@@ -6,6 +6,10 @@ from pcbre.matrix import Rect, translate, scale, Point2, projectPoint
 from pcbre.ui.gl import Texture, vbobind, VAO
 from OpenGL import GL
 import ctypes
+import time
+import freetype
+import scipy.ndimage.morphology
+import scipy.ndimage.interpolation
 import numpy
 import json
 from pcbre.qt_compat import QtCore, QtGui
@@ -153,7 +157,6 @@ class TextBatcher(object):
         return ti
 
 
-
 class _StringMetrics(object):
     def __init__(self, arr, metrics):
         self.__rect = Rect()
@@ -234,9 +237,7 @@ class TextRender(object):
         self.b1 = vbobind(self.sdf_shader, self.buffer_dtype, "vertex")
         self.b2 = vbobind(self.sdf_shader, self.buffer_dtype, "texpos")
 
-
         self.tex = Texture()
-
 
         # TODO: implement short-int caching
         # build a De-bruijn sequence (shorted substring containing all substrings)
@@ -260,7 +261,7 @@ class TextRender(object):
         # Starting pen X coordinate
         q = []
         pen_x = 0
-
+        print(text)
         left, right, top, bottom = 0, 0, 0, 0
 
         for ch in text:
@@ -297,9 +298,6 @@ class TextRender(object):
             # And increment to the next character
             pen_x += gp.hb
         return _StringMetrics(q, (left, right, bottom, top))
-
-
-
 
     def updateTexture(self):
         # Don't update the texture if its up-to-date
