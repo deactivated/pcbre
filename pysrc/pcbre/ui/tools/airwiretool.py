@@ -51,11 +51,10 @@ class AirwireToolController(BaseToolController):
         pt = self.view.viewState.tfV2W(Point2(evt.pos()))
 
         aw = self.project.artwork.query_point(pt)
-        aw_l = layer_for(aw)
-
         if aw is None:
             return
 
+        aw_l = layer_for(aw)
         if self.state == self.STATE_IDLE:
             self.pt0 = pt
             self.pt0_layer = aw_l

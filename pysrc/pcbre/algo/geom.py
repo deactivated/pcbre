@@ -230,4 +230,5 @@ for i in _geom_types:
     _layer_for_ops[i.value] = globals()["_layer_for_%s" % i.name.lower()]
 
 def layer_for(geom):
-    return _layer_for_ops[geom.ISC.value](geom)
+    if geom:
+        return _layer_for_ops[geom.ISC.value](geom)
