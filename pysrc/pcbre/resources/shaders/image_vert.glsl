@@ -12,4 +12,3 @@ void main(void)
     gl_Position = vec4(calc.x, calc.y, 0, calc.z);
     pos = texpos;
 }
-

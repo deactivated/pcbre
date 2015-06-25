@@ -7,7 +7,6 @@ uniform vec4 color;
 out vec4 FragColor;
 //uniform float gamma;
 
-
 void main(void)
 {
     float dist = texture(tex1, pos).r;
@@ -18,4 +17,3 @@ void main(void)
     newcolor.a *= smoothstep(-aa, +aa, dist - 0.75);
     FragColor = newcolor;
 }
-

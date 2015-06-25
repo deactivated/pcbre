@@ -1,9 +1,11 @@
 #version 150
 
+uniform sampler2D tex1;
+
 in vec2 pos;
 out vec4 FragColor;
 
-uniform sampler2D tex1;
+out vec4 FragColor;
 
 void main(void)
 {

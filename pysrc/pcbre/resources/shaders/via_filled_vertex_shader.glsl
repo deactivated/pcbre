@@ -1,6 +1,5 @@
 #version 150
 
-
 uniform mat3 mat;
 
 in vec2 vertex;
@@ -18,7 +17,6 @@ out vec4 _color;
 out float _r_inside_frac_sq;
 
 void main() {
-
     // x/y deltas for frag shader position calc
     ax = vertex.x;
     ay = vertex.y;

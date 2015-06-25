@@ -7,7 +7,6 @@ INPUT_TYPE vec2 pos_b;
 INPUT_TYPE float thickness;
 uniform vec4 color;
 
-
 in vec2 vertex;
 in int ptid;
 
@@ -40,4 +39,3 @@ void main(void)
 
     color_vtx = color;
 }
-
