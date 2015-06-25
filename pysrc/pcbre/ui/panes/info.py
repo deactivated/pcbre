@@ -1,6 +1,6 @@
 __author__ = 'davidc'
 
-from PySide import QtCore, QtGui
+from pcbre.qt_compat import QtCore, QtGui
 
 
 class InfoWidget(QtGui.QDockWidget):

@@ -7,7 +7,9 @@ from pcbre.ui.gl import Texture, vbobind, VAO
 from OpenGL import GL
 import ctypes
 import numpy
-
+import json
+from pcbre.qt_compat import QtCore, QtGui
+from pcbre.ui.misc import QImage_from_numpy
 from pcbre.ui.gl.textatlas import BASE_FONT
 
 __author__ = 'davidc'
@@ -16,7 +18,6 @@ class TextBatch:
     __tag = namedtuple("tag", ['mat','inf'])
     def __init__(self, tr):
         self.__text_render = tr
-
         self.__elem_count = 0
         self.__color = [1.0, 1.0, 1.0, 1.0]
 
@@ -319,7 +320,7 @@ class TextRender(object):
             # fix line alignment to 1 byte so odd-sized textures load right
             GL.glPixelStorei(GL.GL_UNPACK_ALIGNMENT, 1)
 
-            # Download the data to the buffer. 
+            # Download the data to the buffer.
             GL.glTexImage2D(GL.GL_TEXTURE_2D,
                             0,
                             GL.GL_RED,

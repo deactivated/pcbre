@@ -2,12 +2,11 @@ from collections import defaultdict
 import math
 import time
 
-from PySide import QtOpenGL
-import PySide.QtCore as QtCore
-import PySide.QtGui as QtGui
+from pcbre.qt_compat import QtCore, QtGui, QtOpenGL, QGLContext
 import OpenGL.GL as GL
 import OpenGL.arrays.vbo as VBO
 import numpy
+
 from pcbre import units
 from pcbre.matrix import scale, translate, Point2, projectPoint
 from pcbre.model.const import SIDE
@@ -152,7 +151,7 @@ class BaseViewWidget(QtOpenGL.QGLWidget):
             f = QtOpenGL.QGLFormat();
             f.setVersion(3, 2)
             f.setProfile(QtOpenGL.QGLFormat.CoreProfile)
-            c = QtOpenGL.QGLContext(f)
+            c = QGLContext(f)
             QtOpenGL.QGLWidget.__init__(self, c, parent)
         else:
             QtOpenGL.QGLWidget.__init__(self, parent)

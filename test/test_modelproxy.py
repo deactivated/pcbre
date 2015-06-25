@@ -1,4 +1,4 @@
-from PySide import QtCore
+from pcbre.qt_compat import QtCore
 from pcbre.ui.uimodel import mdlacc, GenModel
 import unittest
 from mock import Mock

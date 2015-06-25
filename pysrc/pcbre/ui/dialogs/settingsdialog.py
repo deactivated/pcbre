@@ -1,4 +1,4 @@
-from PySide import QtGui, QtCore
+from pcbre.qt_compat import QtGui, QtCore
 import math
 from pcbre.matrix import Point2
 from pcbre.ui.widgets.unitedit import UnitLineEdit
@@ -247,4 +247,3 @@ class MultiAutoSettingsDialog(QtGui.QDialog):
     def selectWidget(self, idx):
         self.__qsw.setCurrentIndex(idx)
         self.currentWidget = self.__autoWidgets[idx]
-

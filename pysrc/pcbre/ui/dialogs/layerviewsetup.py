@@ -1,16 +1,15 @@
 import random
 import numpy
 
-from PySide.QtCore import *
-from PySide.QtGui import *
+from pcbre.qt_compat import QtCore, QtGui
 
 import pcbre.model.project
 import pcbre.model.stackup
 
 FIRST_VIEW_COL = 1
-class LayerViewSetupDialog(QDialog):
+class LayerViewSetupDialog(QtGui.QDialog):
     def __init__(self, parent, data_list):
-        QDialog.__init__(self, parent)
+        QtGui.QDialog.__init__(self, parent)
 
         self.resize(470, 350)
         self.setWindowTitle("Layer imagery")
@@ -18,27 +17,27 @@ class LayerViewSetupDialog(QDialog):
         self.table_model = MyTableModel(self, data_list)
 
 
-        self.table_view = QTableView()
+        self.table_view = QtGui.QTableView()
 
-        self.table_view.setSelectionMode(QAbstractItemView.SingleSelection) 
-        self.table_view.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.table_view.setSelectionMode(QtGui.QAbstractItemView.SingleSelection)
+        self.table_view.setSelectionBehavior(QtGui.QAbstractItemView.SelectRows)
 
 
 
         self.table_view.setModel(self.table_model)
         # set font
-        font = QFont("Courier New", 10)
+        font = QtGui.QFont("Courier New", 10)
         self.table_view.setFont(font)
         self.table_view.resizeColumnsToContents()
 
 
-        layout = QHBoxLayout(self)
+        layout = QtGui.QHBoxLayout(self)
         layout.addWidget(self.table_view)
-        l2 = QVBoxLayout()
+        l2 = QtGui.QVBoxLayout()
 
-        self.cancelButton = QPushButton("cancel")
+        self.cancelButton = QtGui.QPushButton("cancel")
         self.cancelButton.clicked.connect(self.reject)
-        self.okButton = QPushButton("apply")
+        self.okButton = QtGui.QPushButton("apply")
         self.okButton.setDefault(True)
         self.okButton.clicked.connect(self.accept)
 
@@ -57,7 +56,7 @@ class LayerViewSetupDialog(QDialog):
 
     def accept(self):
         self.table_model.update()
-        return QDialog.accept(self)
+        return QtGui.QDialog.accept(self)
 
 class EditableLayer(object):
     def __init__(self, mdl, ref, name, ils):
@@ -67,9 +66,9 @@ class EditableLayer(object):
         self.view_set = set(ils)
 
 
-class MyTableModel(QAbstractTableModel):
+class MyTableModel(QtCore.QAbstractTableModel):
     def __init__(self, parent, project, *args):
-        QAbstractTableModel.__init__(self, parent, *args)
+        QtCore.QAbstractTableModel.__init__(self, parent, *args)
         self.p = project
         self._layers =  [
             EditableLayer(self, pl, pl.name, pl.imagelayers)
@@ -96,14 +95,14 @@ class MyTableModel(QAbstractTableModel):
         col = index.column()
         row = index.row()
 
-        if role == Qt.DisplayRole:
+        if role == QtCore.Qt.DisplayRole:
 
             return None
 
-        elif role == Qt.CheckStateRole:
+        elif role == QtCore.Qt.CheckStateRole:
             layer = self._layers[row]
             view = self._views[col]
-            return Qt.Checked if view in layer.view_set else Qt.Unchecked
+            return QtCore.Qt.Checked if view in layer.view_set else QtCore.Qt.Unchecked
 
 
         return None
@@ -133,15 +132,15 @@ class MyTableModel(QAbstractTableModel):
         col = index.column()
         row = index.row()
 
-        flags = Qt.ItemIsEnabled | Qt.ItemIsUserCheckable
+        flags = QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsUserCheckable
         return flags
 
 
     def headerData(self, index, orientation, role):
-        if orientation == Qt.Vertical and role == Qt.DisplayRole:
+        if orientation == QtCore.Qt.Vertical and role == QtCore.Qt.DisplayRole:
             return self._layers[index].name
 
-        if orientation == Qt.Horizontal and role == Qt.DisplayRole:
+        if orientation == QtCore.Qt.Horizontal and role == QtCore.Qt.DisplayRole:
             #TODO HACK
             import os.path
             return os.path.basename(self._views[index].name)
@@ -149,7 +148,7 @@ class MyTableModel(QAbstractTableModel):
 
 # Test harness
 if __name__ == "__main__":
-    app = QApplication([])
+    app = QtCore.QApplication([])
     import os.path
     PATH = '/tmp/test.pcbre'
     if os.path.exists(PATH):

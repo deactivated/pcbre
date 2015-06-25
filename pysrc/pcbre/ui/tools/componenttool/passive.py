@@ -1,4 +1,4 @@
-from PySide import QtCore, QtGui
+from pcbre.qt_compat import QtCore, QtGui
 from pcbre import units
 from pcbre.matrix import Point2, Vec2
 from pcbre.model.const import SIDE
@@ -47,7 +47,7 @@ class PassiveModel(GenModel):
     changed = QtCore.Signal()
 
     snap_well = mdlacc(True)
-    
+
     sym_type = mdlacc(PassiveSymType.TYPE_RES)
     body_type = mdlacc(PassiveBodyType.CHIP)
 
@@ -92,7 +92,7 @@ class PassiveEditFlow(MultipointEditFlow):
     def __init__(self, view, model):
         self.view = view
         self.model = model
-        
+
         self.first_point = EditablePoint(Point2(0,0))
 
         self.theta = 0

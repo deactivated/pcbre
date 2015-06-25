@@ -7,7 +7,7 @@ from pcbre.view.rendersettings import RENDER_OUTLINES, RENDER_HINT_ONCE
 
 __author__ = 'davidc'
 
-from PySide import QtCore, QtGui
+from pcbre.qt_compat import QtCore, QtGui
 from pcbre.ui.tools.basetool import BaseToolController, BaseTool
 from pcbre.ui.uimodel import mdlacc, GenModel
 
@@ -205,4 +205,3 @@ class ComponentTool(BaseTool):
 
     def getToolController(self, view):
         return ComponentController(self.mdl, self.project, view)
-

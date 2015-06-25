@@ -2,7 +2,7 @@ from pcbre.ui.widgets.lineedit import PLineEdit
 
 __author__ = 'davidc'
 from collections import OrderedDict
-from PySide import QtGui, QtCore
+from pcbre.qt_compat import QtGui, QtCore
 
 class UnitGroup(object):
     def __init__(self, items, default_index=0):
@@ -132,4 +132,3 @@ class UnitLineEdit(QtGui.QWidget):
     @suppress_enter.setter
     def suppress_enter(self, v):
         self.__lineEdit.suppress_enter = v
-

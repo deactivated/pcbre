@@ -1,4 +1,4 @@
-from PySide import QtCore, QtGui
+from pcbre.qt_compat import QtCore, QtGui
 from pcbre.model.imagelayer import KeyPointAlignment, KeyPoint
 from pcbre.ui.tools.basetool import BaseToolController
 from pcbre.matrix import translate, scale, Vec2, project_point_line, rotate, line_intersect, INTERSECT_NORMAL, Point2, \

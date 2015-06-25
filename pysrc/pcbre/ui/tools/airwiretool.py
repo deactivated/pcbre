@@ -2,7 +2,8 @@ from pcbre.algo.geom import layer_for
 from pcbre.matrix import Point2
 from pcbre.model.artwork_geom import Airwire
 from pcbre.ui.tools.basetool import BaseTool, BaseToolController
-from PySide import QtGui, QtCore
+import cv2
+from pcbre.qt_compat import QtGui, QtCore
 from pcbre.view.rendersettings import RENDER_HINT_ONCE
 
 AIRWIRE_COLOR = (0.7, 0.7, 0)
@@ -87,4 +88,3 @@ class AirwireTool(BaseTool):
 
     def getToolController(self, view):
         return AirwireToolController(self.project, view)
-

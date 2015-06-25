@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-from PySide import QtCore, QtGui
+from pcbre.qt_compat import QtCore, QtGui, getOpenFileName, getSaveFileName
 
 import pcbre.model.project as P
 from pcbre.ui.actions.add import AddImageDialogAction
@@ -110,14 +110,13 @@ class MainWindow(QtGui.QMainWindow):
     def createLayerSelectionWidget(self):
         dock = LayerListWidget(self.project, self.viewArea.viewState)
         self.addDockWidget(QtCore.Qt.RightDockWidgetArea, dock)
-        
+
         dock = InfoWidget(self.project)
         self.addDockWidget(QtCore.Qt.RightDockWidgetArea, dock)
         #self.subWindowMenu.addAction(dock.toggleViewAction())
 
     def createDockWidgets(self):
         self.createLayerSelectionWidget()
-
 
     def createViewToolbar(self):
         tb = self.addToolBar("View")
@@ -132,7 +131,6 @@ class MainWindow(QtGui.QMainWindow):
             evt.accept()
         else:
             evt.ignore()
-
 
     def createMenubar(self):
         from pcbre.ui.menu.file import FileMenu

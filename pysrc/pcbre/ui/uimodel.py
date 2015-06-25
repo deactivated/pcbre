@@ -1,8 +1,9 @@
 __author__ = "davidc"
 
-from PySide import QtCore
+from pcbre.qt_compat import QtCore
 from contextlib import contextmanager
 import numpy
+
 
 class mdlbase(object):
     pass
@@ -48,7 +49,7 @@ class mdlacc(mdlbase):
             instance.change()
             self.on(instance)
 
-_base = type(QtCore.QObject.__bases__[0])
+_base = type(QtCore.QObject)
 class GenModelMeta(_base):
     def __new__(mcs, name, bases, dict):
         for k, v in list(dict.items()):
@@ -97,4 +98,3 @@ class GenModel(QtCore.QObject, metaclass=GenModelMeta):
                 value.changed.connect(self.change)
 
         QtCore.QObject.__setattr__(self, key, value)
-

@@ -3,7 +3,7 @@ from .basetool import BaseTool, BaseToolController
 from pcbre.model.artwork_geom import Trace
 from pcbre.model.const import TFF
 from pcbre.ui.boardviewwidget import QPoint_to_pair
-from PySide import QtCore, QtGui
+from pcbre.qt_compat import QtCore, QtGui
 from pcbre.ui.uimodel import GenModel, mdlacc
 from pcbre.ui.icon import Icon
 import pkg_resources

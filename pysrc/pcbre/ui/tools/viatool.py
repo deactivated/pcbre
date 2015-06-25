@@ -1,5 +1,6 @@
-from PySide import QtCore, QtGui
+from pcbre.qt_compat import QtCore, QtGui
 from .basetool import BaseTool, BaseToolController
+
 from pcbre.matrix import Point2, translate
 from pcbre.model.artwork_geom import Via
 from pcbre.model.net import Net
@@ -192,4 +193,3 @@ class ViaTool(BaseTool):
 
     def getToolController(self, view):
         return ViaToolController(view, self.project, self.model)
-

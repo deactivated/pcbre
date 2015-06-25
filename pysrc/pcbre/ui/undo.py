@@ -1,4 +1,4 @@
-from PySide import QtGui, QtCore
+from pcbre.qt_compat import QtGui, QtCore
 import functools
 import collections
 

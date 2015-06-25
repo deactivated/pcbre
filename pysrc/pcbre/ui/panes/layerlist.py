@@ -1,4 +1,4 @@
-from PySide import QtCore, QtGui
+from pcbre.qt_compat import QtCore, QtGui
 
 class LayerListModel(QtCore.QAbstractListModel):
     def __init__(self, project, parent=None):

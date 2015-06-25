@@ -1,4 +1,4 @@
-from PySide import QtGui, QtCore
+from pcbre.qt_compat import QtGui, QtCore
 from pcbre.ui.icon import Icon
 import pkg_resources
 
@@ -74,4 +74,3 @@ class BaseTool(object):
 
     def getToolController(self, view):
         return BaseToolController()
-

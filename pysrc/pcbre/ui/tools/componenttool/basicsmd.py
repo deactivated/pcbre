@@ -1,4 +1,10 @@
-from PySide import QtGui, QtCore
+from pcbre.qt_compat import QtGui, QtCore
+import math
+import numpy
+
+from OpenGL import GL as GL
+from OpenGL.arrays.vbo import VBO
+
 from pcbre.matrix import Point2, rotate, Vec2, projectPoint, translate, project_point_line
 from pcbre.model.const import SIDE
 from pcbre.model.smd4component import SMD4Component
@@ -295,4 +301,3 @@ def BasicSMD_getComponent(mdl, ctrl, flow):
                        mdl.side1_pins, mdl.side2_pins, mdl.side3_pins, mdl.side4_pins,
                        mdl.dim_1_body, mdl.dim_1_pincenter, mdl.dim_2_body, mdl.dim_2_pincenter,
                        mdl.pin_contact_length, mdl. pin_contact_width, mdl.pin_spacing)
-

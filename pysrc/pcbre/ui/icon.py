@@ -1,4 +1,4 @@
-from PySide import QtCore, QtGui
+from pcbre.qt_compat import QtCore, QtGui
 import pkg_resources
 
 class Icon(QtGui.QIcon):

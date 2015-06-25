@@ -1,6 +1,6 @@
 import numpy
 import math
-from PySide import QtCore
+from pcbre.qt_compat import QtCore
 
 class RectSize(object):
     def __init__(self, *args, **kwargs):

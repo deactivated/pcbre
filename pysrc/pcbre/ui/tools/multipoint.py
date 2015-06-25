@@ -1,4 +1,4 @@
-from PySide import QtCore, QtGui
+from pcbre.qt_compat import QtCore, QtGui
 from copy import copy, deepcopy
 from enum import Enum
 from pcbre.matrix import Point2, Vec2, clip_point_to_rect, Rect

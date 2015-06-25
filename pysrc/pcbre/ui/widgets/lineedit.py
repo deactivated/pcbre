@@ -1,5 +1,5 @@
 __author__ = 'davidc'
-from PySide import QtCore, QtGui
+from pcbre.qt_compat import QtCore, QtGui
 
 class PLineEdit(QtGui.QLineEdit):
     def __init__(self, *args, **kwargs):

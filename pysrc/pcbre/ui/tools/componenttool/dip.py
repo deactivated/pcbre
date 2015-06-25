@@ -1,4 +1,5 @@
 from pcbre import units
+from pcbre.qt_compat import QtCore
 from pcbre.matrix import Point2, Vec2, projectPoint, rotate, translate
 from pcbre.model.const import SIDE
 from pcbre.model.dipcomponent import DIPComponent
@@ -6,7 +7,6 @@ from pcbre.ui.tools.multipoint import MultipointEditFlow, EditablePoint, OffsetD
 
 
 __author__ = 'davidc'
-from PySide import QtCore
 from pcbre.ui.dialogs.settingsdialog import AutoSettingsWidget, LineEditable, IntTrait, UnitEditable
 from pcbre.ui.uimodel import mdlacc, GenModel
 from pcbre.ui.widgets.unitedit import UNIT_GROUP_MM
@@ -132,7 +132,6 @@ class DIPEditFlow(MultipointEditFlow):
 class DIPModel(GenModel):
     def __init__(self):
         super(DIPModel, self).__init__()
-        
 
     changed = QtCore.Signal()
 
@@ -141,8 +140,8 @@ class DIPModel(GenModel):
     pin_space = mdlacc(units.IN_10)
     pin_width = mdlacc(units.IN_10 * 3)
     pad_diameter = mdlacc(units.MM * 1.6)
-    
-    
+
+
 
 class DIPEditWidget(AutoSettingsWidget):
     def __init__(self, icmdl):
