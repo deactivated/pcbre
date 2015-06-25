@@ -414,7 +414,7 @@ class MyTableModel(QtCore.QAbstractTableModel):
             elif col >= FIRST_VP_COL:
                 vp = self._via_pairs[col-FIRST_VP_COL]
                 if vp.startIndex <= row <= vp.endIndex:
-                    return QtGui.QBrush(QColor(0,0,0))
+                    return QtGui.QBrush(QtGui.QColor(0,0,0))
                 return None
 
         return None
