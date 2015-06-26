@@ -92,14 +92,18 @@ class Stackup(QtCore.QObject):
 
     @property
     def top_layer(self):
-        return self.__layers[0]
+        if self.__layers:
+            return self.__layers[0]
 
     @property
     def bottom_layer(self):
-        return self.__layers[-1]
+        if self.__layers:
+            return self.__layers[-1]
 
     @property
     def both_sides(self):
+        if not self.__layers:
+            return (None, None)
         return self.__layers[0], self.__layers[-1]
 
     def layer_for_side(self, side):
