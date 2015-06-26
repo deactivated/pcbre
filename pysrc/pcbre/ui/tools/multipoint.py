@@ -1,6 +1,8 @@
-from pcbre.qt_compat import QtCore, QtGui
+import math
 from copy import copy, deepcopy
 from enum import Enum
+
+from pcbre.qt_compat import QtCore, QtGui
 from pcbre.matrix import Point2, Vec2, clip_point_to_rect, Rect
 from pcbre.view.rendersettings import RENDER_HINT_ONCE
 
@@ -99,7 +101,7 @@ class MultipointEditRenderer:
         corners = list(map(Point2, [(-N,-N), (N, -N), (N, N), (-N, N)]))
 
         for p in self.flow.points:
-            if not self.show_fn(p):
+            if not self.show_fn(p) or not p.get():
                 continue
 
             color = self.color_fn(self.flow, p)
@@ -208,8 +210,17 @@ class MultipointEditFlow:
             self.updated(self.current_point)
 
     def mousePressEvent(self, evt):
-        if self.__point_active:
-            self.commit_entry(evt.modifiers() & QtCore.Qt.ShiftModifier)
+        if evt.button() == QtCore.Qt.RightButton:
+            if hasattr(self, "theta"):
+                angle = math.pi / 2
+                if evt.modifiers() & QtCore.Qt.ShiftModifier:
+                    angle = -angle
+
+                self.theta += angle
+
+        if evt.button() == QtCore.Qt.LeftButton:
+            if self.__point_active:
+                self.commit_entry(evt.modifiers() & QtCore.Qt.ShiftModifier)
 
     def mouseReleaseEvent(self, evt):
         pass
@@ -269,5 +280,3 @@ class MultipointEditFlow:
     @property
     def done(self):
         return self.__done
-
-
