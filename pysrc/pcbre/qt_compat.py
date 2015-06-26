@@ -27,13 +27,13 @@ if requested_binding == "pyqt4":
         return QtGui.QFileDialog.getSaveFileName(*args, **kwargs)
 
 elif requested_binding == "pyside":
-    from pcbre.qt_compat import QtGui, QtCore, QtOpenGL
+    from PySide import QtGui, QtCore, QtOpenGL
 
     def QGLContext(f):
         return QtOpenGL.QGLContext(f)
 
     def QtLoadUI(f):
-        from PyQt4 import uic
+        from PySide import uic
         return uic.loadUi(f)
 
     def getOpenFileName(*args):
