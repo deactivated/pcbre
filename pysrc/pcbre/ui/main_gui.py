@@ -71,7 +71,6 @@ class MainWindow(QtGui.QMainWindow):
 
         self.setWindowTitle("PCB Reversing Suite")
 
-
         self.current_tool = None
         self.current_controller = None
 
@@ -176,7 +175,14 @@ def main():
     gl_version = probe()
 
     window = MainWindow(p)
-    window.show()
+
+    def focus_window():
+        window.show()
+        window.raise_()
+        window.activateWindow()
+
+    focus_timer = QtCore.QTimer.singleShot(0, focus_window)
+
     sys.exit(app.exec_())
 
 if __name__ == '__main__':
