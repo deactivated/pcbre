@@ -181,7 +181,7 @@ def main():
         window.raise_()
         window.activateWindow()
 
-    focus_timer = QtCore.QTimer.singleShot(0, focus_window)
+    focus_timer = QtCore.QTimer.singleShot(10, focus_window)
 
     sys.exit(app.exec_())
 
