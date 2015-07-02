@@ -552,10 +552,11 @@ class BoardViewWidget(BaseViewWidget):
         with Timer() as il_timer:
             if self.viewState.show_images and (len(stackup_layer.imagelayers) > 0):
                 images = list(stackup_layer.imagelayers)
-                i = self.viewState.layer_permute % len(images)
-                images_cycled = images[i:] + images[:i]
-                for l in images_cycled:
-                    self.image_view_cache_load(l).render(self.viewState.glMatrix)
+                if images:
+                    i = self.viewState.layer_permute % len(images)
+                    images_cycled = images[i:] + images[:i]
+                    for l in images_cycled:
+                        self.image_view_cache_load(l).render(self.viewState.glMatrix)
 
         # Now render features
         self.lt = time.time()
