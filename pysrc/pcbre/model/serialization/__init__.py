@@ -131,6 +131,8 @@ class SContext:
     def set_sid(self, sid, m):
         if not self.__restoring:
             raise StateError("Must be in restore mode to create objects with SID")
+        if sid in self.sid_to_obj:
+            return
         assert not sid in self.sid_to_obj
         self.sid_to_obj[sid] = m
 
