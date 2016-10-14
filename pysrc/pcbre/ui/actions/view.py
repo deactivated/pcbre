@@ -4,7 +4,6 @@ from pcbre.ui.icon import Icon
 __author__ = 'davidc'
 
 
-
 class LayerJumpAction(QtWidgets.QAction):
 
     def __init__(self, window, layer_no):
@@ -12,7 +11,7 @@ class LayerJumpAction(QtWidgets.QAction):
         self.window = window
 
         QtWidgets.QAction.__init__(self, "layer %d" %
-                               layer_no, window, triggered=self.__action)
+                                   layer_no, window, triggered=self.__action)
         self.setShortcut(QtGui.QKeySequence("%d" % (layer_no + 1)))
 
     def __action(self):
@@ -58,7 +57,7 @@ class RotateLAction(QtWidgets.QAction):
     def __init__(self, window):
         self.__window = window
         QtWidgets.QAction.__init__(self, "Rotate 90 (CCW)",
-                               self.__window, triggered=self.__action)
+                                   self.__window, triggered=self.__action)
         self.setShortcut(QtGui.QKeySequence("ctlr+shift+r"))
         self.setIcon(Icon("rotl"))
         self.setToolTip("Ctrl+Shift+r")
@@ -72,7 +71,7 @@ class RotateRAction(QtWidgets.QAction):
     def __init__(self, window):
         self.__window = window
         QtWidgets.QAction.__init__(self, "Rotate 90 (CW)",
-                               self.__window, triggered=self.__action)
+                                   self.__window, triggered=self.__action)
         self.setShortcut(QtGui.QKeySequence("ctlr+r"))
         self.setIcon(Icon("rotr"))
         self.setToolTip("Ctrl+r")

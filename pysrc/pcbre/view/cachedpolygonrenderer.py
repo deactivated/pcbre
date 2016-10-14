@@ -193,7 +193,8 @@ class CachedPolygonRenderer:
         for v in self.__layer_arrays.values():
             v.restart()
 
-    def deferred(self, polygon, rendersettings, render_hint=RENDER_HINT_NORMAL):
+    def deferred(self, polygon, rendersettings,
+                 render_hint=RENDER_HINT_NORMAL):
         if polygon.layer not in self.__layer_arrays:
             self.__layer_arrays[polygon.layer] = PolygonVBOPair(self.__view)
             self.__layer_arrays[polygon.layer].initializeGL()

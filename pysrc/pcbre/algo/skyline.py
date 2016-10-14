@@ -67,9 +67,11 @@ class _StartHeight(object):
         if self.head:
             nodes = itertools.takewhile(
                 lambda x: x != self, _node_iter(self.next))
-            return ", ".join("%s height: %d fw:%d" % (s.node, s.height, s.wasted_width) for s in nodes)
+            return ", ".join("%s height: %d fw:%d" %
+                             (s.node, s.height, s.wasted_width) for s in nodes)
         else:
-            return "<%s height: %d fw:%d>" % (self.node, self.height, self.wasted_width)
+            return "<%s height: %d fw:%d>" % (
+                self.node, self.height, self.wasted_width)
 
 
 def _node_iter(node):
@@ -205,7 +207,8 @@ class SkyLine(object):
                 s_h_list.prev.append(_StartHeight(node))
 
         if len(candidates):
-            return sorted(candidates, key=operator.attrgetter("height", "wasted_width"))[0]
+            return sorted(candidates, key=operator.attrgetter(
+                "height", "wasted_width"))[0]
 
         return None
 

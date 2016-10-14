@@ -51,7 +51,8 @@ class EditablePoint:
 
 class OffsetDefaultPoint(EditablePoint):
 
-    def __init__(self, pt, default_offset, icon=RenderIcon.POINT_ON_LINE, enabled=True):
+    def __init__(self, pt, default_offset,
+                 icon=RenderIcon.POINT_ON_LINE, enabled=True):
         super(OffsetDefaultPoint, self).__init__(enabled=enabled)
         self.reference = pt
         self.offset = default_offset
@@ -89,7 +90,8 @@ def _default_color_fn(flow, pt):
 
 class MultipointEditRenderer:
 
-    def __init__(self, flow, view, color_fn=_default_color_fn, show_fn=lambda pt: pt.enabled):
+    def __init__(self, flow, view, color_fn=_default_color_fn,
+                 show_fn=lambda pt: pt.enabled):
         """
         :type view: pcbre.ui.boardviewwidget.BoardViewWidget
         :param flow:

@@ -316,7 +316,7 @@ class MyTableModel(QtCore.QAbstractTableModel):
         # Now update all the viapairs
         to_remove = set(self.p.stackup.via_pairs)
         for i in self._via_pairs:
-            if i.ref == None:
+            if i.ref is None:
                 new_layer = pcbre.model.stackup.ViaPair(
                     i.startLayer.ref, i.endLayer.ref)
                 self.p.stackup.add_via_pair(new_layer)

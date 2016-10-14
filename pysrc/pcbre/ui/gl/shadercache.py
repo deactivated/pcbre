@@ -42,7 +42,8 @@ class ShaderCache(object):
             'pcbre.resources', "shaders/%s.glsl" % name)
         return byte_str.decode('ascii')
 
-    def get(self, vert_name, frag_name, defines={}, vertex_defines={}, fragment_defines={}):
+    def get(self, vert_name, frag_name, defines={},
+            vertex_defines={}, fragment_defines={}):
 
         _fragment_defines = {}
         _fragment_defines.update(fragment_defines)

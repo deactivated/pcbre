@@ -9,7 +9,8 @@ __author__ = 'davidc'
 class Component:
     TYPE_FLAGS = TFF.HAS_INST_INFO
 
-    def __init__(self, center, theta, side, name_mapping={}, refdes="", partno="", side_layer_oracle=None):
+    def __init__(self, center, theta, side, name_mapping={},
+                 refdes="", partno="", side_layer_oracle=None):
         self.side = side
         self.theta = theta
         self.center = center
@@ -42,7 +43,8 @@ class Component:
 
     @property
     def matrix(self):
-        return translate(self.center.x, self.center.y).dot(rotate(self.theta).dot(cflip(self.side == SIDE.Bottom)))
+        return translate(self.center.x, self.center.y).dot(
+            rotate(self.theta).dot(cflip(self.side == SIDE.Bottom)))
 
     def pin_name_for_no(self, pinno):
         """

@@ -12,7 +12,7 @@ class StackupSetupDialogAction(QtWidgets.QAction):
     def __init__(self, window):
         self.__window = window
         QtWidgets.QAction.__init__(self, "Edit Stackup",
-                               window, triggered=self.__action)
+                                   window, triggered=self.__action)
 
     def __action(self):
         dlg = StackupSetupDialog(self.__window, self.__window.project)
@@ -25,7 +25,7 @@ class RebuildConnectivityAction(QtWidgets.QAction):
         self.__window = window
 
         QtWidgets.QAction.__init__(self, "Rebuild Connectivity",
-                               window, triggered=self.__action)
+                                   window, triggered=self.__action)
 
     class CancelException(Exception):
         pass

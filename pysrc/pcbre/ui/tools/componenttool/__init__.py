@@ -153,7 +153,8 @@ class ComponentController(BaseToolController):
         self.restartFlow()
 
     def get_component(self):
-        return mdl_meta[self.mdl.cmptype].get_comp(self.mdl.get_selected_model(), self, self.flow)
+        return mdl_meta[self.mdl.cmptype].get_comp(
+            self.mdl.get_selected_model(), self, self.flow)
 
     def showSettingsDialog(self):
         dlg = ComponentSettings(self.mdl, self)

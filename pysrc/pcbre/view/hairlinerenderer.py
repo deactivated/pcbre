@@ -102,7 +102,8 @@ class HairlineRenderer:
 
         def finalize(self):
             self.__done = True
-            return HairlineRenderer._Reservation(self.__group, self.__first, self.__last)
+            return HairlineRenderer._Reservation(
+                self.__group, self.__first, self.__last)
 
     def __init__(self, view):
         self.__view = view
@@ -124,7 +125,8 @@ class HairlineRenderer:
         self.__draw_resv = defaultdict(list)
 
     def new_reservation(self, group):
-        return HairlineRenderer._ReservationBuilder(group, self.__recurring_draws.add_point, self.__recurring_draws.last_index(group) // 2)
+        return HairlineRenderer._ReservationBuilder(
+            group, self.__recurring_draws.add_point, self.__recurring_draws.last_index(group) // 2)
 
     def deferred(self, p1, p2, color, group, hint=RENDER_HINT_NORMAL):
         if hint & RENDER_HINT_ONCE:

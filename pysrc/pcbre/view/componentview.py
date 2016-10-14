@@ -78,7 +78,8 @@ class PadRender:
         self.view = view
         self.text_cache = {}
 
-    def render(self, mat, pad, render_mode=RENDER_STANDARD, render_hint=RENDER_HINT_NORMAL):
+    def render(self, mat, pad, render_mode=RENDER_STANDARD,
+               render_hint=RENDER_HINT_NORMAL):
         """
         :type pad: Pad
         :param mat:
@@ -140,7 +141,8 @@ class ComponentRender:
 
         self.__text_cache = weakref.WeakKeyDictionary()
 
-    def render(self, mat, cmp, render_mode=RENDER_STANDARD, render_hint=RENDER_HINT_NORMAL):
+    def render(self, mat, cmp, render_mode=RENDER_STANDARD,
+               render_hint=RENDER_HINT_NORMAL):
         group = None
 
         color = (1, 0, 1)
@@ -162,7 +164,7 @@ class PassiveRender(ComponentRender):
     def _build_points(self, cmp):
         """
         :type cmp: pcbre.model.passivecomponent.PassiveComponent
-        :param cmp: 
+        :param cmp:
         :return:
         """
         circ_groups = []
@@ -252,7 +254,8 @@ class SMDRender(ComponentRender):
             d = Point2(math.cos(theta) * size, math.sin(theta) * size)
             circle_points.append(d + circ_center)
 
-        for p1, p2 in zip(circle_points, circle_points[1:] + circle_points[0:1]):
+        for p1, p2 in zip(circle_points, circle_points[
+                          1:] + circle_points[0:1]):
             lines.append((p1, p2))
 
         return lines

@@ -39,10 +39,12 @@ class ComponentTextBatcher:
         ltor_unit_vector = Point2(
             self.__view.viewState.revMatrix.dot((1, 0, 0))[:2]).norm()
 
-        if math.acos(round(float(up_unit_vector.dot(self.__up_vector)), 8)) > 0.01:
+        if math.acos(
+                round(float(up_unit_vector.dot(self.__up_vector)), 8)) > 0.01:
             needs_rebuild = True
 
-        if math.acos(round(float(ltor_unit_vector.dot(self.__ltor_vector)), 8)) > 0.01:
+        if math.acos(
+                round(float(ltor_unit_vector.dot(self.__ltor_vector)), 8)) > 0.01:
             needs_rebuild = True
 
         self.__up_vector = up_unit_vector

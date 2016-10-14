@@ -78,7 +78,8 @@ class Trace(Geom):
 
     def __repr__(self):
         netname = self.net.name if self.net is not None else "none"
-        return "<Trace %s %s r=%f, layer=%s, net=%s>" % (self.p0, self.p1, self.thickness, self.layer.name, netname)
+        return "<Trace %s %s r=%f, layer=%s, net=%s>" % (
+            self.p0, self.p1, self.thickness, self.layer.name, netname)
 
 
 class Airwire(Geom):

@@ -61,7 +61,8 @@ class TraceToolController(BaseToolController):
         if sp is None:
             sp = self.cur_pt
 
-        return Trace(sp, self.cur_pt, self.toolparammodel.thickness, self.view.current_layer_hack(), None)
+        return Trace(sp, self.cur_pt, self.toolparammodel.thickness,
+                     self.view.current_layer_hack(), None)
 
     def showSettingsDialog(self):
         pass

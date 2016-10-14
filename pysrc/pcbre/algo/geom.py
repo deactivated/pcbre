@@ -33,11 +33,13 @@ def dist_trace_trace(trace_1, trace_2):
 def dist_via_trace(via, trace):
     if trace.layer not in via.viapair.all_layers:
         return float("inf")
-    return dist_pt_line_seg(via.pt, trace.p0, trace.p1) - trace.thickness / 2 - via.r
+    return dist_pt_line_seg(via.pt, trace.p0, trace.p1) - \
+        trace.thickness / 2 - via.r
 
 
 def dist_via_via(via_1, via_2):
-    if not set(via_1.viapair.all_layers).intersection(via_2.viapair.all_layers):
+    if not set(via_1.viapair.all_layers).intersection(
+            via_2.viapair.all_layers):
         return float("inf")
     d = (via_1.pt - via_2.pt).mag()
     return d - via_1.r - via_2.r
@@ -79,7 +81,8 @@ def dist_trace_pad(trace, p1):
 
     # Degenerate case where pad is a circle
     if p1.w == p1.l:
-        return dist_pt_line_seg(p1.center, trace.p0, trace.p1) - trace.thickness / 2 - p1.w / 2
+        return dist_pt_line_seg(p1.center, trace.p0,
+                                trace.p1) - trace.thickness / 2 - p1.w / 2
     else:
         ptr = p1.trace_repr
         return dist_trace_trace(ptr, trace)
@@ -228,7 +231,8 @@ def point_inside(geom, pt):
 
 
 def can_self_intersect(geom):
-    return geom.ISC not in [IntersectionClass.NONE, IntersectionClass.VIRTUAL_LINE]
+    return geom.ISC not in [IntersectionClass.NONE,
+                            IntersectionClass.VIRTUAL_LINE]
 
 
 # layer_for finds a layer (or None) for the geometry queried.

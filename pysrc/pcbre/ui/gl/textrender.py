@@ -197,7 +197,8 @@ class _StringMetrics(object):
         cx = self.__rect.center
         cx *= actual_scale
 
-        return translate(rect.center.x - cx.x, rect.center.y - cx.y).dot(scale(actual_scale))
+        return translate(rect.center.x - cx.x, rect.center.y -
+                         cx.y).dot(scale(actual_scale))
 
 #_tex_vertex = namedtuple("tex_vertex", ["x", "y", "tx", "ty"])
 

@@ -20,7 +20,8 @@ def _wkchip(name):
     n, _ = name.split('/')
     l = int(n[:2]) / 10 * units.MM
     w = int(n[2:4]) / 10 * units.MM
-    return _well_known_t(name, PassiveBodyType.CHIP, l, Point2(l, w), Point2(w, w))
+    return _well_known_t(name, PassiveBodyType.CHIP,
+                         l, Point2(l, w), Point2(w, w))
 
 
 well_known_chip = [

@@ -418,7 +418,7 @@ class Artwork:
                         geom_to_label[i] = label
 
             # Still no label
-            if label == None:
+            if label is None:
                 geom_to_label[k] = labno
                 label_to_geom[labno].add(k)
                 labno += 1
@@ -519,7 +519,8 @@ class Artwork:
             ilist = self.__index.intersect(geom.bbox)
             ilist = [i for i in ilist if i.ISC != IntersectionClass.NONE]
 
-            return sorted([(distance(geom, other), other) for other in ilist], key=operator.itemgetter(0))
+            return sorted([(distance(geom, other), other)
+                           for other in ilist], key=operator.itemgetter(0))
 
         bbox = geom.bbox
 

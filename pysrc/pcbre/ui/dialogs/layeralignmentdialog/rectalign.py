@@ -229,7 +229,8 @@ class RectAlignmentModel(GenModel):
 
     @property
     def flip_rotate_matrix(self):
-        return rotate(self.rotate_theta).dot(scale(-1 if self.flip_x else 1, -1 if self.flip_y else 1))
+        return rotate(self.rotate_theta).dot(
+            scale(-1 if self.flip_x else 1, -1 if self.flip_y else 1))
 
     @property
     def translate_matrix(self):
@@ -240,7 +241,8 @@ class RectAlignmentModel(GenModel):
 
     @property
     def placeholder_dim_values(self):
-        return RectAlignmentModel._lprox(self, self.__placeholder_dim_values, coerce=None)
+        return RectAlignmentModel._lprox(
+            self, self.__placeholder_dim_values, coerce=None)
 
     @property
     def dim_values(self):
@@ -248,7 +250,8 @@ class RectAlignmentModel(GenModel):
 
     @property
     def image_matrix(self):
-        return self.translate_matrix.dot(self.flip_rotate_matrix.dot(self.scale_matrix.dot(self.persp_matrix)))
+        return self.translate_matrix.dot(self.flip_rotate_matrix.dot(
+            self.scale_matrix.dot(self.persp_matrix)))
 
     def all_handles(self):
         if self.dims_locked:
@@ -299,7 +302,8 @@ class RectAlignmentModel(GenModel):
                 if (new_start < 0 or new_start >= self.n or (item.step != 1 and item.step is not None) or
                         new_stop <= new_start or new_stop > self.n):
                     raise IndexError("slice %s is not valid" % item)
-                return RectAlignmentModel._lprox(self.par, self.backing, new_stop - new_start, new_start)
+                return RectAlignmentModel._lprox(
+                    self.par, self.backing, new_stop - new_start, new_start)
 
             raise TypeError
 
@@ -337,7 +341,8 @@ class RectAlignmentModel(GenModel):
             return RectAlignmentModel._lprox(self, self.__dim_handles, 4)
 
     def line_iter(self):
-        return list(zip(self.align_handles[:PERIM_HANDLE_MAX], self.align_handles[1:PERIM_HANDLE_MAX] + self.align_handles[0:1]))
+        return list(zip(self.align_handles[:PERIM_HANDLE_MAX], self.align_handles[
+                    1:PERIM_HANDLE_MAX] + self.align_handles[0:1]))
 
     def get_anchors(self, idx):
         assert IDX_IS_HANDLE(idx)
@@ -862,7 +867,8 @@ class RectAlignmentControllerView(BaseToolController, GenModel):
 
         elif self.idx_handle_sel is not None:
 
-            if evt.key() in (QtCore.Qt.Key_Delete, QtCore.Qt.Key_Backspace) and IDX_IS_ANCHOR(self.idx_handle_sel):
+            if evt.key() in (QtCore.Qt.Key_Delete,
+                             QtCore.Qt.Key_Backspace) and IDX_IS_ANCHOR(self.idx_handle_sel):
 
                 cmd = cmd_set_handle_position(
                     self.model, self.idx_handle_sel, None)
@@ -901,10 +907,10 @@ class RectAlignmentControllerView(BaseToolController, GenModel):
         else:
             idx = self.idx_handle_sel
 
-            if idx == None:
+            if idx is None:
                 return False
 
-            while 1:
+            while True:
                 idx = (idx + step) % len(all_handles)
 
                 if all_handles[idx] is not None:

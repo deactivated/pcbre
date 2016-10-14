@@ -43,7 +43,8 @@ class vbobind(object):
         assert GL.glGetError() == 0
         offset = ctypes.c_void_p(self.offset + base * self.stride)
         GL.glEnableVertexAttribArray(self.loc)
-        if self.t in [GL.GL_BYTE, GL.GL_UNSIGNED_BYTE, GL.GL_SHORT, GL.GL_UNSIGNED_SHORT, GL.GL_INT, GL.GL_UNSIGNED_INT]:
+        if self.t in [GL.GL_BYTE, GL.GL_UNSIGNED_BYTE, GL.GL_SHORT,
+                      GL.GL_UNSIGNED_SHORT, GL.GL_INT, GL.GL_UNSIGNED_INT]:
             GL.glVertexAttribIPointer(
                 self.loc, self.n, self.t, self.stride, offset)
         else:

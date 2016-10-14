@@ -33,7 +33,8 @@ class Pad(object):
     ISC = IntersectionClass.PAD
     TYPE_FLAGS = TFF.HAS_GEOM | TFF.HAS_NET
 
-    def __init__(self, parent, pad_no, rel_center, theta, w, l, th_diam=0, side=None):
+    def __init__(self, parent, pad_no, rel_center,
+                 theta, w, l, th_diam=0, side=None):
         """
         :param parent: Parent
         :param rel_center:
@@ -81,7 +82,8 @@ class Pad(object):
 
     @lazyprop
     def __inv_p2p_mat(self):
-        return translate(self.rel_center.x, self.rel_center.y).dot(rotate(self.theta))
+        return translate(self.rel_center.x, self.rel_center.y).dot(
+            rotate(self.theta))
 
     @lazyprop
     def pad_to_world_matrix(self):

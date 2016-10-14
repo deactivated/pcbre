@@ -122,7 +122,8 @@ class KeyPointAlignment:
 
 class RectAlignment:
 
-    def __init__(self, handles, dim_handles, dims, dims_locked, origin_center, origin_corner, flip_x, flip_y):
+    def __init__(self, handles, dim_handles, dims, dims_locked,
+                 origin_center, origin_corner, flip_x, flip_y):
         self._project = None
         self.handles = handles
         self.dim_handles = dim_handles

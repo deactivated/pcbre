@@ -496,7 +496,8 @@ class BoardViewWidget(BaseViewWidget):
         objects += self.project.artwork.airwires
         return objects
 
-    def render_component(self, mat, cmp, render_mode=RENDER_STANDARD, render_hint=RENDER_HINT_NORMAL):
+    def render_component(
+            self, mat, cmp, render_mode=RENDER_STANDARD, render_hint=RENDER_HINT_NORMAL):
         if not self.layer_visible_m(cmp.on_layers()):
             return
 
@@ -552,7 +553,8 @@ class BoardViewWidget(BaseViewWidget):
 
         # Render all images down onto the layer
         with Timer() as il_timer:
-            if self.viewState.show_images and (len(stackup_layer.imagelayers) > 0):
+            if self.viewState.show_images and (
+                    len(stackup_layer.imagelayers) > 0):
                 images = list(stackup_layer.imagelayers)
                 if images:
                     i = self.viewState.layer_permute % len(images)

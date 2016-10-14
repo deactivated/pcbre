@@ -14,7 +14,7 @@ class AddImageDialogAction(QtWidgets.QAction):
     def __init__(self, window):
         self.window = window
         QtWidgets.QAction.__init__(self, "Image", self.window,
-                               triggered=self.__action)
+                                   triggered=self.__action)
 
     def __action(self):
 

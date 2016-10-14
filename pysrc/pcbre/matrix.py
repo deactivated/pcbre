@@ -93,7 +93,8 @@ class Rect(object):
 
     @property
     def center(self):
-        return Point2(self.right / 2. + self.left / 2., self.bottom / 2. + self.top / 2.)
+        return Point2(self.right / 2. + self.left / 2.,
+                      self.bottom / 2. + self.top / 2.)
 
     @property
     def tl(self):
@@ -137,7 +138,8 @@ class Rect(object):
         return 0
 
     def __repr__(self):
-        return "<Rect l=%f b=%f r=%f t=%f>" % (self.left, self.bottom, self.right, self.top)
+        return "<Rect l=%f b=%f r=%f t=%f>" % (
+            self.left, self.bottom, self.right, self.top)
 
     def intersects(self, other):
         return not (other.left > self.right or
