@@ -21,9 +21,9 @@ class ImageView(object):
         self.im = il.decoded_image
 
         # haaaaaax
-        #flipy = pcbre.matrix.flip(1)
-        #self.mat = flipy.dot(self.il.transform_matrix.dot(numpy.linalg.inv(self.dview_tmat)))
-        #self.mat = self.dview_tmat
+        # flipy = pcbre.matrix.flip(1)
+        # self.mat = flipy.dot(self.il.transform_matrix.dot(numpy.linalg.inv(self.dview_tmat)))
+        # self.mat = self.dview_tmat
         self.mat = None
 
     def initGL(self, gls):
@@ -35,6 +35,7 @@ class ImageView(object):
                 GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_NEAREST)
             GL.glTexParameteri(
                 GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR)
+
             GL.glTexParameteri(
                 GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP_TO_EDGE)
             GL.glTexParameteri(
@@ -71,8 +72,6 @@ class ImageView(object):
         ar["vertex"] = [(-x, -y), (-x, y), (x, -y), (x, y)]
         ar["texpos"] = [(0, 0), (0, 1), (1, 0), (1, 1)]
 
-        print(ar)
-
         self.b1 = vbobind(self.prog, ar.dtype, "vertex")
         self.b2 = vbobind(self.prog, ar.dtype, "texpos")
 
@@ -91,6 +90,12 @@ class ImageView(object):
         if self.mat is None:
             m_pre = self.il.transform_matrix
         mat = viewPort.dot(m_pre)
+
+        # mat = numpy.array([
+        #     [1 / viewPort.width(), 0, 0],
+        #     [0, 1 / viewPort.height(), 0],
+        #     [0, 0, 1]
+        # ])
 
         GL.glActiveTexture(GL.GL_TEXTURE0)
         with self.prog, self._tex.on(GL.GL_TEXTURE_2D), self.vao:

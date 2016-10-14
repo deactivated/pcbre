@@ -112,9 +112,13 @@ class ViewPort(object):
         self.__height = new_height
 
         # World to natural device coordinates matrix
+        rs = max(self.__width, self.__height)
+        wr = self.__width / rs
+        hr = self.__height / rs
+
         self.__w2ndc = numpy.array([
-            [1, 0, 0],
-            [0, 1, 0],
+            [1/wr, 0, 0],
+            [0, 1/hr, 0],
             [0, 0, 1]
         ], dtype=numpy.float32)
 
@@ -124,8 +128,8 @@ class ViewPort(object):
 
         rs = max(self.__width, self.__height) / 2
         self.__ndc2v = numpy.array([
-            [rs,  0, xh],
-            [0, -rs, yh],
+            [xh,  0, xh],
+            [0, -yh, yh],
             [0,   0,  1],
         ])
 

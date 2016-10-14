@@ -28,7 +28,7 @@ class LayerViewSetupDialog(QtWidgets.QDialog):
 
         self.table_view.setModel(self.table_model)
         # set font
-        font = QtWidgets.QFont("Courier New", 10)
+        font = QtGui.QFont("Courier New", 10)
         self.table_view.setFont(font)
         self.table_view.resizeColumnsToContents()
 

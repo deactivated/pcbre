@@ -411,7 +411,9 @@ class BaseViewWidget(QtOpenGL.QGLWidget):
 
         size = max(width, height)
 
-        GL.glViewport((width - size) // 2, (height - size) // 2, size, size)
+        # GL.glViewport((width - size) // 2, (height - size) // 2, size, size)
+        # self.viewState.resize(width, height)
+        GL.glViewport(0, 0, width, height)
         self.viewState.resize(width, height)
 
         # Allocate a new image buffer
@@ -448,8 +450,8 @@ class BoardViewWidget(BaseViewWidget):
 
         # Initial view is a normalized 1-1-1 area.
         # Shift to be 10cm max
-        self.viewState.transform = translate(-0.9, -
-                                             0.9).dot(scale(1. / 100000))
+        self.viewState.transform = \
+            translate(-0.9, - 0.9).dot(scale(1. / 100000))
 
     def text_color(self):
         return [1, 1, 1]
