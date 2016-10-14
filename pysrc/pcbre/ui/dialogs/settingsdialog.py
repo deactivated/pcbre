@@ -1,23 +1,23 @@
-from pcbre.qt_compat import QtGui, QtCore
 import math
+from pcbre.qt_compat import QtGui, QtCore, QtWidgets
 from pcbre.matrix import Point2
 from pcbre.ui.widgets.unitedit import UnitLineEdit
 
 
-class SettingsDialog(QtGui.QDialog):
+class SettingsDialog(QtWidgets.QDialog):
 
     def __init__(self):
         super(SettingsDialog, self).__init__()
 
-        vl = QtGui.QVBoxLayout()
+        vl = QtWidgets.QVBoxLayout()
 
-        self.layout = QtGui.QFormLayout()
+        self.layout = QtWidgets.QFormLayout()
 
         self.setLayout(vl)
         vl.addLayout(self.layout)
 
-        bb = QtGui.QDialogButtonBox(
-            QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)
+        bb = QtWidgets.QDialogButtonBox(
+            QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel)
         vl.addWidget(bb)
 
         bb.accepted.connect(self.accept)
@@ -64,7 +64,7 @@ class IntTrait:
 class LineEditable(object):
 
     def __init__(self, model, attr, traits):
-        self.widget = QtGui.QLineEdit()
+        self.widget = QtWidgets.QLineEdit()
         self.model = model
         self.attr = attr
         self.traits = traits
@@ -88,7 +88,7 @@ class LineEditable(object):
 class DegreeEditable(object):
 
     def __init__(self, model, attr):
-        self.widget = QtGui.QLineEdit()
+        self.widget = QtWidgets.QLineEdit()
         self.model = model
         self.attr = attr
 
@@ -173,7 +173,7 @@ class PointUnitEditable(UnitEditable):
 class CheckedEditable(object):
 
     def __init__(self, model, attr):
-        self.widget = QtGui.QCheckBox()
+        self.widget = QtWidgets.QCheckBox()
         self.model = model
         self.attr = attr
         self.widget.setChecked(getattr(self.model, self.attr))
@@ -200,7 +200,7 @@ class AutoSettingsDialog(SettingsDialog):
         super(AutoSettingsDialog, self).accept()
 
 
-class AutoSettingsWidget(QtGui.QWidget):
+class AutoSettingsWidget(QtWidgets.QWidget):
     """
     Widget similar to AutoSettingsDialog; for use with MultiAutoSettingsDialog
     """
@@ -208,7 +208,7 @@ class AutoSettingsWidget(QtGui.QWidget):
     def __init__(self):
         super(AutoSettingsWidget, self).__init__()
         self.editables = []
-        self.layout = QtGui.QFormLayout()
+        self.layout = QtWidgets.QFormLayout()
         self.setLayout(self.layout)
 
     def addEdit(self, name, editor):
@@ -221,24 +221,24 @@ class AutoSettingsWidget(QtGui.QWidget):
             i.save()
 
 
-class MultiAutoSettingsDialog(QtGui.QDialog):
+class MultiAutoSettingsDialog(QtWidgets.QDialog):
 
     def __init__(self):
         super(MultiAutoSettingsDialog, self).__init__()
 
-        vl = QtGui.QVBoxLayout()
+        vl = QtWidgets.QVBoxLayout()
         self.setLayout(vl)
 
-        self.headerWidget = QtGui.QWidget()
+        self.headerWidget = QtWidgets.QWidget()
         vl.addWidget(self.headerWidget)
 
-        self.__qsw = QtGui.QStackedLayout()
+        self.__qsw = QtWidgets.QStackedLayout()
         self.__autoWidgets = []
 
         vl.addLayout(self.__qsw)
 
-        bb = QtGui.QDialogButtonBox(
-            QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)
+        bb = QtWidgets.QDialogButtonBox(
+            QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel)
         vl.addWidget(bb)
 
         bb.accepted.connect(self.accept)

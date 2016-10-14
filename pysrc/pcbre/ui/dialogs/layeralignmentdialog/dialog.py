@@ -1,3 +1,4 @@
+import numpy
 import OpenGL.GL as GL
 
 from pcbre.matrix import scale, Point2
@@ -12,13 +13,14 @@ from pcbre.ui.gl.textrender import TextBatcher
 from pcbre.ui.undo import UndoStack, undofunc, sig
 from pcbre.view.imageview import ImageView
 from pcbre.view.originview import OriginView
-from .rectalign import RectAlignmentControllerView, RectAlignmentModel
-
-from pcbre.qt_compat import QtGui, QtCore
-import numpy
+from pcbre.qt_compat import QtGui, QtCore, QtWidgets
 from pcbre.ui.uimodel import mdlacc, GenModel
 
+from .rectalign import RectAlignmentControllerView, RectAlignmentModel
+
+
 __author__ = 'davidc'
+
 
 ALIGN_BY_DIMENSIONS = 0
 ALIGN_BY_KEYPOINTS = 1
@@ -158,10 +160,10 @@ class AlignmentViewWidget(BaseViewWidget):
             self.interactionDelegate.focusOutEvent(evt)
 
 
-class LayerAlignmentDialog(QtGui.QDialog):
+class LayerAlignmentDialog(QtWidgets.QDialog):
 
     def __init__(self, parent, project, il):
-        QtGui.QDialog.__init__(self, parent)
+        QtWidgets.QDialog.__init__(self, parent)
         self.resize(800, 600)
         self.setSizeGripEnabled(True)
 
@@ -184,12 +186,12 @@ class LayerAlignmentDialog(QtGui.QDialog):
             self.model.align_by = ALIGN_BY_DIMENSIONS
 
         # Dialog is two areas, the view, and the controls for the view
-        hlayout = QtGui.QHBoxLayout()
+        hlayout = QtWidgets.QHBoxLayout()
         self.setLayout(hlayout)
 
-        view_layout = QtGui.QVBoxLayout()
+        view_layout = QtWidgets.QVBoxLayout()
 
-        self.view_tabs = QtGui.QTabBar()
+        self.view_tabs = QtWidgets.QTabBar()
         self.view_tabs.currentChanged.connect(self.set_view_type)
 
         self.update_tabs()
@@ -205,44 +207,44 @@ class LayerAlignmentDialog(QtGui.QDialog):
         self.view.overlays.add(self.kp_id)
 
         view_layout.addWidget(self.view, 1)
-        self.directions_label = QtGui.QLabel("")
+        self.directions_label = QtWidgets.QLabel("")
         view_layout.addWidget(self.directions_label, 0)
         hlayout.addLayout(view_layout, 1)
 
         # Align Controls
-        control_layout = QtGui.QFormLayout()
+        control_layout = QtWidgets.QFormLayout()
 
         rect_align_controls = RectAlignSettingsWidget(self, self.model.ra)
         keypoint_align_controls = KeypointAlignmentWidget(self, self.model.kp)
 
         # Alignment selection
-        self.align_selection = QtGui.QComboBox()
+        self.align_selection = QtWidgets.QComboBox()
         self.align_selection.addItem("Perimeter + Dimensions")
         self.align_selection.addItem("Keypoints")
         self.align_selection.activated.connect(self.align_selection_cb_changed)
         control_layout.addRow("Align By:", self.align_selection)
 
         # And the widget stack to drive that
-        self.stacked_layout = QtGui.QStackedLayout()
+        self.stacked_layout = QtWidgets.QStackedLayout()
         self.stacked_layout.addWidget(rect_align_controls)
         self.stacked_layout.addWidget(keypoint_align_controls)
 
         # right pane layout
-        control_buttons_layout = QtGui.QVBoxLayout()
+        control_buttons_layout = QtWidgets.QVBoxLayout()
         control_buttons_layout.addLayout(control_layout)
         control_buttons_layout.addLayout(self.stacked_layout)
 
         # Visbox
-        vis_gb = QtGui.QGroupBox("Visible Layers")
+        vis_gb = QtWidgets.QGroupBox("Visible Layers")
 
         self.vis_widget = VisibilityTree(self.vis_model)
-        vis_gb_layout = QtGui.QVBoxLayout()
+        vis_gb_layout = QtWidgets.QVBoxLayout()
         vis_gb.setLayout(vis_gb_layout)
         vis_gb_layout.addWidget(self.vis_widget)
         control_buttons_layout.addWidget(vis_gb)
 
-        bbox = QtGui.QDialogButtonBox(
-            QtGui.QDialogButtonBox.Save | QtGui.QDialogButtonBox.Cancel)
+        bbox = QtWidgets.QDialogButtonBox(
+            QtWidgets.QDialogButtonBox.Save | QtWidgets.QDialogButtonBox.Cancel)
         bbox.accepted.connect(self.accept)
         bbox.rejected.connect(self.reject)
         control_buttons_layout.addWidget(bbox)

@@ -1,15 +1,21 @@
 #!/usr/bin/python
 
-from pcbre.qt_compat import QtCore, QtGui, getOpenFileName, getSaveFileName
-
 import pcbre.model.project as P
+
+from pcbre.qt_compat import (QtCore, QtGui, QtWidgets, getOpenFileName,
+                             getSaveFileName)
 from pcbre.ui.actions.add import AddImageDialogAction
-from pcbre.ui.actions.misc import NudgeUpAction, NudgeLeftAction, NudgeDownAction, NudgeRightAction, \
-    ShowToolSettingsAction
-from pcbre.ui.actions.pcb import RebuildConnectivityAction, LayerViewSetupDialogAction, StackupSetupDialogAction
+from pcbre.ui.actions.misc import (NudgeUpAction, NudgeLeftAction,
+                                   NudgeDownAction, NudgeRightAction,
+                                   ShowToolSettingsAction)
+from pcbre.ui.actions.pcb import (RebuildConnectivityAction,
+                                  LayerViewSetupDialogAction,
+                                  StackupSetupDialogAction)
 from pcbre.ui.actions.save import checkCloseSave
-from pcbre.ui.actions.view import LayerJumpAction, FlipXAction, FlipYAction, RotateLAction, CycleDrawOrderAction, \
-    RotateRAction, ToggleShowImageryAction, ToggleDrawOtherLayersAction
+from pcbre.ui.actions.view import (LayerJumpAction, FlipXAction, FlipYAction,
+                                   RotateLAction, CycleDrawOrderAction,
+                                   RotateRAction, ToggleShowImageryAction,
+                                   ToggleDrawOtherLayersAction)
 from pcbre.ui.boardviewwidget import BoardViewWidget
 from pcbre.ui.panes.info import InfoWidget
 from pcbre.ui.panes.layerlist import LayerListWidget
@@ -56,7 +62,7 @@ class MainWindowActions:
         window.addAction(NudgeRightAction(window))
 
 
-class MainWindow(QtGui.QMainWindow):
+class MainWindow(QtWidgets.QMainWindow):
 
     def __init__(self, p):
         super(MainWindow, self).__init__()
@@ -87,7 +93,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def createToolbars(self):
         self.createViewToolbar()
-        self.bg = QtGui.QButtonGroup()
+        self.bg = QtWidgets.QButtonGroup()
         self.bg.setExclusive(True)
         self.bg.buttonClicked.connect(self.toolBarChanged)
 
@@ -175,7 +181,7 @@ def main():
             print("File not found")
             exit()
 
-    app = QtGui.QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
 
     gl_version = probe()
 

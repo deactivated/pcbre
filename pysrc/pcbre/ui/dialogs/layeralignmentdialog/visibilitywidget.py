@@ -1,9 +1,9 @@
 from pcbre.ui.uimodel import GenModel
+from pcbre.qt_compat import QtGui, QtCore, QtWidgets
+
 
 __author__ = 'davidc'
 
-
-from pcbre.qt_compat import QtGui, QtCore
 
 VISIBLE_NO = 0
 VISIBLE_MAYBE = 1
@@ -207,7 +207,7 @@ class VisibilityAdaptor(QtCore.QAbstractItemModel):
         return False
 
 
-class VisibilityTree(QtGui.QTreeView):
+class VisibilityTree(QtWidgets.QTreeView):
 
     def __init__(self, model):
         super(VisibilityTree, self).__init__()
@@ -218,8 +218,8 @@ class VisibilityTree(QtGui.QTreeView):
         header = self.header()
         header.setStretchLastSection(False)
 
-        header.setResizeMode(0, QtGui.QHeaderView.Stretch)
-        header.setResizeMode(1, QtGui.QHeaderView.ResizeToContents)
+        header.setResizeMode(0, QtWidgets.QHeaderView.Stretch)
+        header.setResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
         header.hide()
 
 

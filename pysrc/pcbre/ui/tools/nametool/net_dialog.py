@@ -1,38 +1,41 @@
+from pcbre.qt_compat import QtCore, QtGui, QtWidgets
 from pcbre.model.const import TFF
 from pcbre.model.pad import Pad
 
+
 __author__ = 'davidc'
 
-from pcbre.qt_compat import QtCore, QtGui
 
-
-class NetDialog(QtGui.QDialog):
+class NetDialog(QtWidgets.QDialog):
 
     def __init__(self, parent, obj):
         super(NetDialog, self).__init__(parent)
 
-        buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel,
-                                           QtCore.Qt.Horizontal, self)
+        buttonBox = QtWidgets.QDialogButtonBox(
+            QtWidgets.QDialogButtonBox.Ok |
+            QtWidgets.QDialogButtonBox.Cancel,
+            QtCore.Qt.Horizontal,
+            self)
         buttonBox.accepted.connect(self.accept)
         buttonBox.rejected.connect(self.reject)
 
-        self.mainLayout = QtGui.QVBoxLayout()
+        self.mainLayout = QtWidgets.QVBoxLayout()
         self.setLayout(self.mainLayout)
 
         self.obj = obj
-        self.mainLayout.setSizeConstraint(QtGui.QLayout.SetMinAndMaxSize)
+        self.mainLayout.setSizeConstraint(QtWidgets.QLayout.SetMinAndMaxSize)
 
         if self.obj.TYPE_FLAGS & TFF.HAS_NET:
-            self.net_name_input = QtGui.QLineEdit(self)
+            self.net_name_input = QtWidgets.QLineEdit(self)
             self.net_name_input.setText(obj.net.name)
 
-            name_label = QtGui.QLabel("Net Name")
+            name_label = QtWidgets.QLabel("Net Name")
             name_label.setBuddy(self.net_name_input)
 
-            self.class_input = QtGui.QLineEdit(self)
+            self.class_input = QtWidgets.QLineEdit(self)
             self.class_input.setText(obj.net.net_class)
 
-            class_label = QtGui.QLabel("Net Class")
+            class_label = QtWidgets.QLabel("Net Class")
             class_label.setBuddy(self.class_input)
 
             self.mainLayout.addWidget(name_label)
@@ -44,10 +47,10 @@ class NetDialog(QtGui.QDialog):
 
         if isinstance(obj, Pad):
             # Pad Name
-            self.pad_name_input = QtGui.QLineEdit(self)
+            self.pad_name_input = QtWidgets.QLineEdit(self)
             self.pad_name_input.setText(obj.pad_name)
 
-            pad_name_label = QtGui.QLabel("Pad (%s) Name" % obj.pad_no)
+            pad_name_label = QtWidgets.QLabel("Pad (%s) Name" % obj.pad_no)
             pad_name_label.setBuddy(self.pad_name_input)
 
             self.mainLayout.addWidget(pad_name_label)
@@ -59,14 +62,14 @@ class NetDialog(QtGui.QDialog):
             self.cmp = obj
 
         if self.cmp:
-            self.refdes_input = QtGui.QLineEdit(self)
+            self.refdes_input = QtWidgets.QLineEdit(self)
             self.refdes_input.setText(self.cmp.refdes)
-            refdes_label = QtGui.QLabel("Component Reference Designator")
+            refdes_label = QtWidgets.QLabel("Component Reference Designator")
             refdes_label.setBuddy(self.refdes_input)
 
-            self.partname_input = QtGui.QLineEdit(self)
+            self.partname_input = QtWidgets.QLineEdit(self)
             self.partname_input.setText(self.cmp.partno)
-            partname_label = QtGui.QLabel("Component Part Number")
+            partname_label = QtWidgets.QLabel("Component Part Number")
             partname_label.setBuddy(self.partname_input)
 
             self.mainLayout.addWidget(refdes_label)

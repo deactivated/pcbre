@@ -1,6 +1,5 @@
-from pcbre.qt_compat import QtGui, QtCore
+from pcbre.qt_compat import QtGui, QtCore, QtWidgets
 from pcbre.ui.icon import Icon
-import pkg_resources
 
 
 class BaseToolController(QtCore.QObject):
@@ -53,7 +52,7 @@ class BaseTool(object):
     def setupToolButton(self, icon_name, name):
         ico = Icon(icon_name)
 
-        self.toolButton = QtGui.QToolButton(None)
+        self.toolButton = QtWidgets.QToolButton(None)
         self.toolButton.setIcon(ico)
         self.toolButton.setText(name)
 

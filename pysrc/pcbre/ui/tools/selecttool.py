@@ -1,12 +1,14 @@
 import enum
-from .basetool import BaseTool, BaseToolController
+import pkg_resources
+
 from pcbre.model.artwork_geom import Trace
 from pcbre.model.const import TFF
 from pcbre.ui.boardviewwidget import QPoint_to_pair
-from pcbre.qt_compat import QtCore, QtGui
+from pcbre.qt_compat import QtCore, QtGui, QtWidgets
 from pcbre.ui.uimodel import GenModel, mdlacc
 from pcbre.ui.icon import Icon
-import pkg_resources
+
+from .basetool import BaseTool, BaseToolController
 
 
 class SelectByModes(enum.Enum):
@@ -119,11 +121,11 @@ class SelectTool(BaseTool):
         self.model.vers = v
 
     def setupToolButtonExtra(self):
-        self.menu = QtGui.QMenu()
-        self.ag = QtGui.QActionGroup(self.menu)
+        self.menu = QtWidgets.QMenu()
+        self.ag = QtWidgets.QActionGroup(self.menu)
 
         for n in valid_select:
-            a1 = QtGui.QAction(select_names[n], self.menu)
+            a1 = QtWidgets.QAction(select_names[n], self.menu)
 
             def closure(n):
                 def fn():

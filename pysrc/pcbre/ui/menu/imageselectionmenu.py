@@ -1,13 +1,12 @@
+from pcbre.qt_compat import QtCore, QtGui, QtWidgets
 from pcbre.model.imagelayer import ImageLayer
 from pcbre.ui.dialogs.layeralignmentdialog.dialog import LayerAlignmentDialog
+
 
 __author__ = 'davidc'
 
 
-from pcbre.qt_compat import QtCore, QtGui
-
-
-class ImageSelectionMenu(QtGui.QMenu):
+class ImageSelectionMenu(QtWidgets.QMenu):
 
     def __init__(self, window):
         """

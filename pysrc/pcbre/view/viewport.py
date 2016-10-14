@@ -1,5 +1,5 @@
 import numpy
-import collections
+
 from pcbre.matrix import projectPoint
 
 # We use 4 types of coordinates:
@@ -22,14 +22,14 @@ from pcbre.matrix import projectPoint
 
 class ViewPort(object):
 
-    def __init__(self, x, y):
+    def __init__(self, width, height):
 
         # _transform defines the mapping from physical (world) coordinates to
         # the projection area
         self.__transform = numpy.identity(3, dtype=numpy.float32)
         self.__scale_factor = 1
 
-        self.resize(x, y)
+        self.resize(width, height)
 
     @property
     def _transform(self):

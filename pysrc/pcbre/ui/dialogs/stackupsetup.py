@@ -2,7 +2,7 @@ import random
 import colorsys
 import numpy
 
-from pcbre.qt_compat import QtCore, QtGui
+from pcbre.qt_compat import QtCore, QtGui, QtWidgets
 
 import pcbre.model.project
 import pcbre.model.stackup
@@ -13,32 +13,32 @@ FIRST_VP_COL = 1
 # Header with fixed size
 
 
-class HHeader(QtGui.QHeaderView):
+class HHeader(QtWidgets.QHeaderView):
 
     def __init__(self, *args, **kwargs):
-        QtGui.QHeaderView.__init__(self, *args, **kwargs)
+        QtWidgets.QHeaderView.__init__(self, *args, **kwargs)
         self.setResizeMode(self.Fixed)
 
     def sizeHint(self):
         return QtCore.QSize(30, 0)
 
 
-class StackupSetupDialog(QtGui.QDialog):
+class StackupSetupDialog(QtWidgets.QDialog):
 
     def __init__(self, parent, data_list, *args):
-        QtGui.QDialog.__init__(self, parent, *args)
+        QtWidgets.QDialog.__init__(self, parent, *args)
 
         self.resize(470, 350)
         self.setWindowTitle("Layer parameters")
 
         self.table_model = MyTableModel(self, data_list)
 
-        self.table_view = QtGui.QTableView()
+        self.table_view = QtWidgets.QTableView()
 
         self.table_view.setSelectionMode(
-            QtGui.QAbstractItemView.SingleSelection)
+            QtWidgets.QAbstractItemView.SingleSelection)
         self.table_view.setSelectionBehavior(
-            QtGui.QAbstractItemView.SelectRows)
+            QtWidgets.QAbstractItemView.SelectRows)
 
         self.table_view.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.table_view.customContextMenuRequested.connect(self.handleAreaMenu)
@@ -62,23 +62,23 @@ class StackupSetupDialog(QtGui.QDialog):
         self.table_view.setFont(font)
         self.table_view.resizeColumnsToContents()
 
-        layout = QtGui.QHBoxLayout(self)
+        layout = QtWidgets.QHBoxLayout(self)
         layout.addWidget(self.table_view)
-        l2 = QtGui.QVBoxLayout()
+        l2 = QtWidgets.QVBoxLayout()
 
-        self.newButton = QtGui.QPushButton("add layer")
+        self.newButton = QtWidgets.QPushButton("add layer")
         self.newButton.clicked.connect(self.addLayer)
-        self.deleteButton = QtGui.QPushButton("delete layer")
+        self.deleteButton = QtWidgets.QPushButton("delete layer")
         self.deleteButton.clicked.connect(self.deleteLayer)
 
-        self.upButton = QtGui.QPushButton("move up")
+        self.upButton = QtWidgets.QPushButton("move up")
         self.upButton.clicked.connect(self.moveUpButtonPressed)
-        self.downButton = QtGui.QPushButton("move down")
+        self.downButton = QtWidgets.QPushButton("move down")
         self.downButton.clicked.connect(self.moveDownButtonPressed)
 
-        self.cancelButton = QtGui.QPushButton("cancel")
+        self.cancelButton = QtWidgets.QPushButton("cancel")
         self.cancelButton.clicked.connect(self.reject)
-        self.okButton = QtGui.QPushButton("apply")
+        self.okButton = QtWidgets.QPushButton("apply")
         self.okButton.setDefault(True)
         self.okButton.clicked.connect(self.accept)
 
@@ -103,7 +103,7 @@ class StackupSetupDialog(QtGui.QDialog):
 
     def accept(self):
         self.table_model.update()
-        return QtGui.QDialog.accept(self)
+        return QtWidgets.QDialog.accept(self)
 
     def moveUpButtonPressed(self):
         row = self.table_view.selectedIndexes()[0].row()
@@ -157,7 +157,7 @@ class StackupSetupDialog(QtGui.QDialog):
             bool(row) and bool(self.table_model.layerCount()))
 
     def doMenu(self, row, col, is_header=False):
-        menu = QtGui.QMenu()
+        menu = QtWidgets.QMenu()
 
         layer = None
         vp = None
@@ -208,7 +208,7 @@ class StackupSetupDialog(QtGui.QDialog):
     def selectColor(self, idx):
         cur = numpy.array(self.table_model.layer(idx).color) * 255
         initial = QtGui.QColor(*cur)
-        c = QtGui.QColorDialog.getColor(initial)
+        c = QtWidgets.QColorDialog.getColor(initial)
         if c.isValid():
             r, g, b, _ = c.getRgb()
             self.table_model.layer(idx).color = numpy.array([r, g, b]) / 255.0

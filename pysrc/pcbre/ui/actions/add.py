@@ -1,19 +1,19 @@
 import itertools
-from pcbre.qt_compat import QtGui, getOpenFileName
+from pcbre.qt_compat import QtGui, getOpenFileName, QtWidgets
 from pcbre.model.imagelayer import ImageLayer
 from pcbre.ui.dialogs.layeralignmentdialog.dialog import LayerAlignmentDialog
 
 __author__ = 'davidc'
 
 
-class AddImageDialogAction(QtGui.QAction):
+class AddImageDialogAction(QtWidgets.QAction):
     """
     This action shows a QT file selection dialog; and then adds an image to the project
     """
 
     def __init__(self, window):
         self.window = window
-        QtGui.QAction.__init__(self, "Image", self.window,
+        QtWidgets.QAction.__init__(self, "Image", self.window,
                                triggered=self.__action)
 
     def __action(self):
@@ -45,5 +45,5 @@ class AddImageDialogAction(QtGui.QAction):
         # Allow the user to align the image
         dlg = LayerAlignmentDialog(self.window, self.window.project, il)
         res = dlg.exec_()
-        if res == QtGui.QDialog.Accepted:
+        if res == QtWidgets.QDialog.Accepted:
             self.window.project.imagery.add_imagelayer(il)

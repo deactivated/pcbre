@@ -1,11 +1,11 @@
 from collections import defaultdict
 import math
 import time
-
-from pcbre.qt_compat import QtCore, QtGui, QtOpenGL, QGLContext
+import numpy
 import OpenGL.GL as GL
 import OpenGL.arrays.vbo as VBO
-import numpy
+
+from pcbre.qt_compat import QtCore, QtGui, QtOpenGL, QGLContext
 
 from pcbre import units
 from pcbre.matrix import scale, translate, Point2, projectPoint
@@ -76,22 +76,24 @@ def getSelectColor(c, selected):
 
     return (r, g, b)
 
+
 # Full view state for the multilayer view
 
 
-class ViewState(QtCore.QObject, ViewPort):
+class ViewState(ViewPort, QtCore.QObject):
     changed = QtCore.Signal()
     currentLayerChanged = QtCore.Signal()
 
-    def __init__(self, x, y):
-        ViewPort.__init__(self, x, y)
+    def __init__(self, width, height):
+        ViewPort.__init__(self, width, height)
         QtCore.QObject.__init__(self)
 
         self.__current_layer = None
-        self.currentLayerChanged.connect(self.changed)
         self.__show_images = True
         self.__draw_other_layers = True
         self.layer_permute = 0
+
+        self.currentLayerChanged.connect(self.changed)
 
     def permute_layer_order(self):
         self.layer_permute += 1

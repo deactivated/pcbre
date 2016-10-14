@@ -51,7 +51,7 @@ elif requested_binding == "pyqt5":
     QtCore.Slot = QtCore.pyqtSlot
 
     def QGLContext(f):
-        return QtOpenGL.QGLContext(f, None)
+        return QtOpenGL.QGLContext(f)
 
     def QtLoadUI(f):
         from pcbre.qt_compat import QtUiTools

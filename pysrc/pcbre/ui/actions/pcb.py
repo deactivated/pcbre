@@ -1,17 +1,17 @@
+import time
 from pcbre.ui.dialogs.layerviewsetup import LayerViewSetupDialog
 from pcbre.ui.dialogs.stackupsetup import StackupSetupDialog
-import time
+from pcbre.qt_compat import QtGui, QtCore, QtWidgets
+
+
 __author__ = 'davidc'
 
 
-from PySide import QtGui, QtCore
-
-
-class StackupSetupDialogAction(QtGui.QAction):
+class StackupSetupDialogAction(QtWidgets.QAction):
 
     def __init__(self, window):
         self.__window = window
-        QtGui.QAction.__init__(self, "Edit Stackup",
+        QtWidgets.QAction.__init__(self, "Edit Stackup",
                                window, triggered=self.__action)
 
     def __action(self):
@@ -19,12 +19,12 @@ class StackupSetupDialogAction(QtGui.QAction):
         dlg.exec_()
 
 
-class RebuildConnectivityAction(QtGui.QAction):
+class RebuildConnectivityAction(QtWidgets.QAction):
 
     def __init__(self, window):
         self.__window = window
 
-        QtGui.QAction.__init__(self, "Rebuild Connectivity",
+        QtWidgets.QAction.__init__(self, "Rebuild Connectivity",
                                window, triggered=self.__action)
 
     class CancelException(Exception):
@@ -47,7 +47,7 @@ class RebuildConnectivityAction(QtGui.QAction):
 
         if self.__pd is None:
             self.__pd_last_evt = now
-            self.__pd = QtGui.QProgressDialog(
+            self.__pd = QtWidgets.QProgressDialog(
                 "Rebuilding Connectivity....", "Cancel", 0, max, self.__window)
             self.__pd.show()
 
@@ -61,11 +61,11 @@ class RebuildConnectivityAction(QtGui.QAction):
         self.__pd.setValue(now_v)
 
 
-class LayerViewSetupDialogAction(QtGui.QAction):
+class LayerViewSetupDialogAction(QtWidgets.QAction):
 
     def __init__(self, window):
         self.__window = window
-        QtGui.QAction.__init__(
+        QtWidgets.QAction.__init__(
             self, "Edit Stackup/Imagery pairing", self.__window, triggered=self.__action)
 
     def __action(self):

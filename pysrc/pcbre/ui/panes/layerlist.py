@@ -1,4 +1,4 @@
-from pcbre.qt_compat import QtCore, QtGui
+from pcbre.qt_compat import QtCore, QtGui, QtWidgets
 
 
 class LayerListModel(QtCore.QAbstractListModel):
@@ -21,7 +21,7 @@ class LayerListModel(QtCore.QAbstractListModel):
         return None
 
 
-class LayerListWidget(QtGui.QDockWidget):
+class LayerListWidget(QtWidgets.QDockWidget):
 
     def __init__(self, project, viewState):
         super(LayerListWidget, self).__init__("Layer List")
@@ -29,7 +29,7 @@ class LayerListWidget(QtGui.QDockWidget):
                              QtCore.Qt.RightDockWidgetArea)
 
         model = LayerListModel(project)
-        customerList = QtGui.QListView(self)
+        customerList = QtWidgets.QListView(self)
         customerList.setModel(model)
         selm = customerList.selectionModel()
         self.p = project

@@ -1,8 +1,8 @@
 __author__ = 'davidc'
-from pcbre.qt_compat import QtCore, QtGui
+from pcbre.qt_compat import QtCore, QtGui, QtWidgets
 
 
-class PLineEdit(QtGui.QLineEdit):
+class PLineEdit(QtWidgets.QLineEdit):
 
     def __init__(self, *args, **kwargs):
         super(PLineEdit, self).__init__(*args, **kwargs)

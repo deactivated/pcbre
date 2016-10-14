@@ -1,11 +1,13 @@
-from pcbre.qt_compat import QtGui, QtCore
 import functools
 import collections
+
+from pcbre.qt_compat import QtGui, QtCore, QtWidgets
+
 
 __author__ = 'davidc'
 
 
-class UndoStack(QtGui.QUndoStack):
+class UndoStack(QtWidgets.QUndoStack):
 
     def setup_actions(self, target, menu=None):
         undoAction = self.createUndoAction(target)
@@ -21,7 +23,7 @@ class UndoStack(QtGui.QUndoStack):
             pass
 
 
-class undo_helper_fncall(QtGui.QUndoCommand):
+class undo_helper_fncall(QtWidgets.QUndoCommand):
 
     def __init__(self, set_state, *args, **kwargs):
         super(undo_helper_fncall, self).__init__()
@@ -98,7 +100,7 @@ class undofunc(object):
         return self
 
 
-class undo_set_params(QtGui.QUndoCommand):
+class undo_set_params(QtWidgets.QUndoCommand):
 
     def __init__(self, target, **kwargs):
         super(undo_set_params, self).__init__()

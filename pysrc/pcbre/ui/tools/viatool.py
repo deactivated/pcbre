@@ -1,15 +1,15 @@
-from pcbre.qt_compat import QtCore, QtGui
-from .basetool import BaseTool, BaseToolController
+from pcbre.qt_compat import QtCore, QtGui, QtWidgets
 
 from pcbre.matrix import Point2, translate
 from pcbre.model.artwork_geom import Via
 from pcbre.model.net import Net
 from pcbre.ui.boardviewwidget import QPoint_to_pair
-
 from pcbre.ui.dialogs.settingsdialog import SettingsDialog
 from pcbre.ui.widgets.unitedit import UnitLineEdit, UNIT_GROUP_MM
 from pcbre.view.rendersettings import RENDER_OUTLINES
 from pcbre.view.viaview import THRenderer
+
+from .basetool import BaseTool, BaseToolController
 
 
 class ViaSettingsDialog(SettingsDialog):
@@ -26,7 +26,7 @@ class ViaSettingsDialog(SettingsDialog):
     @QtCore.Slot()
     def accept(self):
         self.tpm.radius = self.radius_li.getValue()
-        QtGui.QDialog.accept(self)
+        QtWidgets.QDialog.accept(self)
 
 
 class ViaToolOverlay:
@@ -166,19 +166,19 @@ class ViaTool(BaseTool):
         self.model.current_layer_pair = vp
 
     def __setupMenu(self):
-        self.menu = QtGui.QMenu()
+        self.menu = QtWidgets.QMenu()
         self.menu.aboutToShow.connect(self.aboutShowMenu)
         self.toolButton.setMenu(self.menu)
 
     def aboutShowMenu(self):
         self.menu.clear()
 
-        self.ag = QtGui.QActionGroup(self.menu)
+        self.ag = QtWidgets.QActionGroup(self.menu)
         self.ag.setExclusive(True)
 
         for n, vp in enumerate(self.project.stackup.via_pairs):
             l1, l2 = vp.layers
-            a1 = QtGui.QAction("%d-%d" % (l1.order, l2.order), self.menu)
+            a1 = QtWidgets.QAction("%d-%d" % (l1.order, l2.order), self.menu)
             a1.setCheckable(True)
             a1.setChecked(vp is self.model.current_layer_pair)
 
