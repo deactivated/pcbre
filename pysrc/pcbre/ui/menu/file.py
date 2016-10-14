@@ -21,7 +21,7 @@ class FileMenu(QtWidgets.QMenu):
         self.addSeparator()
         self.addAction(mw.actions.file_exit)
 
-        # the "save" option is disabled if a) the project hasn't changed
+        # The "save" option is disabled if a) the project hasn't changed
         # or b) the save location isn't defined
         def updateCanSave():
             mw.actions.file_save.setEnabled(mw.project.can_save)
