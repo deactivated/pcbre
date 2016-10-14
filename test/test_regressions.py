@@ -8,12 +8,14 @@ from pcbre.model.stackup import Layer
 __author__ = 'davidc'
 import unittest
 
+
 class test_regressions(unittest.TestCase):
+
     def test_sorted_query_regression(self):
         # Attempt to
         p = Project()
 
-        l = Layer("t1", (1,1,1))
+        l = Layer("t1", (1, 1, 1))
 
         p.stackup.add_layer(l)
 
@@ -21,10 +23,10 @@ class test_regressions(unittest.TestCase):
         ts = []
         for i in range(100):
             r = 5000 - 40 * i
-            r1 = 5000 - 40 * (i+1)
+            r1 = 5000 - 40 * (i + 1)
 
             t = math.radians(30 * i)
-            t1 = math.radians(30 * (i+1))
+            t1 = math.radians(30 * (i + 1))
 
             v = Point2(math.cos(t) * r, math.sin(t) * r)
             v1 = Point2(math.cos(t1) * r1, math.sin(t1) * r1)
@@ -45,7 +47,7 @@ class test_regressions(unittest.TestCase):
     def test_fixup_broken_nets(self):
         p = Project()
 
-        l = Layer("t1", (1,1,1))
+        l = Layer("t1", (1, 1, 1))
 
         p.stackup.add_layer(l)
 
@@ -53,16 +55,14 @@ class test_regressions(unittest.TestCase):
         n2 = p.nets.new()
         n3 = p.nets.new()
 
-
         # T1 and T2 should be joined
         # T2 and T3 should be split
         # T4 should stay the same
 
-        t1 = Trace(Point2(0,0), Point2(100, 100), 10, l, n1)
+        t1 = Trace(Point2(0, 0), Point2(100, 100), 10, l, n1)
         t2 = Trace(Point2(200, 200), Point2(100, 100), 10, l, n2)
         t3 = Trace(Point2(400, 400), Point2(500, 500), 10, l, n2)
         t4 = Trace(Point2(600, 600), Point2(700, 700), 10, l, n3)
-
 
         p.artwork.add_artwork(t1)
         p.artwork.add_artwork(t2)
@@ -80,4 +80,3 @@ class test_regressions(unittest.TestCase):
         self.assertIsNotNone(t2.net)
         self.assertIsNotNone(t3.net)
         self.assertIsNotNone(t4.net)
-

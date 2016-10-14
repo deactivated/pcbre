@@ -9,7 +9,9 @@ VISIBLE_NO = 0
 VISIBLE_MAYBE = 1
 VISIBLE_YES = 2
 
+
 class VisibilityModelLeaf(object):
+
     def __init__(self, name):
         super(VisibilityModelLeaf, self).__init__()
         self.name = name
@@ -30,7 +32,9 @@ class VisibilityModelLeaf(object):
         self._visible = visible
         self.model.change()
 
+
 class VisibilityModelGroup(object):
+
     def __init__(self, name):
         super(VisibilityModelGroup, self).__init__()
         self.__children = []
@@ -59,8 +63,8 @@ class VisibilityModelGroup(object):
                 i.setVisible(visible)
 
 
-
 class VisibilityModel(GenModel):
+
     def __init__(self):
         super(VisibilityModel, self).__init__()
         self.__children = []
@@ -79,6 +83,7 @@ class VisibilityModel(GenModel):
     @property
     def children(self):
         return list(self.__children)
+
 
 class VisibilityAdaptor(QtCore.QAbstractItemModel):
 
@@ -202,10 +207,8 @@ class VisibilityAdaptor(QtCore.QAbstractItemModel):
         return False
 
 
-
-
-
 class VisibilityTree(QtGui.QTreeView):
+
     def __init__(self, model):
         super(VisibilityTree, self).__init__()
         self.model = model
@@ -215,10 +218,9 @@ class VisibilityTree(QtGui.QTreeView):
         header = self.header()
         header.setStretchLastSection(False)
 
-        header.setResizeMode(0,QtGui.QHeaderView.Stretch)
-        header.setResizeMode(1,QtGui.QHeaderView.ResizeToContents)
+        header.setResizeMode(0, QtGui.QHeaderView.Stretch)
+        header.setResizeMode(1, QtGui.QHeaderView.ResizeToContents)
         header.hide()
-
 
 
 if __name__ == "__main__":
@@ -240,10 +242,8 @@ if __name__ == "__main__":
     group1.addChild(child3)
     model.propagate_model()
 
-
     widg = VisibilityTree(model)
     widg.show()
-    widg.resize(100,500)
+    widg.resize(100, 500)
 
     app.exec_()
-

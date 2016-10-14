@@ -16,6 +16,7 @@ import math
 
 
 class BodyCornerPoint:
+
     def __init__(self, parent):
         self.parent = parent
         self.icon = None
@@ -30,7 +31,8 @@ class BodyCornerPoint:
 
     def get(self):
         r = rotate(self.parent.theta)
-        cv = Vec2(-self.parent._model.dim_1_body/2, -self.parent._model.dim_2_body/2)
+        cv = Vec2(-self.parent._model.dim_1_body /
+                  2, -self.parent._model.dim_2_body / 2)
         return self.parent.center + projectPoint(r, cv)
 
     def save(self):
@@ -40,13 +42,13 @@ class BodyCornerPoint:
         self.parent._model.dim_1_body, self.parent._model.dim_2_body = v
 
 
-
 class BasicSMDFlow(MultipointEditFlow):
+
     def __init__(self, view, model):
         self._model = model
 
         self.__theta = 0
-        self.center = Point2(0,0)
+        self.center = Point2(0, 0)
 
         self.p1_point = EditablePoint()
 
@@ -57,17 +59,23 @@ class BasicSMDFlow(MultipointEditFlow):
         self.p_bottom_corner = OffsetDefaultPoint(self.p1_point, corner_offset)
 
         def other_corner_offset():
-            x = self._model.pin_spacing * ((self._model.side1_pins - 1) / 2 + (self._model.side3_pins - 1) / 2)
+            x = self._model.pin_spacing * \
+                ((self._model.side1_pins - 1) / 2 +
+                 (self._model.side3_pins - 1) / 2)
             y = self._model.dim_2_pincenter
 
             r = rotate(self.__theta)
             return projectPoint(r, Point2(x, y))
 
-        self.p_side_3_1 = OffsetDefaultPoint(self.p1_point, other_corner_offset)
+        self.p_side_3_1 = OffsetDefaultPoint(
+            self.p1_point, other_corner_offset)
 
         def p2_corner_offset():
-            x = self._model.pin_spacing * ((self._model.side1_pins - 1) / 2) + self._model.dim_1_pincenter/2
-            y = self._model.dim_2_pincenter / 2 - (self._model.side2_pins - 1) / 2 * self._model.pin_spacing
+            x = self._model.pin_spacing * \
+                ((self._model.side1_pins - 1) / 2) + \
+                self._model.dim_1_pincenter / 2
+            y = self._model.dim_2_pincenter / 2 - \
+                (self._model.side2_pins - 1) / 2 * self._model.pin_spacing
 
             r = rotate(self.__theta)
             return projectPoint(r, Point2(x, y))
@@ -75,11 +83,13 @@ class BasicSMDFlow(MultipointEditFlow):
         def p2_corner_ena():
             return self._model.side2_pins or self._model.side4_pins
 
-        self.p_side_2_1 = OffsetDefaultPoint(self.p1_point, p2_corner_offset, enabled=p2_corner_ena)
+        self.p_side_2_1 = OffsetDefaultPoint(
+            self.p1_point, p2_corner_offset, enabled=p2_corner_ena)
 
         self.p_body_corner = BodyCornerPoint(self)
 
-        points = [self.p1_point, self.p_bottom_corner, self.p_side_3_1, self.p_side_2_1, self.p_body_corner]
+        points = [self.p1_point, self.p_bottom_corner,
+                  self.p_side_3_1, self.p_side_2_1, self.p_body_corner]
         super(BasicSMDFlow, self).__init__(view, points, True)
 
         self.__side = None
@@ -95,26 +105,26 @@ class BasicSMDFlow(MultipointEditFlow):
 
                 self._model.pin_spacing = mag / (self._model.side1_pins - 1)
 
-
             self.v_base = Vec2.fromPolar(self.__theta, 1)
             self.v_vert = Vec2(-self.v_base.y, self.v_base.x).norm()
 
-            p_edge_center = self.v_base * self._model.pin_spacing * (self._model.side1_pins - 1) / 2
-
+            p_edge_center = self.v_base * self._model.pin_spacing * \
+                (self._model.side1_pins - 1) / 2
 
             if self.p_side_3_1.is_set:
                 dv = self.p_side_3_1.get() - self.p1_point.get()
 
-                v, _ = project_point_line(dv, Point2(0,0), self.v_vert, False)
+                v, _ = project_point_line(dv, Point2(0, 0), self.v_vert, False)
                 self._model.dim_2_pincenter = v.mag()
 
-            self.center = self.v_vert * self._model.dim_2_pincenter / 2 + p_edge_center + self.p1_point.get()
+            self.center = self.v_vert * self._model.dim_2_pincenter / \
+                2 + p_edge_center + self.p1_point.get()
 
             if self.p_side_2_1.is_set:
-                v, _ = project_point_line(self.p_side_2_1.get() - self.center, Point2(0,0), self.v_base, False)
+                v, _ = project_point_line(
+                    self.p_side_2_1.get() - self.center, Point2(0, 0), self.v_base, False)
 
                 self._model.dim_1_pincenter = v.mag() * 2
-
 
     @property
     def theta(self):
@@ -143,12 +153,8 @@ class BasicSMDFlow(MultipointEditFlow):
         else:
             sign = 1
 
-        self.matrix = translate(self.center.x, self.center.y).dot(rotate(self.__theta))
-
-
-
-
-
+        self.matrix = translate(self.center.x, self.center.y).dot(
+            rotate(self.__theta))
 
 
 SYM_4_SQUARE = 0
@@ -184,7 +190,9 @@ def guess_sym(s1, s2, s3, s4):
         return SYM_2
     return SYM_ARB
 
+
 class BasicSMDICEditWidget(AutoSettingsWidget):
+
     def __init__(self, icmdl):
         super(BasicSMDICEditWidget, self).__init__()
 
@@ -195,7 +203,8 @@ class BasicSMDICEditWidget(AutoSettingsWidget):
         for s in syms:
             self.symw.addItem(text_for_sym(s), s)
 
-        self.sym = guess_sym(self.mdl.side1_pins, self.mdl.side2_pins, self.mdl.side3_pins, self.mdl.side4_pins)
+        self.sym = guess_sym(self.mdl.side1_pins, self.mdl.side2_pins,
+                             self.mdl.side3_pins, self.mdl.side4_pins)
         self.symw.setCurrentIndex(self.sym)
 
         self.layout.addRow("Symmetry", self.symw)
@@ -203,28 +212,45 @@ class BasicSMDICEditWidget(AutoSettingsWidget):
 
         # PinCount
         self.pin_count = 0
-        self.pincw = self.addEdit("Pin Count", LineEditable(self, "pin_count", IntTrait))
-        self.pincw.widget.editingFinished.connect(lambda: self.sym_value_changed(True))
+        self.pincw = self.addEdit(
+            "Pin Count", LineEditable(self, "pin_count", IntTrait))
+        self.pincw.widget.editingFinished.connect(
+            lambda: self.sym_value_changed(True))
 
-        self.s1pw = self.addEdit("Side 1 Pins", LineEditable(self.mdl, "side1_pins", IntTrait))
-        self.s1pw.widget.editingFinished.connect(lambda: self.sym_value_changed(False))
-        self.s2pw = self.addEdit("Side 2 Pins", LineEditable(self.mdl, "side2_pins", IntTrait))
-        self.s2pw.widget.editingFinished.connect(lambda: self.sym_value_changed(False))
-        self.s3pw = self.addEdit("Side 3 Pins", LineEditable(self.mdl, "side3_pins", IntTrait))
-        self.s3pw.widget.editingFinished.connect(lambda: self.sym_value_changed(False))
-        self.s4pw = self.addEdit("Side 4 Pins", LineEditable(self.mdl, "side4_pins", IntTrait))
-        self.s4pw.widget.editingFinished.connect(lambda: self.sym_value_changed(False))
+        self.s1pw = self.addEdit("Side 1 Pins", LineEditable(
+            self.mdl, "side1_pins", IntTrait))
+        self.s1pw.widget.editingFinished.connect(
+            lambda: self.sym_value_changed(False))
+        self.s2pw = self.addEdit("Side 2 Pins", LineEditable(
+            self.mdl, "side2_pins", IntTrait))
+        self.s2pw.widget.editingFinished.connect(
+            lambda: self.sym_value_changed(False))
+        self.s3pw = self.addEdit("Side 3 Pins", LineEditable(
+            self.mdl, "side3_pins", IntTrait))
+        self.s3pw.widget.editingFinished.connect(
+            lambda: self.sym_value_changed(False))
+        self.s4pw = self.addEdit("Side 4 Pins", LineEditable(
+            self.mdl, "side4_pins", IntTrait))
+        self.s4pw.widget.editingFinished.connect(
+            lambda: self.sym_value_changed(False))
 
-        self.addEdit("(D1) Dimension 1 Body", UnitEditable(self.mdl, "dim_1_body", UNIT_GROUP_MM))
-        self.addEdit("(D) Dimension 1 Pin Center-to-Center", UnitEditable(self.mdl, "dim_1_pincenter", UNIT_GROUP_MM))
-        self.addEdit("(E1) Dimension 2 Body", UnitEditable(self.mdl, "dim_2_body", UNIT_GROUP_MM))
-        self.addEdit("(E) Dimension 2 Pin Center-to-Center", UnitEditable(self.mdl, "dim_2_pincenter", UNIT_GROUP_MM))
+        self.addEdit("(D1) Dimension 1 Body", UnitEditable(
+            self.mdl, "dim_1_body", UNIT_GROUP_MM))
+        self.addEdit("(D) Dimension 1 Pin Center-to-Center",
+                     UnitEditable(self.mdl, "dim_1_pincenter", UNIT_GROUP_MM))
+        self.addEdit("(E1) Dimension 2 Body", UnitEditable(
+            self.mdl, "dim_2_body", UNIT_GROUP_MM))
+        self.addEdit("(E) Dimension 2 Pin Center-to-Center",
+                     UnitEditable(self.mdl, "dim_2_pincenter", UNIT_GROUP_MM))
 
         self.layout.addWidget(QtGui.QLabel("Dimension 1 is along pin 1 edge"))
 
-        self.addEdit("(e) Pin Spacing", UnitEditable(self.mdl, "pin_spacing", UNIT_GROUP_MM))
-        self.addEdit("(L) Pin PCB contact length", UnitEditable(self.mdl, "pin_contact_length", UNIT_GROUP_MM))
-        self.addEdit("(b) Pin PCB contact width", UnitEditable(self.mdl, "pin_contact_width", UNIT_GROUP_MM))
+        self.addEdit("(e) Pin Spacing", UnitEditable(
+            self.mdl, "pin_spacing", UNIT_GROUP_MM))
+        self.addEdit("(L) Pin PCB contact length", UnitEditable(
+            self.mdl, "pin_contact_length", UNIT_GROUP_MM))
+        self.addEdit("(b) Pin PCB contact width", UnitEditable(
+            self.mdl, "pin_contact_width", UNIT_GROUP_MM))
 
         self.update_sym_ena()
         self.sym_value_changed(False)
@@ -272,10 +298,12 @@ class BasicSMDICEditWidget(AutoSettingsWidget):
                 self.pincw.value = self.s1pw.value * 2
         elif self.sym == SYM_ARB:
             assert not is_pinc
-            self.pincw.value = self.s1pw.value + self.s2pw.value + self.s3pw.value + self.s4pw.value
+            self.pincw.value = self.s1pw.value + \
+                self.s2pw.value + self.s3pw.value + self.s4pw.value
 
 
 class BasicSMDICModel(GenModel):
+
     def __init__(self):
         super(BasicSMDICModel, self).__init__()
 
@@ -297,7 +325,7 @@ class BasicSMDICModel(GenModel):
 
 
 def BasicSMD_getComponent(mdl, ctrl, flow):
-    return SMD4Component(flow.center, flow.theta + math.pi/2, flow.side, ctrl.project,
-                       mdl.side1_pins, mdl.side2_pins, mdl.side3_pins, mdl.side4_pins,
-                       mdl.dim_1_body, mdl.dim_1_pincenter, mdl.dim_2_body, mdl.dim_2_pincenter,
-                       mdl.pin_contact_length, mdl. pin_contact_width, mdl.pin_spacing)
+    return SMD4Component(flow.center, flow.theta + math.pi / 2, flow.side, ctrl.project,
+                         mdl.side1_pins, mdl.side2_pins, mdl.side3_pins, mdl.side4_pins,
+                         mdl.dim_1_body, mdl.dim_1_pincenter, mdl.dim_2_body, mdl.dim_2_pincenter,
+                         mdl.pin_contact_length, mdl. pin_contact_width, mdl.pin_spacing)

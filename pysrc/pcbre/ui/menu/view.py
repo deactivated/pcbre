@@ -1,6 +1,8 @@
 from PySide import QtGui
 
+
 class ViewMenu(QtGui.QMenu):
+
     def __init__(self, mw):
         QtGui.QMenu.__init__(self, "&View", mw)
 
@@ -22,5 +24,3 @@ class ViewMenu(QtGui.QMenu):
             mw.actions.view_toggle_draw_other_layers.update_from_prop()
 
         self.aboutToShow.connect(update_sub)
-
-

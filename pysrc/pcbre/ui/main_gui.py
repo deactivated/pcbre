@@ -19,6 +19,7 @@ from pcbre.ui.actions.save import SaveAction, SaveAsDialogAction, ExitAction
 
 
 class MainWindowActions:
+
     def __init__(self, window):
         # File actions
         self.file_add_image = AddImageDialogAction(window)
@@ -33,8 +34,10 @@ class MainWindowActions:
         self.view_rotate_r = RotateRAction(window)
         self.view_cycle_draw_order = CycleDrawOrderAction(window)
 
-        self.view_toggle_show_imagery = ToggleShowImageryAction(window, window.viewArea)
-        self.view_toggle_draw_other_layers = ToggleDrawOtherLayersAction(window, window.viewArea)
+        self.view_toggle_show_imagery = ToggleShowImageryAction(
+            window, window.viewArea)
+        self.view_toggle_draw_other_layers = ToggleDrawOtherLayersAction(
+            window, window.viewArea)
 
         # PCB Actions
         self.pcb_stackup_setup_dialog = StackupSetupDialogAction(window)
@@ -52,7 +55,9 @@ class MainWindowActions:
         window.addAction(NudgeLeftAction(window))
         window.addAction(NudgeRightAction(window))
 
+
 class MainWindow(QtGui.QMainWindow):
+
     def __init__(self, p):
         super(MainWindow, self).__init__()
 
@@ -73,7 +78,6 @@ class MainWindow(QtGui.QMainWindow):
 
         self.current_tool = None
         self.current_controller = None
-
 
     def toolBarChanged(self, bid):
         self.current_tool = self.tool_map[bid]
@@ -112,7 +116,7 @@ class MainWindow(QtGui.QMainWindow):
 
         dock = InfoWidget(self.project)
         self.addDockWidget(QtCore.Qt.RightDockWidgetArea, dock)
-        #self.subWindowMenu.addAction(dock.toggleViewAction())
+        # self.subWindowMenu.addAction(dock.toggleViewAction())
 
     def createDockWidgets(self):
         self.createLayerSelectionWidget()
@@ -139,6 +143,7 @@ class MainWindow(QtGui.QMainWindow):
         self.menuBar().addMenu(FileMenu(self))
         self.menuBar().addMenu(ViewMenu(self))
         self.menuBar().addMenu(PCBMenu(self))
+
 
 def main():
     import sys

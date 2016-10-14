@@ -18,6 +18,7 @@ class HairlineRenderer:
 
     # VBOs and associated VAOs for drawing data
     class _RenderData:
+
         def __init__(self, dtype, shader, glhint):
             self.__dtype = dtype
 
@@ -34,7 +35,6 @@ class HairlineRenderer:
             self.__groups = defaultdict(list)
             self.__group_lookup = {}
             self.group_offsets = {}
-
 
         def build_vbo(self):
             if not self.__vbo_update:
@@ -62,7 +62,6 @@ class HairlineRenderer:
         def last_index(self, group):
             return len(self.__groups[group])
 
-
         def add_point(self, p1, p2, group):
             group = self.__groups[group]
             idx = len(group) // 2
@@ -82,12 +81,14 @@ class HairlineRenderer:
             return idx
 
     class _Reservation:
+
         def __init__(self, group, first, last):
             self.first = first
             self.last = last
             self.group = group
 
     class _ReservationBuilder:
+
         def __init__(self, group, adder, first):
             self.__group = group
             self.__adder = adder
@@ -110,8 +111,10 @@ class HairlineRenderer:
         self.__dtype = numpy.dtype([('vertex', numpy.float32, 2)])
         self.__shader = self.__view.gls.shader_cache.get("vert2", "frag1")
 
-        self.__recurring_draws = HairlineRenderer._RenderData(self.__dtype, self.__shader, GL.GL_STATIC_DRAW)
-        self.__once_draws = HairlineRenderer._RenderData(self.__dtype, self.__shader, GL.GL_DYNAMIC_DRAW)
+        self.__recurring_draws = HairlineRenderer._RenderData(
+            self.__dtype, self.__shader, GL.GL_STATIC_DRAW)
+        self.__once_draws = HairlineRenderer._RenderData(
+            self.__dtype, self.__shader, GL.GL_DYNAMIC_DRAW)
 
     def restart(self):
         self.__once_draws.clear()
@@ -121,7 +124,7 @@ class HairlineRenderer:
         self.__draw_resv = defaultdict(list)
 
     def new_reservation(self, group):
-        return HairlineRenderer._ReservationBuilder(group, self.__recurring_draws.add_point, self.__recurring_draws.last_index(group)//2)
+        return HairlineRenderer._ReservationBuilder(group, self.__recurring_draws.add_point, self.__recurring_draws.last_index(group) // 2)
 
     def deferred(self, p1, p2, color, group, hint=RENDER_HINT_NORMAL):
         if hint & RENDER_HINT_ONCE:
@@ -134,21 +137,22 @@ class HairlineRenderer:
     def deferred_reservation(self, reservation, color, group):
         self.__draw_resv[group].append((reservation, color))
 
-
     def __render_class(self, offset, tags, reservations=[]):
         color_batches = defaultdict(list)
         for idx, color in tags:
             color_batches[color].append((idx, idx + 1))
 
         for reservation, color in reservations:
-            color_batches[color].append((reservation.first, reservation.last + 1))
+            color_batches[color].append(
+                (reservation.first, reservation.last + 1))
 
         for color, indicies in color_batches.items():
             color = tuple(color) + (1,)
             batches = get_consolidated_draws(indicies)
             GL.glUniform4f(self.__shader.uniforms.color, *color)
             for first, last in batches:
-                GL.glDrawArrays(GL.GL_LINES, offset + first * 2, (last - first) * 2)
+                GL.glDrawArrays(GL.GL_LINES, offset +
+                                first * 2, (last - first) * 2)
 
     def render_group(self, mat, group):
         self.__recurring_draws.build_vbo()
@@ -165,15 +169,17 @@ class HairlineRenderer:
         # Overall, setup the shader and the matrix
         mat = numpy.array(mat, dtype=numpy.float32)
         with self.__shader:
-            GL.glUniformMatrix3fv(self.__shader.uniforms.mat, 1, True, mat.ctypes.data_as(GLI.c_float_p))
+            GL.glUniformMatrix3fv(self.__shader.uniforms.mat,
+                                  1, True, mat.ctypes.data_as(GLI.c_float_p))
 
             # For the one-off draws, render that data
             if once_tags:
                 with self.__once_draws.vao:
-                    self.__render_class(self.__once_draws.group_offsets[group], once_tags)
+                    self.__render_class(
+                        self.__once_draws.group_offsets[group], once_tags)
 
             # For the recurring draws, render that data
             if recur_tags or res_tags:
                 with self.__recurring_draws.vao:
-                    self.__render_class(self.__recurring_draws.group_offsets[group], recur_tags, res_tags)
-
+                    self.__render_class(self.__recurring_draws.group_offsets[
+                                        group], recur_tags, res_tags)

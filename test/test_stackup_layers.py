@@ -8,11 +8,12 @@ from unittest.mock import Mock
 
 
 class test_stackup_layers(unittest.TestCase):
+
     def setUp(self):
         self.p = Project.create()
 
     def test_basic(self):
-        layer = Layer("foo",(1,1,1))
+        layer = Layer("foo", (1, 1, 1))
         self.p.stackup.add_layer(layer)
 
         self.assertIn(layer, self.p.stackup.layers)
@@ -22,7 +23,7 @@ class test_stackup_layers(unittest.TestCase):
         self.assertNotIn(layer, self.p.stackup.layers)
 
     def test_callback_called_on_add_del(self):
-        layer = Layer("foo",(1,1,1))
+        layer = Layer("foo", (1, 1, 1))
 
         call_me = Mock()
 

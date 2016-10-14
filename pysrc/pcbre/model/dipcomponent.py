@@ -7,12 +7,15 @@ from pcbre.model.component import Component
 
 __author__ = 'davidc'
 
+
 class DIPComponent(Component):
     ISC = IntersectionClass.NONE
 
     def __init__(self, center, theta, side, side_layer_oracle, pin_count, pin_space, pin_width, pad_size=units.MM):
-        Component.__init__(self, center, theta, side, side_layer_oracle=side_layer_oracle)
-        self.__my_init(pin_count, pin_space, pin_width, pad_size, side_layer_oracle)
+        Component.__init__(self, center, theta, side,
+                           side_layer_oracle=side_layer_oracle)
+        self.__my_init(pin_count, pin_space, pin_width,
+                       pad_size, side_layer_oracle)
 
     def __my_init(self, pin_count, pin_space, pin_width, pad_size, side_layer_oracle):
         # Center and theta don't affect the pin settings
@@ -45,14 +48,15 @@ class DIPComponent(Component):
             dx = (i % edge_count) * self.__pin_space
 
             if i < self.__pin_count / 2:
-                x = -self.__pin_width/2
+                x = -self.__pin_width / 2
                 y = pin_edge_center_delta - dx
             else:
-                x = self.__pin_width/2
+                x = self.__pin_width / 2
                 y = -pin_edge_center_delta + dx
 
-            center = Point2(x,y)
-            newpad = Pad(self, "%s" % (i + 1), center, 0, self.__pad_size, self.__pad_size, th_diam=500)
+            center = Point2(x, y)
+            newpad = Pad(self, "%s" % (i + 1), center, 0,
+                         self.__pad_size, self.__pad_size, th_diam=500)
             self.__pins_cache.append(newpad)
 
     @property
@@ -118,4 +122,3 @@ class DIPComponent(Component):
         Component.deserializeTo(project, dip_msg.common, cmp)
         cmp.__my_init(m.pinCount, m.pinSpace, m.pinWidth, m.padSize, project)
         return cmp
-

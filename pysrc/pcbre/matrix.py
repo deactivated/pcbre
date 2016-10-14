@@ -2,7 +2,9 @@ import numpy
 import math
 from pcbre.qt_compat import QtCore
 
+
 class RectSize(object):
+
     def __init__(self, *args, **kwargs):
         if len(args) == 2:
             self.width, self.height = args
@@ -33,16 +35,18 @@ def clip_point_to_rect(pt, rect):
 
     return pt
 
+
 class Rect(object):
+
     @staticmethod
     def fromCenterSize(pt1, width=0, height=0):
         width = abs(width)
         height = abs(height)
         r = Rect()
-        r.left = pt1.x - width/2.
-        r.bottom = pt1.y - height/2.
-        r.right = pt1.x + width/2.
-        r.top = pt1.y + height/2.
+        r.left = pt1.x - width / 2.
+        r.bottom = pt1.y - height / 2.
+        r.right = pt1.x + width / 2.
+        r.top = pt1.y + height / 2.
         return r
 
     @staticmethod
@@ -89,7 +93,7 @@ class Rect(object):
 
     @property
     def center(self):
-        return Point2(self.right/2. + self.left/2., self.bottom/2. + self.top/2.)
+        return Point2(self.right / 2. + self.left / 2., self.bottom / 2. + self.top / 2.)
 
     @property
     def tl(self):
@@ -166,18 +170,18 @@ class Rect(object):
         return n
 
 
-
 class Vec2:
+
     @staticmethod
     def fromHomol(*args):
         if len(args) == 3:
-            x,y,w = args
+            x, y, w = args
         elif len(args) == 1 and len(args[0]) == 3:
-            x,y,w = args[0]
+            x, y, w = args[0]
         else:
             raise TypeError
 
-        return Vec2(x/w,y/w)
+        return Vec2(x / w, y / w)
 
     @staticmethod
     def fromPolar(theta, mag):
@@ -217,8 +221,6 @@ class Vec2:
         else:
             raise TypeError
 
-
-
     def __getitem__(self, index):
         if index == 0:
             return self.x
@@ -232,19 +234,19 @@ class Vec2:
         return d < eps
 
     #@property
-    #def x(self):
+    # def x(self):
     #    return self[0]
 
     #@x.setter
-    #def x(self, value):
+    # def x(self, value):
     #    self[0] = value
 
     #@property
-    #def y(self):
+    # def y(self):
     #    return self[1]
 
     #@y.setter
-    #def y(self, value):
+    # def y(self, value):
     #    self[1] = value
 
     def mag2(self):
@@ -254,7 +256,7 @@ class Vec2:
         return math.sqrt(self.mag2())
 
     def norm(self):
-        return self/self.mag()
+        return self / self.mag()
 
     def homol(self):
         """
@@ -276,7 +278,6 @@ class Vec2:
 
     def dot(self, other):
         return self.x * other.x + self.y * other.y
-
 
     def angle(self):
         return math.atan2(self.y, self.x)
@@ -302,11 +303,11 @@ class Vec2:
         return Point2(-self.x, -self.y)
 
 
-
-
 class Point2(Vec2):
+
     def __repr__(self):
         return "P(%f %f)" % (self.x, self.y)
+
 
 def project_point_line(point, lp1, lp2, segment=True, off_end=False):
     """
@@ -348,6 +349,7 @@ INTERSECT_COLINEAR = 0
 INTERSECT_PARALLEL = 1
 INTERSECT_NORMAL = 2
 
+
 def line_intersect(lp1, lp2, lp3, lp4):
     p = Vec2(lp1)
     q = Vec2(lp3)
@@ -367,14 +369,15 @@ def line_intersect(lp1, lp2, lp3, lp4):
 def cross(a, b):
     return numpy.cross(numpy.array([a.x, a.y]), numpy.array([b.x, b.y]))
 
+
 def line_distance_segment(lp1, lp2, lp3, lp4):
     p = Vec2(lp1)
     q = Vec2(lp3)
-    
+
     vec_1 = Vec2(lp2) - Vec2(lp1)
-    
+
     vec_2 = Vec2(lp4) - Vec2(lp3)
-    
+
     u_num = cross(q - p, vec_1)
     v_num = cross(q - p, vec_2)
     denom = cross(vec_1, vec_2)
@@ -388,13 +391,14 @@ def line_distance_segment(lp1, lp2, lp3, lp4):
         v = v_num / denom
         if 0 <= u <= 1 and 0 <= v <= 1:
             return 0
-    
+
     distances = []
     distances.append(project_point_line(lp1, lp3, lp4, True, True)[1])
     distances.append(project_point_line(lp2, lp3, lp4, True, True)[1])
     distances.append(project_point_line(lp3, lp1, lp2, True, True)[1])
     distances.append(project_point_line(lp4, lp1, lp2, True, True)[1])
     return min(distances)
+
 
 def translate(x, y):
     return numpy.array([
@@ -403,6 +407,7 @@ def translate(x, y):
         [0, 0, 1]
     ], dtype=numpy.float32)
 
+
 def scale(xs, ys=None):
     if ys is None:
         ys = xs
@@ -410,17 +415,19 @@ def scale(xs, ys=None):
     return numpy.array([
         [xs, 0, 0],
         [0, ys, 0],
-        [0,  0, 1]
+        [0, 0, 1]
     ], dtype=numpy.float32)
+
 
 def rotate(theta):
     _cos = math.cos(theta)
     _sin = math.sin(theta)
     return numpy.array([
         [_cos, -_sin, 0],
-        [_sin,  _cos, 0],
-        [              0,                0, 1]
+        [_sin, _cos, 0],
+        [0, 0, 1]
     ], dtype=numpy.float32)
+
 
 def flip(axis=0):
     if axis == 0:
@@ -431,13 +438,16 @@ def flip(axis=0):
         ys = -1
     return scale(xs, ys)
 
+
 def cflip(do_flip, axis=0):
     if do_flip:
         return flip(axis)
     return numpy.identity(3, dtype=numpy.float32)
 
+
 def projectPoint(matrix, pt):
     return Point2.fromHomol(matrix.dot(pt.homol()))
+
 
 def projectPoints(matrix, pts):
     return [projectPoint(matrix, pt) for pt in pts]

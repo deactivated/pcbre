@@ -4,6 +4,7 @@ from PySide import QtGui
 
 
 class FileMenu(QtGui.QMenu):
+
     def __init__(self, mw):
         QtGui.QMenu.__init__(self, "&File", mw)
 
@@ -20,7 +21,6 @@ class FileMenu(QtGui.QMenu):
         self.addSeparator()
         self.addAction(mw.actions.file_exit)
 
-
         # the "save" option is disabled if a) the project hasn't changed
         # or b) the save location isn't defined
         def updateCanSave():
@@ -28,4 +28,3 @@ class FileMenu(QtGui.QMenu):
 
         # So update the "greyed" state immediately before rendering
         self.aboutToShow.connect(updateCanSave)
-

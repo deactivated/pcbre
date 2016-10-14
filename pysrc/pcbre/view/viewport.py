@@ -19,10 +19,13 @@ from pcbre.matrix import projectPoint
 # W - World coords. World coordinates are in mm
 #
 
+
 class ViewPort(object):
+
     def __init__(self, x, y):
 
-        # _transform defines the mapping from physical (world) coordinates to the projection area
+        # _transform defines the mapping from physical (world) coordinates to
+        # the projection area
         self.__transform = numpy.identity(3, dtype=numpy.float32)
         self.__scale_factor = 1
 
@@ -89,7 +92,8 @@ class ViewPort(object):
 
     def __update(self):
         self.__fwdMatrix = self.__ndc2v.dot(self.__w2ndc.dot(self._transform))
-        self.__scale_factor = max(map(abs, [self.fwdMatrix[0][0], self.fwdMatrix[0][1], self.fwdMatrix[1][0], self.fwdMatrix[1][1]]))
+        self.__scale_factor = max(map(abs, [self.fwdMatrix[0][0], self.fwdMatrix[0][
+                                  1], self.fwdMatrix[1][0], self.fwdMatrix[1][1]]))
         self.__revMatrix = numpy.linalg.inv(self.fwdMatrix)
 
         self.__glMatrix = self.__w2ndc.dot(self._transform)
@@ -100,26 +104,22 @@ class ViewPort(object):
         self.__width = newwidth
         self.__height = newheight
 
-
         # World to natural device coordinates matrix
         self.__w2ndc = numpy.array([
-                                       [     1,      0,     0],
-                                       [     0,      1,     0],
-                                       [     0,      0,     1]
-                                   ], dtype=numpy.float32)
+            [1, 0, 0],
+            [0, 1, 0],
+            [0, 0, 1]
+        ], dtype=numpy.float32)
 
         # Natural device coordinates to viewport matrix
-        xh = self.__width/2
-        yh = self.__height/2
+        xh = self.__width / 2
+        yh = self.__height / 2
 
-        rs = max(self.__width, self.__height)/2
+        rs = max(self.__width, self.__height) / 2
         self.__ndc2v = numpy.array([
-            [ rs,   0, xh],
-            [  0, -rs, yh],
-            [  0,   0,  1],
-            ])
+            [rs, 0, xh],
+            [0, -rs, yh],
+            [0, 0, 1],
+        ])
 
         self.__update()
-
-
-

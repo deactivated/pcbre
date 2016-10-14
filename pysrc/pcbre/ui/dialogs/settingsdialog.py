@@ -5,6 +5,7 @@ from pcbre.ui.widgets.unitedit import UnitLineEdit
 
 
 class SettingsDialog(QtGui.QDialog):
+
     def __init__(self):
         super(SettingsDialog, self).__init__()
 
@@ -15,7 +16,8 @@ class SettingsDialog(QtGui.QDialog):
         self.setLayout(vl)
         vl.addLayout(self.layout)
 
-        bb = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)
+        bb = QtGui.QDialogButtonBox(
+            QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)
         vl.addWidget(bb)
 
         bb.accepted.connect(self.accept)
@@ -30,6 +32,7 @@ class SettingsDialog(QtGui.QDialog):
 
 
 class FloatTrait:
+
     @staticmethod
     def validator():
         return QtGui.QDoubleValidator()
@@ -44,6 +47,7 @@ class FloatTrait:
 
 
 class IntTrait:
+
     @staticmethod
     def validator():
         return QtGui.QIntValidator()
@@ -58,6 +62,7 @@ class IntTrait:
 
 
 class LineEditable(object):
+
     def __init__(self, model, attr, traits):
         self.widget = QtGui.QLineEdit()
         self.model = model
@@ -79,7 +84,9 @@ class LineEditable(object):
     def value(self, v):
         self.widget.setText(self.traits.fmt(v))
 
+
 class DegreeEditable(object):
+
     def __init__(self, model, attr):
         self.widget = QtGui.QLineEdit()
         self.model = model
@@ -100,7 +107,9 @@ class DegreeEditable(object):
     def value(self, val):
         self.widget.setText("%f" % math.degrees(val))
 
+
 class UnitEditable(object):
+
     def __init__(self, model, attr, unitgroup, defaultunit=None):
         self.widget = UnitLineEdit(unitgroup)
         self.widget.suppress_enter = False
@@ -113,7 +122,6 @@ class UnitEditable(object):
 
         self.load()
 
-
     def _get_par_obj(self):
         obj = self.model
         for p_cmp in self.path:
@@ -122,7 +130,7 @@ class UnitEditable(object):
         return obj
 
     def load(self):
-        par =  self._get_par_obj()
+        par = self._get_par_obj()
         elem = getattr(par, self.subattr)
 
         self.widget.setValue(elem)
@@ -140,26 +148,30 @@ class UnitEditable(object):
     def value(self, v):
         self.widget.setValue(v)
 
+
 class PointUnitEditable(UnitEditable):
-    def __init__(self, model, attr, axis, unitgroup, defaultunit = None):
+
+    def __init__(self, model, attr, axis, unitgroup, defaultunit=None):
         self.axis = axis
-        super(PointUnitEditable, self).__init__(model, attr, unitgroup, defaultunit)
+        super(PointUnitEditable, self).__init__(
+            model, attr, unitgroup, defaultunit)
 
     def load(self):
-        par =  self._get_par_obj()
+        par = self._get_par_obj()
         elem = getattr(getattr(par, self.subattr), self.axis)
         self.widget.setValue(elem)
 
     def save(self):
-        par =  self._get_par_obj()
+        par = self._get_par_obj()
         cur = getattr(par, self.subattr)
-        kw = {'x':cur.x, 'y':cur.y }
+        kw = {'x': cur.x, 'y': cur.y}
         kw[self.axis] = self.value
         v = Point2(**kw)
         setattr(par, self.subattr, v)
 
 
 class CheckedEditable(object):
+
     def __init__(self, model, attr):
         self.widget = QtGui.QCheckBox()
         self.model = model
@@ -171,6 +183,7 @@ class CheckedEditable(object):
 
 
 class AutoSettingsDialog(SettingsDialog):
+
     def __init__(self):
         super(AutoSettingsDialog, self).__init__()
         self.editables = []
@@ -207,13 +220,14 @@ class AutoSettingsWidget(QtGui.QWidget):
         for i in self.editables:
             i.save()
 
+
 class MultiAutoSettingsDialog(QtGui.QDialog):
+
     def __init__(self):
         super(MultiAutoSettingsDialog, self).__init__()
 
         vl = QtGui.QVBoxLayout()
         self.setLayout(vl)
-
 
         self.headerWidget = QtGui.QWidget()
         vl.addWidget(self.headerWidget)
@@ -223,7 +237,8 @@ class MultiAutoSettingsDialog(QtGui.QDialog):
 
         vl.addLayout(self.__qsw)
 
-        bb = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)
+        bb = QtGui.QDialogButtonBox(
+            QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)
         vl.addWidget(bb)
 
         bb.accepted.connect(self.accept)

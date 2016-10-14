@@ -1,12 +1,14 @@
 __author__ = 'davidc'
 from pcbre.qt_compat import QtCore, QtGui
 
+
 class PLineEdit(QtGui.QLineEdit):
+
     def __init__(self, *args, **kwargs):
         super(PLineEdit, self).__init__(*args, **kwargs)
         self.suppress_enter = True
 
-        #for a in self.actions():
+        # for a in self.actions():
 
     def keyPressEvent(self, evt):
         super(PLineEdit, self).keyPressEvent(evt)
@@ -23,4 +25,3 @@ class PLineEdit(QtGui.QLineEdit):
 
     def createStandardContextMenu(self, *args, **kwargs):
         pass
-

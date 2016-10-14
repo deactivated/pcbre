@@ -4,14 +4,16 @@ import pcbre.model.stackup as S
 import pcbre.model.imagelayer as IL
 import unittest
 
+
 class via_sanity(unittest.TestCase):
+
     def setUp(self):
         self.p = P.Project.create()
 
     def test_via_sanity(self):
         p = self.p
 
-        color = (1,1,1)
+        color = (1, 1, 1)
         l1 = S.Layer(name="Top", color=color)
         l2 = S.Layer(name="Bottom", color=color)
 
@@ -26,7 +28,4 @@ class via_sanity(unittest.TestCase):
 
         l1.imagelayers = [lv1, lv2]
 
-
         assert lv1 in l1.imagelayers
-
-

@@ -15,7 +15,9 @@ __author__ = 'davidc'
 
 import unittest
 
+
 class test_save_restore(unittest.TestCase):
+
     def __saverestore(self, p):
         with TemporaryFile(buffering=0) as fd:
 
@@ -35,7 +37,7 @@ class test_save_restore(unittest.TestCase):
             self.assertAlmostEqual(i, j)
 
     def __setup_layers(self, n):
-        names = ["foo","bar","quux", "sed","a"] + list("abcdefghijklmnop")
+        names = ["foo", "bar", "quux", "sed", "a"] + list("abcdefghijklmnop")
         p = Project.create()
         for i, name in zip(range(n), names):
             color = (random.random(), random.random(), random.random())
@@ -78,16 +80,18 @@ class test_save_restore(unittest.TestCase):
 
         p_new = self.__saverestore(p)
 
-        self.assertEqual(len(p.stackup.via_pairs), len(p_new.stackup.via_pairs))
+        self.assertEqual(len(p.stackup.via_pairs),
+                         len(p_new.stackup.via_pairs))
         for vp_old, vp_new in zip(p.stackup.via_pairs, p_new.stackup.via_pairs):
             self.check_obj(p_new, vp_new, vp_old)
 
-            new_first_i, new_second_i = [p_new.stackup.layers.index(i) for i in vp_new.layers]
-            old_first_i, old_second_i = [p.stackup.layers.index(i) for i in vp_old.layers]
+            new_first_i, new_second_i = [
+                p_new.stackup.layers.index(i) for i in vp_new.layers]
+            old_first_i, old_second_i = [
+                p.stackup.layers.index(i) for i in vp_old.layers]
 
             self.assertEqual(new_first_i, old_first_i)
             self.assertEqual(new_second_i, old_second_i)
-
 
     def setup_i3(self):
         p = self.__setup_via_pairs_layers()
@@ -105,36 +109,40 @@ class test_save_restore(unittest.TestCase):
         p = self.setup_i3()
         p_new = self.__saverestore(p)
 
-        self.assertEqual(len(p.imagery.imagelayers), len(p_new.imagery.imagelayers))
+        self.assertEqual(len(p.imagery.imagelayers),
+                         len(p_new.imagery.imagelayers))
         for il_old, il_new in zip(p.imagery.imagelayers, p_new.imagery.imagelayers):
             self.check_obj(p_new, il_new, il_old)
             self.assertEqual(il_new.data, il_old.data)
             self.assertEqual(il_new.name, il_old.name)
 
-        self.assertListEqual(p.stackup.layers[0].imagelayers, p.imagery.imagelayers[:2])
-        self.assertListEqual(p.stackup.layers[1].imagelayers, p.imagery.imagelayers[2:])
+        self.assertListEqual(
+            p.stackup.layers[0].imagelayers, p.imagery.imagelayers[:2])
+        self.assertListEqual(
+            p.stackup.layers[1].imagelayers, p.imagery.imagelayers[2:])
 
     def cmpMat(self, a, b):
-        eps = numpy.absolute(b-a).max()
+        eps = numpy.absolute(b - a).max()
         self.assertLess(eps, 0.00001, "CmpMat: %s %s" % (a, b))
 
     def test_keypoints(self):
         p = self.setup_i3()
-        kp1 = KeyPoint(Point2(3,6))
-        kp2 = KeyPoint(Point2(5,5))
+        kp1 = KeyPoint(Point2(3, 6))
+        kp2 = KeyPoint(Point2(5, 5))
         p.imagery.add_keypoint(kp1)
         p.imagery.add_keypoint(kp2)
 
         align = KeyPointAlignment()
         p.imagery.imagelayers[0].set_alignment(align)
 
-        align.set_keypoint_position(kp1, Point2(-7,13))
+        align.set_keypoint_position(kp1, Point2(-7, 13))
         align.set_keypoint_position(kp2, Point2(4, 5))
 
         p_new = self.__saverestore(p)
 
         # Verify Keypoints saved/restored
-        self.assertEqual(len(p_new.imagery.keypoints), len(p.imagery.keypoints))
+        self.assertEqual(len(p_new.imagery.keypoints),
+                         len(p.imagery.keypoints))
         for kp_old, kp_new in zip(p.imagery.keypoints, p_new.imagery.keypoints):
             self.check_obj(p_new, kp_new, kp_old)
 
@@ -145,8 +153,10 @@ class test_save_restore(unittest.TestCase):
         self.assertIsInstance(il_0_new.alignment, KeyPointAlignment)
         al = il_0_new.alignment
 
-        new_kpl = sorted(al.keypoint_positions, key=lambda x: x.key_point.world_position.x)
-        old_kpl = sorted(align.keypoint_positions, key=lambda x: x.key_point.world_position.x)
+        new_kpl = sorted(al.keypoint_positions,
+                         key=lambda x: x.key_point.world_position.x)
+        old_kpl = sorted(align.keypoint_positions,
+                         key=lambda x: x.key_point.world_position.x)
 
         self.cmpMat(new_kpl[0].image_pos, old_kpl[0].image_pos)
         self.cmpMat(new_kpl[1].image_pos, old_kpl[1].image_pos)
@@ -154,8 +164,9 @@ class test_save_restore(unittest.TestCase):
     def test_rectalign(self):
         p = self.setup_i3()
         align = RectAlignment(
-            [Point2(3,3), Point2(7,3), Point2(7,7), Point2(3, 7), None, None, None, None, Point2(4, 7), None, None, None],
-            [Point2(5,6), Point2(7,8), Point2(1, 3), Point2(2,3)],
+            [Point2(3, 3), Point2(7, 3), Point2(7, 7), Point2(3, 7),
+             None, None, None, None, Point2(4, 7), None, None, None],
+            [Point2(5, 6), Point2(7, 8), Point2(1, 3), Point2(2, 3)],
             (5.77, 3.135),
             False,
             Point2(47, 56),
@@ -177,19 +188,19 @@ class test_save_restore(unittest.TestCase):
         self.assertEqual(align.flip_x, new_align.flip_x)
         self.assertEqual(align.flip_y, new_align.flip_y)
 
-        for a,b in zip(align.handles, new_align.handles):
+        for a, b in zip(align.handles, new_align.handles):
             if a is None:
                 self.assertIsNone(b)
             else:
                 self.assertIsNotNone(b)
-                self.cmpMat(a,b)
+                self.cmpMat(a, b)
 
-        for a,b in zip(align.dim_handles, new_align.dim_handles):
+        for a, b in zip(align.dim_handles, new_align.dim_handles):
             if a is None:
                 self.assertIsNone(b)
             else:
                 self.assertIsNotNone(b)
-                self.cmpMat(a,b)
+                self.cmpMat(a, b)
 
     def test_vias(self):
         p = self.__setup_via_pairs_layers()
@@ -218,7 +229,8 @@ class test_save_restore(unittest.TestCase):
             self.assertEqual(p.stackup.via_pairs.index(a.viapair),
                              p_new.stackup.via_pairs.index(b.viapair))
             self.assertEqual(a.r, b.r)
-            self.assertEqual(p.nets.nets.index(a.net), p_new.nets.nets.index(b.net))
+            self.assertEqual(p.nets.nets.index(a.net),
+                             p_new.nets.nets.index(b.net))
 
     def test_airwires(self):
         p = self.__setup_via_pairs_layers()
@@ -229,7 +241,8 @@ class test_save_restore(unittest.TestCase):
         v = Via(Point2(3700, 2100), p.stackup.via_pairs[0], 31337, n1)
         v2 = Via(Point2(1234, 5678), p.stackup.via_pairs[1], 31339, n1)
 
-        airwire = Airwire(v.pt, v2.pt, v.viapair.layers[0], v2.viapair.layers[0], n1)
+        airwire = Airwire(v.pt, v2.pt, v.viapair.layers[
+                          0], v2.viapair.layers[0], n1)
 
         p.artwork.add_artwork(v)
         p.artwork.add_artwork(v2)
@@ -256,10 +269,9 @@ class test_save_restore(unittest.TestCase):
         n2 = Net()
         p.nets.add_net(n2)
 
-        ext = [Point2(0,0), Point2(10,0), Point2(10,10), Point2(0, 10)]
-        int1 = [Point2(1,1), Point2(2,1), Point2(2,2), Point2(1,2)]
-        int2 = [Point2(4,1), Point2(5,1), Point2(5,2), Point2(4,2)]
-
+        ext = [Point2(0, 0), Point2(10, 0), Point2(10, 10), Point2(0, 10)]
+        int1 = [Point2(1, 1), Point2(2, 1), Point2(2, 2), Point2(1, 2)]
+        int2 = [Point2(4, 1), Point2(5, 1), Point2(5, 2), Point2(4, 2)]
 
         po = Polygon(p.stackup.layers[0], ext, [int1, int2], n1)
 
@@ -275,14 +287,18 @@ class test_save_restore(unittest.TestCase):
 
         r = pol_new.get_poly_repr()
 
-        # All LineRings contain the first element as the last, so we drop during the comparison
+        # All LineRings contain the first element as the last, so we drop
+        # during the comparison
 
         pb = po.get_poly_repr()
-        self.assertListEqual(list(r.exterior.coords), [tuple(i) for i in pb.exterior.coords])
+        self.assertListEqual(list(r.exterior.coords), [
+                             tuple(i) for i in pb.exterior.coords])
         interiors = r.interiors
         self.assertEqual(len(interiors), 2)
-        self.assertListEqual(list(interiors[0].coords), [tuple(i) for i in pb.interiors[0].coords])
-        self.assertListEqual(list(interiors[1].coords), [tuple(i) for i in pb.interiors[1].coords])
+        self.assertListEqual(list(interiors[0].coords), [
+                             tuple(i) for i in pb.interiors[0].coords])
+        self.assertListEqual(list(interiors[1].coords), [
+                             tuple(i) for i in pb.interiors[1].coords])
 
         self.assertIsNotNone(pol_new.net)
         self.assertIsNotNone(pol_new.layer)
@@ -296,8 +312,10 @@ class test_save_restore(unittest.TestCase):
         n2 = Net()
         p.nets.add_net(n2)
 
-        t1 = Trace(Point2(61, -300), Point2(848, 1300), 775, p.stackup.layers[0], n1)
-        t2 = Trace(Point2(1234, 5678), Point2(90210, 84863), 775, p.stackup.layers[0], n2)
+        t1 = Trace(Point2(61, -300), Point2(848, 1300),
+                   775, p.stackup.layers[0], n1)
+        t2 = Trace(Point2(1234, 5678), Point2(
+            90210, 84863), 775, p.stackup.layers[0], n2)
 
         p.artwork.add_artwork(t1)
         p.artwork.add_artwork(t2)
@@ -318,14 +336,17 @@ class test_save_restore(unittest.TestCase):
             self.assertEqual(t_old.thickness, t_new.thickness)
 
             # Check links to layer object and net object are restored
-            self.assertEqual(p.nets.nets.index(t_old.net), p_new.nets.nets.index(t_new.net))
+            self.assertEqual(p.nets.nets.index(t_old.net),
+                             p_new.nets.nets.index(t_new.net))
             self.assertEqual(p.stackup.layers.index(t_old.layer),
                              p_new.stackup.layers.index(t_new.layer))
 
+
 class test_save_mats(unittest.TestCase):
+
     def __test_shape(self, n):
 
-        mat = numpy.random.rand(n,n)
+        mat = numpy.random.rand(n, n)
 
         msg = serialize_matrix(mat)
 
@@ -340,9 +361,12 @@ class test_save_mats(unittest.TestCase):
     def test_mat_4_4(self):
         self.__test_shape(4)
 
+
 class test_save_point2(unittest.TestCase):
+
     def test_point2(self):
-        # Point2 class is floating (for now), but serialized form is integral units
+        # Point2 class is floating (for now), but serialized form is integral
+        # units
         pt = Point2(54.3, 72.9)
         msg = serialize_point2(pt)
 

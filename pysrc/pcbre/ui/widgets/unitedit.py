@@ -4,11 +4,14 @@ __author__ = 'davidc'
 from collections import OrderedDict
 from pcbre.qt_compat import QtGui, QtCore
 
+
 class UnitGroup(object):
+
     def __init__(self, items, default_index=0):
         self.units = OrderedDict(items)
         self.by_name = dict(reversed(i) for i in enumerate(self.units.keys()))
-        self.by_scalefactor = dict(reversed(i) for i in enumerate(self.units.values()))
+        self.by_scalefactor = dict(reversed(i)
+                                   for i in enumerate(self.units.values()))
         self.__default_index = default_index
 
     def idx_by_name(self, name):
@@ -35,6 +38,7 @@ class UnitGroup(object):
 UNIT_GROUP_MM = UnitGroup([("\u00B5m", 1), ("mm", 1000), ("in", 25400)], 1)
 UNIT_GROUP_PX = UnitGroup([("px", 1)])
 
+
 class UnitLineEdit(QtGui.QWidget):
     edited = QtCore.Signal()
 
@@ -45,7 +49,7 @@ class UnitLineEdit(QtGui.QWidget):
         self._field_type = float
 
         self.layout = QtGui.QHBoxLayout()
-        self.layout.setContentsMargins(0,0,0,0)
+        self.layout.setContentsMargins(0, 0, 0, 0)
 
         self.__lineEdit = PLineEdit()
         self.__lineEdit.editingFinished.connect(self.text_changed)
@@ -107,7 +111,8 @@ class UnitLineEdit(QtGui.QWidget):
         if self._placeholder_value is None:
             self.__lineEdit.setPlaceholderText("")
         else:
-            self.__lineEdit.setPlaceholderText("%s" % (self._placeholder_value / float(scale)))
+            self.__lineEdit.setPlaceholderText(
+                "%s" % (self._placeholder_value / float(scale)))
 
     def text_changed(self):
         v = self.__lineEdit.text()

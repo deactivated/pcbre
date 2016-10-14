@@ -4,7 +4,9 @@ import collections
 
 __author__ = 'davidc'
 
+
 class UndoStack(QtGui.QUndoStack):
+
     def setup_actions(self, target, menu=None):
         undoAction = self.createUndoAction(target)
         undoAction.setShortcuts(QtGui.QKeySequence.Undo)
@@ -19,8 +21,8 @@ class UndoStack(QtGui.QUndoStack):
             pass
 
 
-
 class undo_helper_fncall(QtGui.QUndoCommand):
+
     def __init__(self, set_state, *args, **kwargs):
         super(undo_helper_fncall, self).__init__()
 
@@ -41,7 +43,7 @@ class undo_helper_fncall(QtGui.QUndoCommand):
         self.old_state = self.set_state(*args, **kwargs)
 
     def set_merge_id(self, _id):
-        self._id = ((1<<31)-1) & _id
+        self._id = ((1 << 31) - 1) & _id
 
     def id(self):
         return self._id
@@ -49,7 +51,9 @@ class undo_helper_fncall(QtGui.QUndoCommand):
     def set_merge_fn(self, mf):
         self.mergeWith = functools.partial(mf, self)
 
+
 class undofunc(object):
+
     def __new__(cls, *args, **kwargs):
         if len(args) == 1 and isinstance(args[0], collections.Callable):
             self = object.__new__(cls)
@@ -60,7 +64,8 @@ class undofunc(object):
         elif len(args) == 1 and isinstance(args[0], bool):
             return functools.partial(undofunc, simple_merge=args[0])
         else:
-            raise ValueError("invalid args to undofunc args=%s kwargs=%s" % (args, kwargs))
+            raise ValueError(
+                "invalid args to undofunc args=%s kwargs=%s" % (args, kwargs))
 
     @staticmethod
     def merge_check_default(self, new):
@@ -92,19 +97,20 @@ class undofunc(object):
         self.merge_check = fn
         return self
 
+
 class undo_set_params(QtGui.QUndoCommand):
+
     def __init__(self, target, **kwargs):
         super(undo_set_params, self).__init__()
         self._id = -1
         if "merge" in kwargs:
             del kwargs["merge"]
-            self._id = hash((frozenset(list(kwargs.keys())), id(target))) & ((1<<31) - 1)
+            self._id = hash((frozenset(list(kwargs.keys())),
+                             id(target))) & ((1 << 31) - 1)
 
         self.target = target
         self.new_state = kwargs
         self.old_state = None
-
-
 
     def redo(self):
         self.old_state = {}
@@ -121,6 +127,7 @@ class undo_set_params(QtGui.QUndoCommand):
 
     def id(self):
         return self._id
+
 
 def sig(*args, **kwargs):
     return args, kwargs

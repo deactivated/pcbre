@@ -6,7 +6,9 @@ __author__ = 'davidc'
 
 from pcbre.qt_compat import QtCore, QtGui
 
+
 class ImageSelectionMenu(QtGui.QMenu):
+
     def __init__(self, window):
         """
 
@@ -14,7 +16,7 @@ class ImageSelectionMenu(QtGui.QMenu):
         :param model:
         :return:
         """
-        
+
         super(ImageSelectionMenu, self).__init__()
 
         self.window = window

@@ -5,6 +5,7 @@ import numpy
 import ctypes
 import contextlib
 
+
 def translate_dtype(dt):
     assert len(dt.shape) <= 1
     if dt.base == numpy.uint32:
@@ -23,6 +24,7 @@ def translate_dtype(dt):
 
 
 class vbobind(object):
+
     def __init__(self, program, dtype, name, shader_name=None, div=0):
         if shader_name is None:
             shader_name = name
@@ -42,15 +44,19 @@ class vbobind(object):
         offset = ctypes.c_void_p(self.offset + base * self.stride)
         GL.glEnableVertexAttribArray(self.loc)
         if self.t in [GL.GL_BYTE, GL.GL_UNSIGNED_BYTE, GL.GL_SHORT, GL.GL_UNSIGNED_SHORT, GL.GL_INT, GL.GL_UNSIGNED_INT]:
-            GL.glVertexAttribIPointer(self.loc, self.n, self.t, self.stride, offset)
+            GL.glVertexAttribIPointer(
+                self.loc, self.n, self.t, self.stride, offset)
         else:
-            GL.glVertexAttribPointer(self.loc, self.n, self.t, False, self.stride, offset)
+            GL.glVertexAttribPointer(
+                self.loc, self.n, self.t, False, self.stride, offset)
         GL.glVertexAttribDivisor(self.loc, self.div)
 
+
 class Texture(int):
+
     def __new__(cls, *args, **kwargs):
         a = GL.glGenTextures(1)
-        return  super(Texture, cls).__new__(cls, a)
+        return super(Texture, cls).__new__(cls, a)
 
     @contextlib.contextmanager
     def on(self, target):
@@ -60,9 +66,10 @@ class Texture(int):
 
 
 class VAO(int):
+
     def __new__(cls, *args, **kwargs):
         a = GL.glGenVertexArrays(1)
-        return  super(VAO, cls).__new__(cls, a)
+        return super(VAO, cls).__new__(cls, a)
 
     def __enter__(self):
         GL.glBindVertexArray(self)

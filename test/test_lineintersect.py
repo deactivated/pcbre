@@ -1,7 +1,9 @@
 import unittest
 from pcbre.matrix import *
 
+
 class test_mmath(unittest.TestCase):
+
     def setUp(self):
         pass
 
@@ -30,7 +32,7 @@ class test_mmath(unittest.TestCase):
         pt1 = Vec2(7, 13)
         pt2 = Vec2(2, 96)
 
-        d = Vec2(11,4)
+        d = Vec2(11, 4)
         pt3 = pt1 + d
         pt4 = pt2 + d
 
@@ -66,7 +68,6 @@ class test_mmath(unittest.TestCase):
     def test_line_intersect_2(self):
         pt1 = Vec2(-1, -5)
         pt2 = Vec2(5, 19)
-
 
         pt3 = Vec2(-5, 5)
         pt4 = Vec2(-2, 4)

@@ -10,20 +10,21 @@ from pcbre.model.artwork_geom import Airwire, Via
 from pcbre.model.stackup import Layer, ViaPair
 from pcbre.model.net import Net
 
+
 class test_nets(unittest.TestCase):
+
     def setUp(self):
         self.p = Project.create()
 
-        l1 = Layer(name="Top", color=(0,0,0))
-        l2 = Layer(name="Bot", color=(0,0,1))
-        vp = ViaPair(l1,l2)
+        l1 = Layer(name="Top", color=(0, 0, 0))
+        l2 = Layer(name="Bot", color=(0, 0, 1))
+        vp = ViaPair(l1, l2)
 
         self.net0 = Net()
         self.net1 = Net()
 
         self.v1 = Via(Point2(0, 0), r=1, viapair=vp, net=self.net0)
         self.v2 = Via(Point2(0, 0), r=1, viapair=vp, net=self.net1)
-
 
         self.p.stackup.add_layer(l1)
         self.p.stackup.add_layer(l2)
@@ -64,6 +65,3 @@ class test_nets(unittest.TestCase):
         self.assertEqual(self.x.container, self.p.nets)
         self.assertEqual(self.x.what, self.net1)
         self.assertEqual(self.x.reason, ChangeType.REMOVE)
-
-
-

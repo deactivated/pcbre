@@ -5,7 +5,9 @@ __author__ = 'davidc'
 
 from pcbre.qt_compat import QtCore, QtGui
 
+
 class NetDialog(QtGui.QDialog):
+
     def __init__(self, parent, obj):
         super(NetDialog, self).__init__(parent)
 
@@ -16,7 +18,6 @@ class NetDialog(QtGui.QDialog):
 
         self.mainLayout = QtGui.QVBoxLayout()
         self.setLayout(self.mainLayout)
-
 
         self.obj = obj
         self.mainLayout.setSizeConstraint(QtGui.QLayout.SetMinAndMaxSize)
@@ -75,7 +76,6 @@ class NetDialog(QtGui.QDialog):
 
         self.mainLayout.addWidget(buttonBox)
 
-
     def accept(self):
         super(NetDialog, self).accept()
 
@@ -89,6 +89,3 @@ class NetDialog(QtGui.QDialog):
         if self.cmp:
             self.cmp.refdes = str(self.refdes_input.text())
             self.cmp.partno = str(self.partname_input.text())
-
-
-

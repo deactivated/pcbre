@@ -38,7 +38,9 @@ void main(void)
 
 
 # Ensure we have a qapplication - another testcase might have created it though
-if QtGui.qApp == None: QtGui.QApplication([])
+if QtGui.qApp == None:
+    QtGui.QApplication([])
+
 
 class test_shader_stuff(unittest.TestCase):
     ctx = None
@@ -55,7 +57,6 @@ class test_shader_stuff(unittest.TestCase):
 
         self.assertTrue(self.ctx.isValid())
         self.ctx.makeCurrent()
-
 
         # Compile the two shaders individually
         s1 = S.compileShader(VERT_1, GL.GL_VERTEX_SHADER)
@@ -101,7 +102,7 @@ class test_shader_stuff(unittest.TestCase):
 
         ar = numpy.identity(3, dtype=numpy.float32)
         self.prog.glUniformMatrix3fv("mat", 1, False, ar)
-        self.prog.glUniform4f("col", 1,1,1,1)
+        self.prog.glUniform4f("col", 1, 1, 1, 1)
         self.prog.glUniform1i("tex1", 0)
 
         self.assertRaises(S.UnboundAttributeException, _)
@@ -110,7 +111,7 @@ class test_shader_stuff(unittest.TestCase):
         self.prog._update_bindings()
 
         # Now setup all the bindings, and validate
-        self.prog.glUniform4f("col", 1,1,1,1)
+        self.prog.glUniform4f("col", 1, 1, 1, 1)
         self.prog.glUniform1i("tex1", 0)
 
         ar = numpy.identity(3, dtype=numpy.float32)
@@ -118,7 +119,4 @@ class test_shader_stuff(unittest.TestCase):
         i = self.prog.attributes.vertex
         i = self.prog.attributes.texpos
 
-
         self.prog.check_bindings()
-
-

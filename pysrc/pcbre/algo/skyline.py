@@ -16,6 +16,7 @@ class _SkyLineNode(object):
     The width of the block (which continues at 'height') is implicit to either the 'left' of the next block, or to the
     width of the area on which the skyline is being run.
     """
+
     def __init__(self, left=0, height=0):
         self.left = left
         self.height = height
@@ -31,6 +32,7 @@ def print_skyline(s):
 
 
 class _StartHeight(object):
+
     def __init__(self, startnode, head=False):
         self.height = startnode.height
         self.node = startnode
@@ -63,15 +65,18 @@ class _StartHeight(object):
 
     def __repr__(self):
         if self.head:
-            nodes = itertools.takewhile(lambda x: x != self, _node_iter(self.next))
+            nodes = itertools.takewhile(
+                lambda x: x != self, _node_iter(self.next))
             return ", ".join("%s height: %d fw:%d" % (s.node, s.height, s.wasted_width) for s in nodes)
         else:
-            return  "<%s height: %d fw:%d>" % (self.node, self.height, self.wasted_width)
+            return "<%s height: %d fw:%d>" % (self.node, self.height, self.wasted_width)
+
 
 def _node_iter(node):
     while node is not None:
         yield node
         node = node.next
+
 
 class SkyLine(object):
     """The SkyLine class represents a mutable 'SkyLine' in area (width, height). Initially, the skyline is zero-height.
@@ -79,6 +84,7 @@ class SkyLine(object):
 
     The SkyLine class itself does not directly manage any
     """
+
     def __init__(self, width, height):
         self.width = width
         self.height = height
@@ -112,10 +118,8 @@ class SkyLine(object):
         assert splitpoint <= self.width
         assert height > node.height
 
-
         last_height = node.height
         node.height = height
-
 
         # If the splitpoint is at the RHS of the packing bin
         # just shortcut out
@@ -187,11 +191,13 @@ class SkyLine(object):
 
                     assert s_h_list.prev != s_h_list
 
-                    # If we've bumped the height to the point it no longer fits, discard it
+                    # If we've bumped the height to the point it no longer
+                    # fits, discard it
                     if height + s_h_list.prev.height <= self.height:
                         candidates.append(s_h_list.prev)
 
-                    # This candidate will be strictly better than any others in flight
+                    # This candidate will be strictly better than any others in
+                    # flight
                     s_h_list.reset()
 
             # Otherwise, start a new candidate
@@ -211,7 +217,6 @@ class SkyLine(object):
         if cand is None:
             return None
 
-
         self.split(cand.node, cand.node.left + width, cand.height + height)
 
         return cand.node.left, cand.height
@@ -224,28 +229,17 @@ class SkyLine(object):
         while l:
             scores = []
             for n_l, (n_initial, (width, height)) in enumerate(l):
-                scores.append((n_l, height, self.find(width, height)) )
+                scores.append((n_l, height, self.find(width, height)))
 
-            win_index, glyph_height, win_cand = min(scores, key=lambda x: (x[2].height + x[1], x[2].wasted_width))
+            win_index, glyph_height, win_cand = min(
+                scores, key=lambda x: (x[2].height + x[1], x[2].wasted_width))
             width, height = l[win_index][1]
 
-            self.split(win_cand.node, win_cand.node.left + width, win_cand.height + height)
+            self.split(win_cand.node, win_cand.node.left +
+                       width, win_cand.height + height)
 
             results[l[win_index][0]] = win_cand.node.left, win_cand.height
 
             del l[win_index]
 
         return results
-
-
-
-
-
-
-
-
-
-
-
-
-

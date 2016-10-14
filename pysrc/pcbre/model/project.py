@@ -16,14 +16,18 @@ from pcbre.model.util import ImmutableListProxy
 MAGIC = b"PCBRE\x00"
 VERSION_MAGIC = b"\x01\x00"
 
+
 class ProjectConfig(dict):
+
     def serialize(self):
         pass
 
     def deserialize(self):
         pass
 
+
 class ProjectIsBadException(Exception):
+
     def __init__(self, reason):
         self.__reason = reason
 
@@ -32,6 +36,7 @@ class ProjectIsBadException(Exception):
 
 
 class Stackup(QtCore.QObject):
+
     def __init__(self, project):
         super(Stackup, self).__init__()
 
@@ -48,13 +53,15 @@ class Stackup(QtCore.QObject):
         assert via_pair._project is None
         via_pair._project = self.__project
         self.__via_pairs.append(via_pair)
-        self.changed.emit(ModelChange(self.via_pairs, ChangeType.ADD, via_pair))
+        self.changed.emit(ModelChange(
+            self.via_pairs, ChangeType.ADD, via_pair))
 
     def remove_via_pair(self, via_pair):
         assert via_pair._project is self.__project
 
         raise NotImplementedError("Via Pair removal not finished")
-        self.changed.emit(ModelChange(self.via_pairs, ChangeType.REMOVE, via_pair))
+        self.changed.emit(ModelChange(
+            self.via_pairs, ChangeType.REMOVE, via_pair))
         # TODO, check for vias
 
         self.__via_pairs.erase(via_pair)
@@ -112,7 +119,6 @@ class Stackup(QtCore.QObject):
         else:
             return self.top_layer
 
-
     def serialize(self):
         _stackup = ser.Stackup.new_message()
         _stackup.init("layers", len(self.__layers))
@@ -137,6 +143,7 @@ class Stackup(QtCore.QObject):
 
 
 class Imagery:
+
     def __init__(self, project):
         self.__project = project
 
@@ -177,7 +184,8 @@ class Imagery:
         """
 
         assert kp._project is self
-        assert len(kp.layer_positions) == 0 # Verify that no layers use the keypoint
+        # Verify that no layers use the keypoint
+        assert len(kp.layer_positions) == 0
 
         kp._project = None
 
@@ -185,7 +193,6 @@ class Imagery:
 
     def get_keypoint_index(self, kp):
         return self.keypoints.index(kp)
-
 
     def serialize(self):
         imagery = ser.Imagery.new_message()
@@ -208,7 +215,9 @@ class Imagery:
             self.__keypoints.append(KeyPoint.deserialize(self.__project, i))
 
         for i in msg.imagelayers:
-            self.__imagelayers.append(ImageLayer.deserialize(self.__project, i))
+            self.__imagelayers.append(
+                ImageLayer.deserialize(self.__project, i))
+
 
 class Nets(QtCore.QObject):
     changed = QtCore.Signal(ModelChange)
@@ -267,6 +276,7 @@ class Nets(QtCore.QObject):
             n = Net(name=i.name, net_class=i.nclass)
             self.__project.scontext.set_sid(i.sid, n)
             self.add_net(n)
+
 
 class Project:
 
@@ -371,9 +381,9 @@ class Project:
         f.flush()
         f.close()
 
-
     def close(self):
         pass
+
 
 def openProject():
     pass

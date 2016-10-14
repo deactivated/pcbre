@@ -4,7 +4,9 @@ from pcbre.model.const import SIDE
 import weakref
 from pcbre.ui.gl.textrender import TextBatch
 
+
 class ComponentTextBatcher:
+
     def __init__(self, view, project, text_renderer):
         self.__text = text_renderer
         self.__project = project
@@ -20,7 +22,6 @@ class ComponentTextBatcher:
         self.__up_vector = Vec2(0, 1)
         self.__ltor_vector = Vec2(1, 0)
 
-
     def initializeGL(self):
         self.__top_side_pads.initializeGL()
         self.__bottom_side_pads.initializeGL()
@@ -33,15 +34,16 @@ class ComponentTextBatcher:
         if self.__project.artwork.components_generation != self.__last_generation:
             needs_rebuild = True
 
-        up_unit_vector = Point2(self.__view.viewState.revMatrix.dot((0,1,0))[:2]).norm()
-        ltor_unit_vector = Point2(self.__view.viewState.revMatrix.dot((1,0,0))[:2]).norm()
+        up_unit_vector = Point2(
+            self.__view.viewState.revMatrix.dot((0, 1, 0))[:2]).norm()
+        ltor_unit_vector = Point2(
+            self.__view.viewState.revMatrix.dot((1, 0, 0))[:2]).norm()
 
         if math.acos(round(float(up_unit_vector.dot(self.__up_vector)), 8)) > 0.01:
             needs_rebuild = True
 
         if math.acos(round(float(ltor_unit_vector.dot(self.__ltor_vector)), 8)) > 0.01:
             needs_rebuild = True
-
 
         self.__up_vector = up_unit_vector
         self.__ltor_vector = ltor_unit_vector
@@ -68,10 +70,12 @@ class ComponentTextBatcher:
 
             for pad in cmp.get_pads():
                 if pad.is_through():
-                    r = Rect.fromCenterSize(Point2(0,0), pad.l * 0.6, pad.w * 0.6)
+                    r = Rect.fromCenterSize(
+                        Point2(0, 0), pad.l * 0.6, pad.w * 0.6)
 
                 else:
-                    r = Rect.fromCenterSize(Point2(0,0), pad.l*0.8, pad.w*0.8)
+                    r = Rect.fromCenterSize(
+                        Point2(0, 0), pad.l * 0.8, pad.w * 0.8)
 
                 mat = cmp.matrix.dot(pad.translate_mat)
 
@@ -89,9 +93,8 @@ class ComponentTextBatcher:
         self.__bottom_side_pads.prepare()
 
     def render_layer(self, mat, side, labels):
-        { (SIDE.Top, True): self.__top_side_labels,
-          (SIDE.Top, False): self.__top_side_pads,
-          (SIDE.Bottom, True): self.__bottom_side_labels,
-          (SIDE.Bottom, False): self.__bottom_side_pads
-        }[side, labels].render(mat)
-
+        {(SIDE.Top, True): self.__top_side_labels,
+         (SIDE.Top, False): self.__top_side_pads,
+         (SIDE.Bottom, True): self.__bottom_side_labels,
+         (SIDE.Bottom, False): self.__bottom_side_pads
+         }[side, labels].render(mat)

@@ -5,6 +5,7 @@ import numpy
 
 
 class OriginView(object):
+
     def initializeGL(self, gls):
         self.gls = gls
 
@@ -14,7 +15,7 @@ class OriginView(object):
         # Build a VBO for rendering square "drag-handles"
         # Coords are pixel coords
         #self.vbo_triangles_ar = numpy.ndarray(4, dtype=[("vertex", numpy.float32, 2, "color", numpy.float32, j)])
-        #self.vbo_triangles_ar["vertex"][]
+        # self.vbo_triangles_ar["vertex"][]
 
     def render(self, viewState):
         pass

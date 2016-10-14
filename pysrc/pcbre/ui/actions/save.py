@@ -4,23 +4,30 @@ from PySide import QtGui
 
 pcbre_filter = "PCBRE Project Files (*.pcbre)"
 
-#class OpenAction(QtGui.QAction):
+# class OpenAction(QtGui.QAction):
+
 
 class SaveAction(QtGui.QAction):
+
     def __init__(self, window):
         self.window = window
-        QtGui.QAction.__init__(self, "Save", self.window, shortcut="Ctrl+S", triggered=self.__action)
+        QtGui.QAction.__init__(self, "Save", self.window,
+                               shortcut="Ctrl+S", triggered=self.__action)
 
     def __action(self):
         self.window.project.save()
 
+
 class SaveAsDialogAction(QtGui.QAction):
+
     def __init__(self, window):
         self.window = window
-        QtGui.QAction.__init__(self, "Save-As", self.window, shortcut="Ctrl+Shift+S", triggered=self.__action)
+        QtGui.QAction.__init__(self, "Save-As", self.window,
+                               shortcut="Ctrl+Shift+S", triggered=self.__action)
 
     def __action(self):
-        filename, _ = QtGui.QFileDialog.getSaveFileName(self.window, "Save project as....", filter=pcbre_filter)
+        filename, _ = QtGui.QFileDialog.getSaveFileName(
+            self.window, "Save project as....", filter=pcbre_filter)
 
         if filename:
             self.window.project.save(filename, update_path=True)
@@ -42,14 +49,14 @@ def checkCloseSave(window):
 
     return False
 
+
 class ExitAction(QtGui.QAction):
 
     def __init__(self, window):
         self.window = window
-        QtGui.QAction.__init__(self, "E&xit", self.window, shortcut="Ctrl+Q", triggered=self.__action)
+        QtGui.QAction.__init__(self, "E&xit", self.window,
+                               shortcut="Ctrl+Q", triggered=self.__action)
 
     def __action(self):
         # Note - the save check is done in the window closeEvent handler
         self.window.close()
-
-

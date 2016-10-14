@@ -7,6 +7,7 @@ import pcbre.matrix
 
 
 class ImageView(object):
+
     def __init__(self, il):
         """
 
@@ -17,8 +18,6 @@ class ImageView(object):
 
         self.il = il
         self.im = il.decoded_image
-
-
 
         # haaaaaax
         #flipy = pcbre.matrix.flip(1)
@@ -31,10 +30,14 @@ class ImageView(object):
 
         # Setup the basic texture parameters
         with self._tex.on(GL.GL_TEXTURE_2D):
-            GL.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_NEAREST);
-            GL.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR);
-            GL.glTexParameteri(GL.GL_TEXTURE_2D,GL.GL_TEXTURE_WRAP_S,GL.GL_CLAMP_TO_EDGE);
-            GL.glTexParameteri(GL.GL_TEXTURE_2D,GL.GL_TEXTURE_WRAP_T,GL.GL_CLAMP_TO_EDGE);
+            GL.glTexParameteri(
+                GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_NEAREST)
+            GL.glTexParameteri(
+                GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR)
+            GL.glTexParameteri(
+                GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP_TO_EDGE)
+            GL.glTexParameteri(
+                GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP_TO_EDGE)
 
             # numpy packs data tightly, whereas the openGL default is 4-byte-aligned
             # fix line alignment to 1 byte so odd-sized textures load right
@@ -42,15 +45,16 @@ class ImageView(object):
 
             # Download the data to the buffer. cv2 stores data in BGR format
             GL.glTexImage2D(GL.GL_TEXTURE_2D,
-                0,
-                GL.GL_RGB,
-                self.im.shape[1],
-                self.im.shape[0],
-                0,
-                GL.GL_BGR,
-                GL.GL_UNSIGNED_BYTE,
-                self.im.ctypes.data_as(ctypes.POINTER(ctypes.c_uint8))
-                )
+                            0,
+                            GL.GL_RGB,
+                            self.im.shape[1],
+                            self.im.shape[0],
+                            0,
+                            GL.GL_BGR,
+                            GL.GL_UNSIGNED_BYTE,
+                            self.im.ctypes.data_as(
+                                ctypes.POINTER(ctypes.c_uint8))
+                            )
 
         self.prog = gls.shader_cache.get("image_vert", "image_frag")
 
@@ -62,24 +66,21 @@ class ImageView(object):
         sca = max(self.im.shape[0], self.im.shape[1])
         x = self.im.shape[1] / float(sca)
         y = self.im.shape[0] / float(sca)
-        ar["vertex"] = [ (-x,-y), (-x, y), (x,-y), (x, y)]
-        ar["texpos"] = [ (0,0), (0, 1), (1,0), (1, 1)]
+        ar["vertex"] = [(-x, -y), (-x, y), (x, -y), (x, y)]
+        ar["texpos"] = [(0, 0), (0, 1), (1, 0), (1, 1)]
 
         self.b1 = vbobind(self.prog, ar.dtype, "vertex")
-        self.b2 = vbobind(self.prog, ar.dtype,"texpos")
+        self.b2 = vbobind(self.prog, ar.dtype, "texpos")
 
         self.vbo = VBO(ar, GL.GL_STATIC_DRAW, GL.GL_ARRAY_BUFFER)
 
         self.mat_loc = GL.glGetUniformLocation(self.prog, "mat")
         self.tex1_loc = GL.glGetUniformLocation(self.prog, "tex1")
 
-
         self.vao = VAO()
         with self.vbo, self.vao:
             self.b1.assign()
             self.b2.assign()
-
-
 
     def render(self, viewPort):
         m_pre = self.mat
@@ -89,18 +90,17 @@ class ImageView(object):
 
         GL.glActiveTexture(GL.GL_TEXTURE0)
         with self.prog, self._tex.on(GL.GL_TEXTURE_2D), self.vao:
-            GL.glUniformMatrix3fv(self.mat_loc, 1, True, mat.astype(numpy.float32))
+            GL.glUniformMatrix3fv(self.mat_loc, 1, True,
+                                  mat.astype(numpy.float32))
             GL.glUniform1i(self.tex1_loc, 0)
 
-            GL.glDrawArrays(GL.GL_TRIANGLE_STRIP,0,4)
-
+            GL.glDrawArrays(GL.GL_TRIANGLE_STRIP, 0, 4)
 
     def tfI2W(self, pt):
         x_, y_, t_ = self.il.transform_matrix.dot([pt[0], pt[1], 1.])
-        return (x_/t_, y_/t_)
+        return (x_ / t_, y_ / t_)
 
     def tfW2I(self, pt):
         reverse = numpy.linalg.inv(self.il.transform_matrix)
         x_, y_, t_ = reverse.dot([pt[0], pt[1], 1.])
-        return (x_/t_, y_/t_)
-
+        return (x_ / t_, y_ / t_)

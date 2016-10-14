@@ -7,8 +7,8 @@ from .net_dialog import NetDialog
 __author__ = 'davidc'
 
 
-
 class NameToolController(BaseToolController):
+
     def __init__(self, view, project):
         super(NameToolController, self).__init__()
 
@@ -21,7 +21,6 @@ class NameToolController(BaseToolController):
 
     def showSettingsDialog(self):
         pass
-
 
     def mousePressEvent(self, evt):
         pos = evt.pos()

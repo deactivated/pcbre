@@ -8,7 +8,9 @@ __author__ = 'davidc'
 
 import unittest
 
+
 class test_polygon_basic_intersect(unittest.TestCase):
+
     def setUp(self):
         self.p = Project()
         self.l1 = Layer("l1", None)
@@ -42,10 +44,10 @@ class test_polygon_basic_intersect(unittest.TestCase):
         self.assertGreater(distance(p, p2), 0)
 
     def test_inner_ring(self):
-        ext = [Point2(0,0), Point2(10, 0), Point2(10, 10), Point2(0, 10)]
-        inner = [Point2(3,3), Point2(7, 3), Point2(7, 7), Point2(3, 7)]
+        ext = [Point2(0, 0), Point2(10, 0), Point2(10, 10), Point2(0, 10)]
+        inner = [Point2(3, 3), Point2(7, 3), Point2(7, 7), Point2(3, 7)]
 
-        inner2 = [Point2(4,4), Point2(6, 4), Point2(6, 6), Point2(4, 6)]
+        inner2 = [Point2(4, 4), Point2(6, 4), Point2(6, 6), Point2(4, 6)]
 
         outer_ring = Polygon(self.l1, ext, [inner])
         inner_ring = Polygon(self.l1, inner2)
@@ -55,7 +57,9 @@ class test_polygon_basic_intersect(unittest.TestCase):
         outer_ring.get_tris_repr()
         inner_ring.get_tris_repr()
 
+
 class test_p2t_exc(unittest.TestCase):
+
     def setUp(self):
         self.p = Project()
         self.l1 = Layer("l1", None)
@@ -63,4 +67,3 @@ class test_p2t_exc(unittest.TestCase):
 
         self.p.stackup.add_layer(self.l1)
         self.p.stackup.add_layer(self.l2)
-

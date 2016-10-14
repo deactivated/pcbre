@@ -4,26 +4,32 @@ __author__ = 'davidc'
 
 from PySide import QtGui
 
+
 class LayerJumpAction(QtGui.QAction):
+
     def __init__(self, window, layer_no):
         self.__layer = layer_no
         self.window = window
 
-        QtGui.QAction.__init__(self, "layer %d" % layer_no, window, triggered=self.__action)
-        self.setShortcut(QtGui.QKeySequence("%d" % (layer_no+1)))
+        QtGui.QAction.__init__(self, "layer %d" %
+                               layer_no, window, triggered=self.__action)
+        self.setShortcut(QtGui.QKeySequence("%d" % (layer_no + 1)))
 
     def __action(self):
         if self.__layer >= len(self.window.project.stackup.layers):
             return
 
-        self.window.viewArea.viewState.current_layer = self.window.project.stackup.layers[self.__layer]
+        self.window.viewArea.viewState.current_layer = self.window.project.stackup.layers[
+            self.__layer]
 
 
 class FlipXAction(QtGui.QAction):
+
     def __init__(self, window):
         self.__window = window
 
-        QtGui.QAction.__init__(self, "Flip X", self.__window, triggered=self.__action)
+        QtGui.QAction.__init__(
+            self, "Flip X", self.__window, triggered=self.__action)
         self.setShortcut(QtGui.QKeySequence("f"))
         self.setIcon(Icon("flipx"))
         self.setToolTip('f')
@@ -31,11 +37,14 @@ class FlipXAction(QtGui.QAction):
     def __action(self):
         self.__window.viewArea.viewState.flip(0)
 
+
 class FlipYAction(QtGui.QAction):
+
     def __init__(self, window):
         self.__window = window
 
-        QtGui.QAction.__init__(self, "Flip Y", self.__window, triggered=self.__action)
+        QtGui.QAction.__init__(
+            self, "Flip Y", self.__window, triggered=self.__action)
         self.setShortcut(QtGui.QKeySequence("shift+f"))
         self.setIcon(Icon("flipy"))
         self.setToolTip('Shift+f')
@@ -45,34 +54,39 @@ class FlipYAction(QtGui.QAction):
 
 
 class RotateLAction(QtGui.QAction):
+
     def __init__(self, window):
         self.__window = window
-        QtGui.QAction.__init__(self, "Rotate 90 (CCW)", self.__window, triggered=self.__action)
+        QtGui.QAction.__init__(self, "Rotate 90 (CCW)",
+                               self.__window, triggered=self.__action)
         self.setShortcut(QtGui.QKeySequence("ctlr+shift+r"))
         self.setIcon(Icon("rotl"))
         self.setToolTip("Ctrl+Shift+r")
-
 
     def __action(self):
         self.__window.viewArea.viewState.rotate(-90)
 
 
 class RotateRAction(QtGui.QAction):
+
     def __init__(self, window):
         self.__window = window
-        QtGui.QAction.__init__(self, "Rotate 90 (CW)", self.__window, triggered=self.__action)
+        QtGui.QAction.__init__(self, "Rotate 90 (CW)",
+                               self.__window, triggered=self.__action)
         self.setShortcut(QtGui.QKeySequence("ctlr+r"))
         self.setIcon(Icon("rotr"))
         self.setToolTip("Ctrl+r")
 
-
     def __action(self):
         self.__window.viewArea.viewState.rotate(90)
 
+
 class CycleDrawOrderAction(QtGui.QAction):
+
     def __init__(self, window):
         self.__window = window
-        QtGui.QAction.__init__(self, "Cycle Image Draw Order", self.__window, triggered=self.__action)
+        QtGui.QAction.__init__(
+            self, "Cycle Image Draw Order", self.__window, triggered=self.__action)
         self.setShortcut(QtGui.QKeySequence("]"))
         self.setIcon(Icon("changeorder"))
         self.setToolTip("]")
@@ -82,6 +96,7 @@ class CycleDrawOrderAction(QtGui.QAction):
 
 
 class ToggleShowImageryAction(QtGui.QAction):
+
     def __init__(self, mw, va):
         QtGui.QAction.__init__(self, "Show Imagery", mw)
         self.va = va
@@ -99,6 +114,7 @@ class ToggleShowImageryAction(QtGui.QAction):
 
 
 class ToggleDrawOtherLayersAction(QtGui.QAction):
+
     def __init__(self, mw, va):
         QtGui.QAction.__init__(self, "Show Other Layers artwork", mw)
         self.va = va

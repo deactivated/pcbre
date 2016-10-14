@@ -6,7 +6,8 @@ import pcbre.ui.undo as U
 from pcbre.qt_compat import QtGui, QtCore
 
 
-if QtGui.qApp == None: QtGui.QApplication([])
+if QtGui.qApp == None:
+    QtGui.QApplication([])
 
 
 @U.undofunc
@@ -15,11 +16,13 @@ def cmd_no_merge(target, value):
     target.value = value
     return U.sig(old_value)
 
+
 @U.undofunc(True)
 def cmd_merge(target, value):
     old_value = target.value
     target.value = value
     return U.sig(old_value)
+
 
 @U.undofunc(True)
 def cmd_merge_2(target, value):
@@ -27,10 +30,13 @@ def cmd_merge_2(target, value):
     target.value = value
     return U.sig(old_value)
 
+
 class SomethingElse(object):
     pass
 
+
 class test_undo(unittest.TestCase):
+
     def setUp(self):
         self.stack = U.UndoStack()
         self.value = 0
@@ -60,11 +66,11 @@ class test_undo(unittest.TestCase):
         self.stack.push(cmd_no_merge(self, 2))
         self.stack.push(cmd_no_merge(self, 3))
         self.stack.undo()
-        self.assertEqual(self.value,2)
+        self.assertEqual(self.value, 2)
         self.stack.undo()
-        self.assertEqual(self.value,1)
+        self.assertEqual(self.value, 1)
         self.stack.undo()
-        self.assertEqual(self.value,0)
+        self.assertEqual(self.value, 0)
 
     def test_func_merge(self):
         self.stack.push(cmd_no_merge(self, 1))
@@ -74,15 +80,15 @@ class test_undo(unittest.TestCase):
 
         self.assertEqual(self.stack.count(), 3)
         self.stack.undo()
-        self.assertEqual(self.value,3)
+        self.assertEqual(self.value, 3)
         self.stack.undo()
-        self.assertEqual(self.value,1)
+        self.assertEqual(self.value, 1)
         self.stack.redo()
-        self.assertEqual(self.value,3)
+        self.assertEqual(self.value, 3)
         self.stack.undo()
-        self.assertEqual(self.value,1)
+        self.assertEqual(self.value, 1)
         self.stack.undo()
-        self.assertEqual(self.value,0)
+        self.assertEqual(self.value, 0)
 
     def test_func_wrong_fn(self):
         self.stack.push(cmd_merge(self, 2))
@@ -126,7 +132,3 @@ class test_undo(unittest.TestCase):
     def test_kwargs_merge(self):
         self.stack.push(U.undo_set_params(self, value=6, merge=True))
         self.stack.push(U.undo_set_params(self, value=7, merge=True))
-
-
-
-

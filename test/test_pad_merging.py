@@ -17,6 +17,7 @@ import unittest
 
 
 class TestMerges(unittest.TestCase):
+
     def setUp(self):
         self.p = p = Project()
         l = Layer("foo", [])
@@ -34,9 +35,8 @@ class TestMerges(unittest.TestCase):
         class Dummy(Component):
             pass
 
-        cmp = Dummy(Point2(0,0), 0, SIDE.Top, side_layer_oracle=p)
+        cmp = Dummy(Point2(0, 0), 0, SIDE.Top, side_layer_oracle=p)
         self.pad = Pad(cmp, 0, Point2(0, 0), 0, 3, 3, th_diam=1)
-
 
     def test_add_pad(self):
 
@@ -53,4 +53,3 @@ class TestMerges(unittest.TestCase):
         # Since traces are nonoverlapping
         self.assertIsNone(self.pad.net)
         self.assertNotEqual(self.l1.net, self.l2.net)
-

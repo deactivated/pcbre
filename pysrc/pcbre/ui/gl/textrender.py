@@ -18,15 +18,18 @@ from pcbre.ui.gl.textatlas import BASE_FONT
 
 __author__ = 'davidc'
 
+
 class TextBatch:
-    __tag = namedtuple("tag", ['mat','inf'])
+    __tag = namedtuple("tag", ['mat', 'inf'])
+
     def __init__(self, tr):
         self.__text_render = tr
         self.__elem_count = 0
         self.__color = [1.0, 1.0, 1.0, 1.0]
 
     def initializeGL(self):
-        self.vbo = VBO(numpy.ndarray(0, dtype=self.__text_render.buffer_dtype), GL.GL_STATIC_DRAW, GL.GL_ARRAY_BUFFER)
+        self.vbo = VBO(numpy.ndarray(
+            0, dtype=self.__text_render.buffer_dtype), GL.GL_STATIC_DRAW, GL.GL_ARRAY_BUFFER)
         self.vao = VAO()
 
         with self.vao, self.vbo:
@@ -59,13 +62,12 @@ class TextBatch:
     def prepare(self):
         self.__text_render.updateTexture()
 
-
         clist = []
 
         for mat, str_info in self.__strs:
-            for (x,y), (u,v) in str_info.arr:
-                newpt = projectPoint(mat, Point2(x,y))
-                clist.append(((newpt.x,newpt.y), (u,v)))
+            for (x, y), (u, v) in str_info.arr:
+                newpt = projectPoint(mat, Point2(x, y))
+                clist.append(((newpt.x, newpt.y), (u, v)))
 
         arr = numpy.array(clist, dtype=self.__text_render.buffer_dtype)
 
@@ -76,16 +78,18 @@ class TextBatch:
 
         self.__elem_count = len(arr)
 
-
     def render(self, mat):
         with self.__text_render.sdf_shader, self.__text_render.tex.on(GL.GL_TEXTURE_2D), self.vao:
             GL.glUniform1i(self.__text_render.sdf_shader.uniforms.tex1, 0)
-            GL.glUniformMatrix3fv(self.__text_render.sdf_shader.uniforms.mat, 1, True, mat.astype(numpy.float32))
-            GL.glUniform4f(self.__text_render.sdf_shader.uniforms.color, *self.__color)
+            GL.glUniformMatrix3fv(
+                self.__text_render.sdf_shader.uniforms.mat, 1, True, mat.astype(numpy.float32))
+            GL.glUniform4f(
+                self.__text_render.sdf_shader.uniforms.color, *self.__color)
 
             GL.glDrawArrays(GL.GL_TRIANGLES, 0, self.__elem_count)
 
         print("Drawing %d elements" % self.__elem_count)
+
 
 class TextBatcher(object):
     __tag_type = namedtuple("render_tag", ["textinfo", "matrix", "color"])
@@ -101,10 +105,10 @@ class TextBatcher(object):
     def restart(self):
         self.__render_tags = defaultdict(list)
 
-
     def initializeGL(self):
         # Working VBO that will contain glyph data
-        self.vbo = VBO(numpy.ndarray(0, dtype=self.text_render.buffer_dtype), GL.GL_DYNAMIC_DRAW, GL.GL_ARRAY_BUFFER)
+        self.vbo = VBO(numpy.ndarray(
+            0, dtype=self.text_render.buffer_dtype), GL.GL_DYNAMIC_DRAW, GL.GL_ARRAY_BUFFER)
         self.vao = VAO()
 
         with self.vao, self.vbo:
@@ -112,10 +116,10 @@ class TextBatcher(object):
             self.text_render.b2.assign()
         self.__vbo_needs_update = True
 
-
     def render(self, key=None):
         if self.__vbo_needs_update:
-            arr = numpy.array(self.__clist, dtype=self.text_render.buffer_dtype)
+            arr = numpy.array(
+                self.__clist, dtype=self.text_render.buffer_dtype)
 
             self.vbo.data = arr
             self.vbo.size = None
@@ -130,10 +134,13 @@ class TextBatcher(object):
 
             for tag in self.__render_tags[key]:
                 mat_calc = tag.matrix
-                GL.glUniformMatrix3fv(self.text_render.sdf_shader.uniforms.mat, 1, True, mat_calc.astype(numpy.float32))
-                GL.glUniform4f(self.text_render.sdf_shader.uniforms.color, *tag.color)
+                GL.glUniformMatrix3fv(
+                    self.text_render.sdf_shader.uniforms.mat, 1, True, mat_calc.astype(numpy.float32))
+                GL.glUniform4f(
+                    self.text_render.sdf_shader.uniforms.color, *tag.color)
 
-                GL.glDrawArrays(GL.GL_TRIANGLES, tag.textinfo.start, tag.textinfo.count)
+                GL.glDrawArrays(GL.GL_TRIANGLES,
+                                tag.textinfo.start, tag.textinfo.count)
 
     def submit(self, ts, mat, color, k=None):
         self.__render_tags[k].append(self.__tag_type(ts, mat, color))
@@ -158,9 +165,11 @@ class TextBatcher(object):
 
 
 class _StringMetrics(object):
+
     def __init__(self, arr, metrics):
         self.__rect = Rect()
-        (self.__rect.left, self.__rect.right, self.__rect.bottom, self.__rect.top) = metrics
+        (self.__rect.left, self.__rect.right,
+         self.__rect.bottom, self.__rect.top) = metrics
         self.arr = arr
 
     def get_metrics(self):
@@ -192,6 +201,7 @@ class _StringMetrics(object):
 
 #_tex_vertex = namedtuple("tex_vertex", ["x", "y", "tx", "ty"])
 
+
 def de_bruijn(n):
     import operator
     """
@@ -203,6 +213,7 @@ def de_bruijn(n):
 
     a = [0] * k * n
     sequence = []
+
     def db(t, p):
         if t > n:
             if n % p == 0:
@@ -219,6 +230,7 @@ def de_bruijn(n):
 
 
 class TextRender(object):
+
     def __init__(self, gls, sdf_atlas):
         self.gls = gls
 
@@ -244,7 +256,6 @@ class TextRender(object):
         # self.int_seq = de_bruijn(4)
         # self.int_seq += self.int_seq[:3]
 
-
     def getStringMetrics(self, text):
         """
         create an array of coord data for rendering
@@ -268,7 +279,8 @@ class TextRender(object):
             # Fetch the glyph from the atlas
             gp = self.sdf_atlas.getGlyph(ch)
 
-            # width and height of the rendered quad is proportional to the glpyh size
+            # width and height of the rendered quad is proportional to the
+            # glpyh size
             margin = self.sdf_atlas.margin
             w = (gp.w + margin * 2)
             h = (gp.h + margin * 2)
@@ -308,11 +320,15 @@ class TextRender(object):
 
         # Setup the basic texture parameters
         with self.tex.on(GL.GL_TEXTURE_2D):
-            GL.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR)
-            GL.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR)
+            GL.glTexParameteri(
+                GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR)
+            GL.glTexParameteri(
+                GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR)
 
-            GL.glTexParameteri(GL.GL_TEXTURE_2D,GL.GL_TEXTURE_WRAP_S,GL.GL_CLAMP_TO_EDGE)
-            GL.glTexParameteri(GL.GL_TEXTURE_2D,GL.GL_TEXTURE_WRAP_T,GL.GL_CLAMP_TO_EDGE)
+            GL.glTexParameteri(
+                GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP_TO_EDGE)
+            GL.glTexParameteri(
+                GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP_TO_EDGE)
 
             # numpy packs data tightly, whereas the openGL default is 4-byte-aligned
             # fix line alignment to 1 byte so odd-sized textures load right

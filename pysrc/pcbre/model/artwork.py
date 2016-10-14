@@ -4,7 +4,7 @@ from collections import defaultdict
 import operator
 
 from pcbre.algo.geom import dist_via_via, dist_via_trace, dist_trace_trace, \
-            dist_via_pad, dist_trace_pad, dist_pad_pad, distance, point_inside, can_self_intersect, intersect
+    dist_via_pad, dist_trace_pad, dist_pad_pad, distance, point_inside, can_self_intersect, intersect
 from pcbre.matrix import Point2
 from pcbre.model import serialization as ser
 from pcbre.model.artwork_geom import Trace, Via, Polygon, Airwire
@@ -20,11 +20,13 @@ from pcbre.model.util import ImmutableSetProxy
 from rtree import index
 import weakref
 
-#kref Rules of engagement:
+# kref Rules of engagement:
 #
 #   Once an item is added to artwork, it should be considered geometrically and electrically immutable
 #
 #
+
+
 class ArtworkIndex:
     """
     Artwork index provides a wrapper on the Rtree spatial query library. Specifically, it resolves query results to
@@ -58,7 +60,8 @@ class ArtworkIndex:
         return (rect.left, rect.bottom, rect.right, rect.top)
 
     def insert(self, geom):
-        self.__index.insert(self.__get_idx(geom), self.__rect_index_order(geom.bbox))
+        self.__index.insert(self.__get_idx(
+            geom), self.__rect_index_order(geom.bbox))
 
     def intersect(self, bbox):
         idxs = self.__index.intersection(self.__rect_index_order(bbox))
@@ -75,7 +78,9 @@ class ArtworkIndex:
 
         self.__index.delete(idx, self.__rect_index_order(geom.bbox))
 
+
 class Artwork:
+
     def __init__(self, project):
         self.__project = project
         self.__index = ArtworkIndex()
@@ -131,7 +136,6 @@ class Artwork:
         else:
             raise NotImplementedError()
 
-
         self.__index.insert(aw)
 
         aw._project = self.__project
@@ -150,7 +154,6 @@ class Artwork:
             self.__index.insert(pad)
 
         self.components_generation += 1
-
 
     def merge_component(self, cmp):
         """
@@ -171,7 +174,6 @@ class Artwork:
         self.__components.remove(cmp)
 
         self.components_generation += 1
-
 
     def remove_artwork(self, aw):
         assert aw._project is self.__project
@@ -211,7 +213,6 @@ class Artwork:
                     self.__airwires.remove(airwire)
                     self.airwires_generation += 1
 
-
         # If no remaining geometry is on the net, we need to drop it
         n = self.get_geom_for_net(aw_net)
 
@@ -231,7 +232,6 @@ class Artwork:
             self.merge_component(aw)
         else:
             self.merge_artwork(aw)
-
 
     @property
     def __all_pads(self):
@@ -288,7 +288,8 @@ class Artwork:
         pt = Point2(pt)
 
         # layers_include / layers_exclude specify IDs of the layers to search, or exclude from the search
-        # since exclude implicitly means "all layers minus the specified", the combination of both is invalid
+        # since exclude implicitly means "all layers minus the specified", the
+        # combination of both is invalid
         assert layers_include is None or layers_exclude is None
 
         for aw in self.get_all_artwork():
@@ -338,7 +339,8 @@ class Artwork:
 
         # Our query should find the object we're removing
         # In some cases, specifically those when the geometry is "virtual"
-        # the removed geometry can't self-intersect, so we should not remove it from the list
+        # the removed geometry can't self-intersect, so we should not remove it
+        # from the list
         try:
             if can_self_intersect(geom):
                 connected.remove(geom)
@@ -373,9 +375,7 @@ class Artwork:
 
         geom.net = None
 
-
-
-    def compute_connected(self, all_geom, progress_cb = lambda x,y:0 ):
+    def compute_connected(self, all_geom, progress_cb=lambda x, y: 0):
         """
         Compute connected sets from all_geom
         :param all_geom:
@@ -401,7 +401,8 @@ class Artwork:
                 eg = geom_to_label[n]
 
                 if label is None:
-                    # If we don't have a label then take the label of what we're connected to
+                    # If we don't have a label then take the label of what
+                    # we're connected to
                     label_to_geom[eg].add(k)
                     geom_to_label[k] = eg
                     label = eg
@@ -424,12 +425,13 @@ class Artwork:
 
         return list(label_to_geom.values())
 
-
-    def rebuild_connectivity(self, progress_cb = lambda x,y:0):
-        connectivity = self.compute_connected(self.get_all_artwork(), progress_cb = progress_cb)
+    def rebuild_connectivity(self, progress_cb=lambda x, y: 0):
+        connectivity = self.compute_connected(
+            self.get_all_artwork(), progress_cb=progress_cb)
 
         # First, for each existing net, we identify which groups are owned by the net
-        # and remove the groups having the smaller amounts of geometry (by count)
+        # and remove the groups having the smaller amounts of geometry (by
+        # count)
         nets_to_groups = defaultdict(list)
         for g in connectivity:
             for i in g:
@@ -455,8 +457,6 @@ class Artwork:
             for i in group:
                 i.net = n0
 
-
-
     def merge_artwork(self, geom):
         """
         Merge a geometry object into the design. Takes care of either assigning object a net, or merging nets if necessary
@@ -473,7 +473,6 @@ class Artwork:
     def query_intersect(self, geom):
         qr = self.query(geom, bbox_prune=True)
         return list(itertools.takewhile(lambda a: a[0] <= 0, qr))
-
 
     def intersect_sets(self, a, b):
         """
@@ -505,11 +504,8 @@ class Artwork:
                 res.append(i)
         return res
 
-
-
-
     # return distance-sorted list of intersects
-    def query(self, geom, bbox_prune = False):
+    def query(self, geom, bbox_prune=False):
         """
 
         :param geom:  object to query
@@ -571,7 +567,6 @@ class Artwork:
                         other
                     ))
 
-
         elif isinstance(geom, Trace):
             for other in self.__traces:
                 if other.layer is not geom.layer:
@@ -580,10 +575,9 @@ class Artwork:
                 if bbox_prune and not bbox.intersects(other.bbox):
                     continue
                 results.append((
-                        dist_trace_trace(geom, other),
+                    dist_trace_trace(geom, other),
                     other
                 ))
-
 
             # Build lookup to check viapair
             vps_ok = {}
@@ -711,7 +705,7 @@ class Artwork:
                     self.__project.scontext.get(i.viapairSid),
                     i.r,
                     self.__project.scontext.get(i.netSid)
-            )
+                    )
 
             self.add_artwork(v)
 
@@ -728,7 +722,8 @@ class Artwork:
 
         for i in msg.polygons:
             exterior = [deserialize_point2(j) for j in i.exterior]
-            interiors = [[deserialize_point2(k) for k in j] for j in i.interiors]
+            interiors = [[deserialize_point2(k)
+                          for k in j] for j in i.interiors]
 
             p = Polygon(
                 self.__project.scontext.get(i.layerSid),

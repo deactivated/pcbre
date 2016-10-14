@@ -2,6 +2,7 @@ from pcbre.qt_compat import QtGui, QtCore
 from pcbre.ui.icon import Icon
 import pkg_resources
 
+
 class BaseToolController(QtCore.QObject):
     changed = QtCore.Signal()
 
@@ -21,6 +22,7 @@ class BaseToolController(QtCore.QObject):
     """
         called as part of the event filter, must return False unless handling
     """
+
     def keyPressEvent(self, evt):
         return False
 
@@ -39,9 +41,10 @@ class BaseToolController(QtCore.QObject):
     def focusOutEvent(self, evt):
         pass
 
+
 class BaseTool(object):
-    SHORTCUT=None
-    TOOLTIP=None
+    SHORTCUT = None
+    TOOLTIP = None
 
     def __init__(self, project):
         self.toolButton = None

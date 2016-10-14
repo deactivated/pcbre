@@ -4,7 +4,9 @@ import pkg_resources
 import OpenGL.GL as GL
 from pcbre.ui.gl.shader import compileProgram, compileShader
 
+
 class UniformProxy(object):
+
     def __init__(self, parent):
         self._prog = parent
 
@@ -17,12 +19,14 @@ class UniformProxy(object):
         self.__dict__[key] = v
         return v
 
+
 class ShaderCache(object):
+
     def __init__(self):
         self.cache = {}
 
     def __build_s(self, d):
-        return "".join("#define %s %s\n" % (k,v) for k, v in d.items())
+        return "".join("#define %s %s\n" % (k, v) for k, v in d.items())
 
     def extract_version(self, s):
         lines = s.split("\n")
@@ -34,16 +38,17 @@ class ShaderCache(object):
 
     @staticmethod
     def __get_shader_text(name):
-            byte_str = pkg_resources.resource_string('pcbre.resources', "shaders/%s.glsl" % name)
-            return byte_str.decode('ascii')
+        byte_str = pkg_resources.resource_string(
+            'pcbre.resources', "shaders/%s.glsl" % name)
+        return byte_str.decode('ascii')
 
     def get(self, vert_name, frag_name, defines={}, vertex_defines={}, fragment_defines={}):
 
-        _fragment_defines={}
+        _fragment_defines = {}
         _fragment_defines.update(fragment_defines)
         _fragment_defines.update(defines)
 
-        _vertex_defines={}
+        _vertex_defines = {}
         _vertex_defines.update(vertex_defines)
         _vertex_defines.update(defines)
 
@@ -51,7 +56,8 @@ class ShaderCache(object):
         vert_prepend = self.__build_s(_vertex_defines)
 
         # The defines to a shader affect compilation, create an unordered key
-        _defines_key = (frozenset(_fragment_defines.items()), frozenset(_vertex_defines.items()))
+        _defines_key = (frozenset(_fragment_defines.items()),
+                        frozenset(_vertex_defines.items()))
 
         key = vert_name, frag_name, _defines_key
 
@@ -62,8 +68,10 @@ class ShaderCache(object):
             frag_version, frag1s = self.extract_version(frag1s)
             vert_version, vert1s = self.extract_version(vert1s)
             try:
-                frag = compileShader([frag_version, frag_prepend, frag1s], GL.GL_FRAGMENT_SHADER)
-                vert = compileShader([vert_version, vert_prepend, vert1s], GL.GL_VERTEX_SHADER)
+                frag = compileShader(
+                    [frag_version, frag_prepend, frag1s], GL.GL_FRAGMENT_SHADER)
+                vert = compileShader(
+                    [vert_version, vert_prepend, vert1s], GL.GL_VERTEX_SHADER)
                 obj = compileProgram(vert, frag)
             except RuntimeError as e:
                 msg, shader, _ = e.args
@@ -78,4 +86,3 @@ class ShaderCache(object):
 
             self.cache[key] = obj
         return self.cache[key]
-

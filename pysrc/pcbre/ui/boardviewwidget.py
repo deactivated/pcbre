@@ -44,7 +44,7 @@ MOVE_MOUSE_BUTTON = QtCore.Qt.LeftButton
 def fixed_center_dot(viewState, m, view_center=None):
 
     if view_center is None:
-        view_center = Point2(viewState.width/2, viewState.height/2)
+        view_center = Point2(viewState.width / 2, viewState.height / 2)
 
     world_center = viewState.tfV2W(view_center)
 
@@ -63,22 +63,25 @@ def fixed_center_dot(viewState, m, view_center=None):
 def QPoint_to_pair(p):
     return Point2(p.x(), p.y())
 
+
 def getSelectColor(c, selected):
     if not selected:
         return c
 
-    r,g,b = c
+    r, g, b = c
 
     r *= 1.5
     g *= 1.5
     b *= 1.5
 
-    return (r,g,b)
+    return (r, g, b)
 
 # Full view state for the multilayer view
+
+
 class ViewState(QtCore.QObject, ViewPort):
     changed = QtCore.Signal()
-    currentLayerChanged  = QtCore.Signal()
+    currentLayerChanged = QtCore.Signal()
 
     def __init__(self, x, y):
         ViewPort.__init__(self, x, y)
@@ -145,17 +148,18 @@ class ViewState(QtCore.QObject, ViewPort):
         self.__draw_other_layers = value
         self.changed.emit()
 
+
 class BaseViewWidget(QtOpenGL.QGLWidget):
+
     def __init__(self, parent=None):
         if hasattr(QtOpenGL.QGLFormat, 'setVersion'):
-            f = QtOpenGL.QGLFormat();
+            f = QtOpenGL.QGLFormat()
             f.setVersion(3, 2)
             f.setProfile(QtOpenGL.QGLFormat.CoreProfile)
             c = QGLContext(f)
             QtOpenGL.QGLWidget.__init__(self, c, parent)
         else:
             QtOpenGL.QGLWidget.__init__(self, parent)
-
 
         self.__gl_initialized = False
 
@@ -232,7 +236,6 @@ class BaseViewWidget(QtOpenGL.QGLWidget):
 
         return False
 
-
     def setSelectionList(self, l):
         old = self.selectionList
         if l is None:
@@ -298,9 +301,9 @@ class BaseViewWidget(QtOpenGL.QGLWidget):
         delta_px = event.pos() - self.lastPoint
         lastpoint_real = self.viewState.tfV2P(Point2(self.lastPoint))
         newpoint_real = self.viewState.tfV2P(Point2(event.pos()))
-        lx,ly = lastpoint_real
-        nx,ny = newpoint_real
-        delta = nx-lx, ny-ly
+        lx, ly = lastpoint_real
+        nx, ny = newpoint_real
+        delta = nx - lx, ny - ly
 
         self.lastPoint = event.pos()
 
@@ -308,13 +311,15 @@ class BaseViewWidget(QtOpenGL.QGLWidget):
         if (event.buttons() & MOVE_MOUSE_BUTTON) and self.move_dragging:
             self.move_dragged = True
 
-            self.viewState.transform = M.translate(*delta).dot(self.viewState.transform)
+            self.viewState.transform = M.translate(
+                *delta).dot(self.viewState.transform)
             needs_update = True
 
         elif (event.buttons() & QtCore.Qt.MiddleButton):
             delta = -10 * delta_px.y()
 
-            self.wheelEvent(QtGui.QWheelEvent(event.pos(),delta, event.buttons(), event.modifiers()))
+            self.wheelEvent(QtGui.QWheelEvent(
+                event.pos(), delta, event.buttons(), event.modifiers()))
             needs_update = True
         elif not self.move_dragging and not self.mwemu:
             if self.interactionDelegate is not None:
@@ -340,7 +345,6 @@ class BaseViewWidget(QtOpenGL.QGLWidget):
 
         self.update()
 
-
     def wheelEvent(self, event):
         """
         :param event:
@@ -348,10 +352,11 @@ class BaseViewWidget(QtOpenGL.QGLWidget):
         :return:
         """
         if not event.modifiers():
-            step = event.delta()/120.0
+            step = event.delta() / 120.0
 
             sf = 1.1 ** step
-            fixed_center_dot(self.viewState, M.scale(sf), QPoint_to_pair(event.pos()))
+            fixed_center_dot(self.viewState, M.scale(sf),
+                             QPoint_to_pair(event.pos()))
         else:
             if self.interactionDelegate:
                 self.interactionDelegate.mouseWheelEvent(event)
@@ -359,7 +364,7 @@ class BaseViewWidget(QtOpenGL.QGLWidget):
     def initializeGL(self):
         self.__gl_initialized = True
 
-        GL.glClearColor(0,0,0,1)
+        GL.glClearColor(0, 0, 0, 1)
 
         self.gls.initializeGL()
         GL.glGetError()
@@ -385,13 +390,9 @@ class BaseViewWidget(QtOpenGL.QGLWidget):
 
         self.render()
 
-
-
     def render(self):
         if self.interactionDelegate and self.interactionDelegate.overlay:
             self.interactionDelegate.overlay.render(self.viewState)
-
-
 
     def resizeGL(self, width, height):
         if width == 0 or height == 0:
@@ -399,7 +400,7 @@ class BaseViewWidget(QtOpenGL.QGLWidget):
 
         size = max(width, height)
 
-        GL.glViewport((width - size)// 2, (height - size) // 2, size, size)
+        GL.glViewport((width - size) // 2, (height - size) // 2, size, size)
         self.viewState.resize(width, height)
 
         # Allocate a new image buffer
@@ -409,22 +410,26 @@ class BaseViewWidget(QtOpenGL.QGLWidget):
     def isModified(self):
         return self.modified
 
+
 class BoardViewWidget(BaseViewWidget):
+
     def __init__(self, project):
         BaseViewWidget.__init__(self)
         self.project = project
 
-        self.image_view_cache = { }
+        self.image_view_cache = {}
 
         self.pad_renderer = PadRender(self)
         self.dip_renderer = DIPRender(self)
         self.smd_renderer = SMDRender(self)
         self.trace_renderer = TraceRender(self)
         self.via_renderer = THRenderer(self)
-        self.__via_project_batch = ViaBoardBatcher(self.via_renderer, self.project)
+        self.__via_project_batch = ViaBoardBatcher(
+            self.via_renderer, self.project)
 
         self.text_batch = TextBatcher(self.gls.text)
-        self.cmp_text_batch = ComponentTextBatcher(self, self.project, self.gls.text)
+        self.cmp_text_batch = ComponentTextBatcher(
+            self, self.project, self.gls.text)
 
         self.poly_renderer = CachedPolygonRenderer(self)
         self.hairline_renderer = HairlineRenderer(self)
@@ -432,12 +437,11 @@ class BoardViewWidget(BaseViewWidget):
 
         # Initial view is a normalized 1-1-1 area.
         # Shift to be 10cm max
-        self.viewState.transform = translate(-0.9, -0.9).dot(scale(1./100000))
-
-
+        self.viewState.transform = translate(-0.9, -
+                                             0.9).dot(scale(1. / 100000))
 
     def text_color(self):
-        return [1,1,1]
+        return [1, 1, 1]
 
     def current_layer_hack(self):
         return self.viewState.current_layer
@@ -456,10 +460,8 @@ class BoardViewWidget(BaseViewWidget):
 
     def sel_colormod(self, t, oldcolor):
         if t:
-            return [1,1,1,1]
+            return [1, 1, 1, 1]
         return oldcolor
-
-
 
     def image_view_cache_load(self, il):
         key = id(il)
@@ -492,7 +494,6 @@ class BoardViewWidget(BaseViewWidget):
         objects += self.project.artwork.airwires
         return objects
 
-
     def render_component(self, mat, cmp, render_mode=RENDER_STANDARD, render_hint=RENDER_HINT_NORMAL):
         if not self.layer_visible_m(cmp.on_layers()):
             return
@@ -518,7 +519,6 @@ class BoardViewWidget(BaseViewWidget):
                 pad_render_mode |= RENDER_SELECTED
             self.pad_renderer.render(cm, pad, pad_render_mode, render_hint)
 
-
     def _layer_visible(self, l):
         return l is self.viewState.current_layer or self.viewState.draw_other_layers
 
@@ -531,14 +531,14 @@ class BoardViewWidget(BaseViewWidget):
     def render(self):
         t_render_start = time.time()
 
-        self.__layer_visible_lut = [self._layer_visible(i) for i in self.project.stackup.layers]
+        self.__layer_visible_lut = [self._layer_visible(
+            i) for i in self.project.stackup.layers]
 
         # zero accuum buffers for restarts
         self.trace_renderer.restart()
         self.text_batch.restart()
         self.poly_renderer.restart()
         self.hairline_renderer.restart()
-
 
         # Two view modes - CAM and trace
         # CAM -  all layers, SIDE-up
@@ -556,11 +556,11 @@ class BoardViewWidget(BaseViewWidget):
                     i = self.viewState.layer_permute % len(images)
                     images_cycled = images[i:] + images[:i]
                     for l in images_cycled:
-                        self.image_view_cache_load(l).render(self.viewState.glMatrix)
+                        self.image_view_cache_load(l).render(
+                            self.viewState.glMatrix)
 
         # Now render features
         self.lt = time.time()
-
 
         GL.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA)
 
@@ -574,33 +574,34 @@ class BoardViewWidget(BaseViewWidget):
 
                 if isinstance(i, Trace):
                     if self.layer_visible(i.layer):
-                        sx.add((i,rs))
+                        sx.add((i, rs))
 
                 elif isinstance(i, Polygon):
                     if self.layer_visible(i.layer):
                         self.poly_renderer.deferred(i, rs, RENDER_HINT_NORMAL)
                 elif isinstance(i, Airwire):
-                    self.hairline_renderer.deferred(i.p0, i.p1, AIRWIRE_COLOR, None, RENDER_HINT_NORMAL)
+                    self.hairline_renderer.deferred(
+                        i.p0, i.p1, AIRWIRE_COLOR, None, RENDER_HINT_NORMAL)
                 elif isinstance(i, Via):
                     pass
                 else:
                     raise NotImplementedError()
 
             with Timer() as t_vt_gen:
-                self.__via_project_batch.update_if_necessary(self.selectionList)
-
+                self.__via_project_batch.update_if_necessary(
+                    self.selectionList)
 
             with Timer() as t_tr_gen:
-                for i,rs in sx:
+                for i, rs in sx:
                     self.trace_renderer.deferred(i, rs, RENDER_HINT_NORMAL)
-
 
         with Timer() as cmp_timer:
             for cmp in self.project.artwork.components:
                 render_state = 0
                 if cmp in self.selectionList:
                     render_state |= RENDER_SELECTED
-                self.render_component(self.viewState.glMatrix, cmp, render_state)
+                self.render_component(
+                    self.viewState.glMatrix, cmp, render_state)
 
             with Timer() as t_cmp_gen:
                 self.cmp_text_batch.update_if_necessary()
@@ -624,30 +625,36 @@ class BoardViewWidget(BaseViewWidget):
 
             for layer in layers:
                 with t_tr_draw:
-                    self.trace_renderer.render_deferred_layer(self.viewState.glMatrix, layer)
+                    self.trace_renderer.render_deferred_layer(
+                        self.viewState.glMatrix, layer)
 
                 self.poly_renderer.render(self.viewState.glMatrix, layer)
                 with t_tex_draw:
                     self.text_batch.render(key=layer)
-                self.hairline_renderer.render_group(self.viewState.glMatrix, layer)
+                self.hairline_renderer.render_group(
+                    self.viewState.glMatrix, layer)
 
             with Timer() as t_vt_draw:
                 for i in self.project.stackup.via_pairs:
-                    self.__via_project_batch.render_viapair(self.viewState.glMatrix, i)
-
+                    self.__via_project_batch.render_viapair(
+                        self.viewState.glMatrix, i)
 
             # Final rendering
             # Render the non-layer text
             with t_tex_draw:
-                self.cmp_text_batch.render_layer(self.viewState.glMatrix, SIDE.Top, False)
-                self.cmp_text_batch.render_layer(self.viewState.glMatrix, SIDE.Bottom, False)
+                self.cmp_text_batch.render_layer(
+                    self.viewState.glMatrix, SIDE.Top, False)
+                self.cmp_text_batch.render_layer(
+                    self.viewState.glMatrix, SIDE.Bottom, False)
                 self.text_batch.render()
 
             self.hairline_renderer.render_group(self.viewState.glMatrix, None)
 
-            self.hairline_renderer.render_group(self.viewState.glWMatrix, "OVERLAY_VS")
+            self.hairline_renderer.render_group(
+                self.viewState.glWMatrix, "OVERLAY_VS")
 
             GL.glFinish()
 
         all_time = time.time() - t_render_start
-        print("Render time all: %f ot: %f cmp: %f aw: %f gl: %f" % (all_time, other_timer.interval, cmp_timer.interval, t_aw.interval, t.interval))
+        print("Render time all: %f ot: %f cmp: %f aw: %f gl: %f" % (
+            all_time, other_timer.interval, cmp_timer.interval, t_aw.interval, t.interval))

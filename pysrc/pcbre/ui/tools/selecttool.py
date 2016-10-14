@@ -33,8 +33,9 @@ select_icons = {
 
 valid_select = [SelectByModes.POINT, SelectByModes.NET]
 
-    
+
 class SelectToolController(BaseToolController):
+
     def __init__(self, project, model, view):
         """
 
@@ -69,7 +70,6 @@ class SelectToolController(BaseToolController):
 
         current = self.view.selectionList
 
-
         if evt.modifiers() & QtCore.Qt.ControlModifier:
             if evt.modifiers() & QtCore.Qt.ShiftModifier:
                 updated = current.difference(new)
@@ -87,17 +87,15 @@ class SelectToolController(BaseToolController):
             return True
 
         return False
-    
 
-
-        
 
 class SelectToolModel(GenModel):
     vers = mdlacc(SelectByModes.POINT)
 
+
 class SelectTool(BaseTool):
-    ICON_NAME="cross"
-    NAME="Select"
+    ICON_NAME = "cross"
+    NAME = "Select"
     SHORTCUT = 's'
     TOOLTIP = 'Select (s)'
 
@@ -107,13 +105,12 @@ class SelectTool(BaseTool):
 
         self.model.changed.connect(self.__update_icon)
 
-
     def getToolController(self, view):
         return SelectToolController(self.project, self.model, view)
 
     def __update_icon(self):
         ico = Icon(select_icons[self.model.vers])
-        
+
         self.toolButton.setIcon(ico)
         self.toolButton.setText(select_names[self.model.vers])
         self.toolButton.setShortcut(self.SHORTCUT)
@@ -127,6 +124,7 @@ class SelectTool(BaseTool):
 
         for n in valid_select:
             a1 = QtGui.QAction(select_names[n], self.menu)
+
             def closure(n):
                 def fn():
                     self.__set_version(n)

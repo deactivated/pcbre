@@ -30,6 +30,7 @@ VIEW_MODE_EXISTING_KEYPOINTS = 2
 
 
 class AlignmentViewModel(GenModel):
+
     def __init__(self, image):
         GenModel.__init__(self)
 
@@ -40,6 +41,7 @@ class AlignmentViewModel(GenModel):
 
     view_mode = mdlacc(VIEW_MODE_UNALIGNED)
 
+
 @undofunc
 def cmd_set_align_by(target, align_mode):
     old_state = target.model.align_by
@@ -48,6 +50,7 @@ def cmd_set_align_by(target, align_mode):
 
 
 class AlignmentViewWidget(BaseViewWidget):
+
     def __init__(self, vis_model, il, model):
         BaseViewWidget.__init__(self)
 
@@ -87,8 +90,7 @@ class AlignmentViewWidget(BaseViewWidget):
 
             iv.initGL(self.gls)
 
-            self.iv_cache[il]  = iv
-
+            self.iv_cache[il] = iv
 
         return self.iv_cache[il]
 
@@ -135,9 +137,7 @@ class AlignmentViewWidget(BaseViewWidget):
         for ovl in self.active_overlays:
             ovl.render(self.viewState)
 
-
         self.text_batch.render()
-
 
     def keyPressEvent(self, evt):
         if self.interactionDelegate:
@@ -159,9 +159,10 @@ class AlignmentViewWidget(BaseViewWidget):
 
 
 class LayerAlignmentDialog(QtGui.QDialog):
+
     def __init__(self, parent, project, il):
         QtGui.QDialog.__init__(self, parent)
-        self.resize(800,600)
+        self.resize(800, 600)
         self.setSizeGripEnabled(True)
 
         self.project = project
@@ -197,13 +198,11 @@ class LayerAlignmentDialog(QtGui.QDialog):
 
         self.view = AlignmentViewWidget(self.vis_model, self.il, self.model)
 
-
         self.ra_id = RectAlignmentControllerView(self, self.model)
         self.kp_id = KeypointAlignmentControllerView(self, self.model)
 
         self.view.overlays.add(self.ra_id)
         self.view.overlays.add(self.kp_id)
-
 
         view_layout.addWidget(self.view, 1)
         self.directions_label = QtGui.QLabel("")
@@ -228,8 +227,6 @@ class LayerAlignmentDialog(QtGui.QDialog):
         self.stacked_layout.addWidget(rect_align_controls)
         self.stacked_layout.addWidget(keypoint_align_controls)
 
-
-
         # right pane layout
         control_buttons_layout = QtGui.QVBoxLayout()
         control_buttons_layout.addLayout(control_layout)
@@ -244,12 +241,12 @@ class LayerAlignmentDialog(QtGui.QDialog):
         vis_gb_layout.addWidget(self.vis_widget)
         control_buttons_layout.addWidget(vis_gb)
 
-        bbox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Save | QtGui.QDialogButtonBox.Cancel)
+        bbox = QtGui.QDialogButtonBox(
+            QtGui.QDialogButtonBox.Save | QtGui.QDialogButtonBox.Cancel)
         bbox.accepted.connect(self.accept)
         bbox.rejected.connect(self.reject)
         control_buttons_layout.addWidget(bbox)
         hlayout.addLayout(control_buttons_layout, 0)
-
 
         # Explicitly disconnect child-events for the rect-align model
         # We (mostly) don't care about changes to the perimeter
@@ -259,13 +256,11 @@ class LayerAlignmentDialog(QtGui.QDialog):
         self.vis_model.changed.connect(self.view.update)
         self.model.changed.connect(self.update_controls)
 
-
         self._selected_view = None
 
         self._saved_transforms = [
             scale(0.8), scale(0.8)
         ]
-
 
         # Undo stack
         self.undoStack = UndoStack()
@@ -281,7 +276,8 @@ class LayerAlignmentDialog(QtGui.QDialog):
     def buildVisibilityModel(self):
         self.vis_model = VisibilityModel()
 
-        # Add all layers in the project to the visModel. If this layer is visible, put it at the top
+        # Add all layers in the project to the visModel. If this layer is
+        # visible, put it at the top
         g = VisibilityModelGroup("Current")
         self.vis_model.addChild(g)
         l = self.visMakeLeaf(self.il)
@@ -341,18 +337,21 @@ class LayerAlignmentDialog(QtGui.QDialog):
             self.directions_label.setText("Ctrl-click to add anchor point, Shift-click to delete anchor point.\n" +
                                           "Anchor points constrain handle movement.")
         else:
-            self.directions_label.setText("Ctrl-click to add keypoint. Shift-click to delete keypoint.")
+            self.directions_label.setText(
+                "Ctrl-click to add keypoint. Shift-click to delete keypoint.")
 
     def set_view_type(self, idx):
         self.model.view_mode = idx
 
     def save_restore_transform(self):
         if self._selected_view is not None:
-            self._saved_transforms[self._selected_view] = self.view.viewState.transform
+            self._saved_transforms[
+                self._selected_view] = self.view.viewState.transform
 
         self._selected_view = self.model.view_mode
 
-        self.view.viewState.transform = self._saved_transforms[self._selected_view]
+        self.view.viewState.transform = self._saved_transforms[
+            self._selected_view]
 
     def update_controls(self):
 
@@ -369,10 +368,3 @@ class LayerAlignmentDialog(QtGui.QDialog):
             self.view.active_overlays = set([self.kp_id])
 
         self.view_tabs.setCurrentIndex(self.model.view_mode)
-
-
-
-
-
-
-

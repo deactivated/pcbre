@@ -8,7 +8,9 @@ import numpy
 class mdlbase(object):
     pass
 
+
 class mdlacc(mdlbase):
+
     def __init__(self, initial, on=lambda self: None):
         self.value = initial
         self.on = on
@@ -21,7 +23,8 @@ class mdlacc(mdlbase):
         try:
             name = self.name
         except AttributeError:
-            raise NotImplementedError("mdlacc only works when the setup metaclass has been called")
+            raise NotImplementedError(
+                "mdlacc only works when the setup metaclass has been called")
 
         try:
             return getattr(instance, self.name)
@@ -33,7 +36,8 @@ class mdlacc(mdlbase):
         try:
             name = self.name
         except AttributeError:
-            raise NotImplementedError("mdlacc only works when the setup metaclass has been called")
+            raise NotImplementedError(
+                "mdlacc only works when the setup metaclass has been called")
 
         old = getattr(instance, self.name)
         setattr(instance, self.name, value)
@@ -50,7 +54,10 @@ class mdlacc(mdlbase):
             self.on(instance)
 
 _base = type(QtCore.QObject)
+
+
 class GenModelMeta(_base):
+
     def __new__(mcs, name, bases, dict):
         for k, v in list(dict.items()):
             if isinstance(v, mdlbase):
@@ -60,10 +67,13 @@ class GenModelMeta(_base):
 
 wc = 0
 import threading
+
+
 class GenModel(QtCore.QObject, metaclass=GenModelMeta):
     """
     GenModel is a smart "model" class that may be used to construct models that will
     """
+
     def __init__(self):
         super(GenModel, self).__init__()
         self.__editing = 0

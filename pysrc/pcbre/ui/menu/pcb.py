@@ -3,6 +3,7 @@ __author__ = 'davidc'
 from PySide import QtGui
 from pcbre.ui.menu.imageselectionmenu import ImageSelectionMenu
 
+
 class PCBMenu(QtGui.QMenu):
 
     def __init__(self, pw):

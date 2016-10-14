@@ -1,8 +1,8 @@
 def np_print_regular(x, caption=None):
-    border ="-" * (8 * x.shape[1] + 4) 
+    border = "-" * (8 * x.shape[1] + 4)
     if caption:
         print()
-        print("%s:"%caption)
+        print("%s:" % caption)
         print(border)
     for row in x:
         print("| %s |" % "".join("%7.3f " % f for f in row))
@@ -18,7 +18,9 @@ def float_or_None(s):
 
 import time
 
+
 class Timer:
+
     def __enter__(self):
         self.start = time.clock()
         return self

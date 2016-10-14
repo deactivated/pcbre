@@ -13,6 +13,7 @@ from pcbre.view.viaview import THRenderer
 
 
 class ViaSettingsDialog(SettingsDialog):
+
     def __init__(self, tpm):
         super(ViaSettingsDialog, self).__init__()
         self.tpm = tpm
@@ -29,6 +30,7 @@ class ViaSettingsDialog(SettingsDialog):
 
 
 class ViaToolOverlay:
+
     def __init__(self, ctrl):
         """
         :type ctrl: ViaToolController
@@ -51,15 +53,15 @@ class ViaToolOverlay:
         self.render_b.restart()
 
         if self.tpm.current_layer_pair is not None:
-            self.render_b.deferred(Point2(self.ctrl.x, self.ctrl.y), self.tpm.radius, 0, RENDER_OUTLINES)
+            self.render_b.deferred(
+                Point2(self.ctrl.x, self.ctrl.y), self.tpm.radius, 0, RENDER_OUTLINES)
 
         self.render_b.prepare()
-        self.render_b.render_outline( viewport.glMatrix)
-
-
+        self.render_b.render_outline(viewport.glMatrix)
 
 
 class ViaToolController(BaseToolController):
+
     def __init__(self, view, project, toolparammodel):
         """
 
@@ -82,7 +84,6 @@ class ViaToolController(BaseToolController):
     def showSettingsDialog(self):
         ViaSettingsDialog(self.toolparammodel).exec_()
 
-
     def __modelchanged(self):
         self.changed.emit()
 
@@ -92,7 +93,8 @@ class ViaToolController(BaseToolController):
 
         # New object with dummy net
         if self.toolparammodel.current_layer_pair is not None:
-            v = Via(pt_world, self.toolparammodel.current_layer_pair, self.toolparammodel.radius, None)
+            v = Via(pt_world, self.toolparammodel.current_layer_pair,
+                    self.toolparammodel.radius, None)
             self.project.artwork.merge_artwork(v)
 
     def mouseReleaseEvent(self, evt):
@@ -106,12 +108,14 @@ class ViaToolController(BaseToolController):
     def mouseWheelEvent(self, event):
         if event.modifiers() & QtCore.Qt.ShiftModifier:
             # TODO: Remove hack on step
-            step = event.delta()/120.0
+            step = event.delta() / 120.0
             self.toolparammodel.radius += step
             if self.toolparammodel.radius <= 0:
                 self.toolparammodel.radius = 0.00001
 
+
 class ViaToolModel(QtCore.QObject):
+
     def __init__(self, project):
         super(ViaToolModel, self).__init__()
         self.project = project
@@ -144,6 +148,7 @@ class ViaToolModel(QtCore.QObject):
 
         if old != value:
             self.changed.emit()
+
 
 class ViaTool(BaseTool):
     ICON_NAME = "via"
@@ -186,7 +191,6 @@ class ViaTool(BaseTool):
 
             self.menu.addAction(a1)
             self.ag.addAction(a1)
-
 
     def setupToolButtonExtra(self):
         self.__setupMenu()

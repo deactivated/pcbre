@@ -8,12 +8,15 @@ from pcbre.view.rendersettings import RENDER_HINT_ONCE
 
 __author__ = 'davidc'
 
+
 class RenderIcon:
     POINT = 0
-    POINT_ON_LINE = 1 # implies has .get_vector()
-    LINE = 2 # implies has .get_vector()
+    POINT_ON_LINE = 1  # implies has .get_vector()
+    LINE = 2  # implies has .get_vector()
+
 
 class EditablePoint:
+
     def __init__(self, defv=None, icon=RenderIcon.POINT, enabled=True):
         self.is_set = False
         self.pt = defv
@@ -45,7 +48,9 @@ class EditablePoint:
     def get(self):
         return self.pt
 
+
 class OffsetDefaultPoint(EditablePoint):
+
     def __init__(self, pt, default_offset, icon=RenderIcon.POINT_ON_LINE, enabled=True):
         super(OffsetDefaultPoint, self).__init__(enabled=enabled)
         self.reference = pt
@@ -54,7 +59,6 @@ class OffsetDefaultPoint(EditablePoint):
 
     def get_vector(self):
         return self.get() - self.reference.get()
-
 
     def get(self):
         if self.is_set:
@@ -73,16 +77,18 @@ class DONE_REASON(Enum):
     ACCEPT = 1
     REJECT = 2
 
+
 def _default_color_fn(flow, pt):
     if pt is flow.current_point:
-        return (1,1,1)
+        return (1, 1, 1)
     elif pt.is_set:
-        return (1,0,0)
+        return (1, 0, 0)
     else:
-        return (0.5,0,0)
+        return (0.5, 0, 0)
 
 
 class MultipointEditRenderer:
+
     def __init__(self, flow, view, color_fn=_default_color_fn, show_fn=lambda pt: pt.enabled):
         """
         :type view: pcbre.ui.boardviewwidget.BoardViewWidget
@@ -97,8 +103,8 @@ class MultipointEditRenderer:
         self.show_fn = show_fn
 
     def render(self):
-        N=5
-        corners = list(map(Point2, [(-N,-N), (N, -N), (N, N), (-N, N)]))
+        N = 5
+        corners = list(map(Point2, [(-N, -N), (N, -N), (N, N), (-N, N)]))
 
         for p in self.flow.points:
             if not self.show_fn(p) or not p.get():
@@ -107,7 +113,6 @@ class MultipointEditRenderer:
             color = self.color_fn(self.flow, p)
             p_view = self.view.viewState.tfW2V(p.get())
             #p_view = p.get()
-
 
             # Draw crappy cross for now
 
@@ -120,6 +125,7 @@ class MultipointEditRenderer:
 
 
 class MultipointEditFlow:
+
     def __init__(self, view, points, can_shortcut=False):
         self.view = view
         self.__points = points
@@ -131,8 +137,7 @@ class MultipointEditFlow:
 
         self.__done = DONE_REASON.NOT_DONE
 
-
-        self.__grab_delta = Vec2(0,0)
+        self.__grab_delta = Vec2(0, 0)
 
     @property
     def current_point(self):
@@ -151,10 +156,12 @@ class MultipointEditFlow:
         if not world_to_point:
             pt = self.view.viewState.tfW2V(self.current_point.get())
 
-            bounds = Rect.fromPoints(Point2(0,0), Point2(self.view.width(), self.view.height()))
+            bounds = Rect.fromPoints(Point2(0, 0), Point2(
+                self.view.width(), self.view.height()))
             pt_clipped = clip_point_to_rect(pt, bounds)
 
-            screen_pt = self.view.mapToGlobal(QtCore.QPoint(*pt_clipped.intTuple()))
+            screen_pt = self.view.mapToGlobal(
+                QtCore.QPoint(*pt_clipped.intTuple()))
 
             QtGui.QCursor.setPos(screen_pt)
         else:
@@ -183,15 +190,15 @@ class MultipointEditFlow:
             self.next_point()
             if not self.current_point.is_set:
                 if self.is_initial_active:
-                    self.__grab_delta = Vec2(0,0)
+                    self.__grab_delta = Vec2(0, 0)
                     self.make_active()
             else:
                 self.is_initial_active = False
 
-
     def __step_point(self, step):
         for i in range(len(self.points)):
-            self.__current_point_index = (self.__current_point_index + step) % len(self.__points)
+            self.__current_point_index = (
+                self.__current_point_index + step) % len(self.__points)
             if self.current_point.enabled:
                 break
         else:
@@ -205,7 +212,8 @@ class MultipointEditFlow:
 
     def mouseMoveEvent(self, evt):
         if self.__point_active:
-            point_pos = self.view.viewState.tfV2W(Point2(evt.pos()) + self.__grab_delta)
+            point_pos = self.view.viewState.tfV2W(
+                Point2(evt.pos()) + self.__grab_delta)
             self.current_point.set(point_pos)
             self.updated(self.current_point)
 

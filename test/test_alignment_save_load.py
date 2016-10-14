@@ -13,12 +13,13 @@ __author__ = 'davidc'
 def random_point():
     return Point2(random.randint(-32768, 32768), random.randint(-32768, 32768))
 
+
 def setup_global(self):
     p = Project()
     self.p = p
     self.kps = [
         KeyPoint(random_point())
-        for i in range(0,4)
+        for i in range(0, 4)
     ]
 
     for i in self.kps:
@@ -63,12 +64,13 @@ class test_kpalign_load(unittest.TestCase):
         self.assertFalse(self.kpa.keypoints[2].is_new)
         self.assertTrue(self.kpa.keypoints[3].is_new)
 
+
 class test_kpalign_initial_save(unittest.TestCase):
+
     def test(self):
         p = Project()
-        il = ImageLayer("foo",b"")
-        il.set_decoded_data(numpy.ndarray((800,600,3), dtype=numpy.float32))
-
+        il = ImageLayer("foo", b"")
+        il.set_decoded_data(numpy.ndarray((800, 600, 3), dtype=numpy.float32))
 
         ini_align = KeypointAlignmentModel(il)
 
@@ -92,7 +94,6 @@ class test_kpalign_initial_save(unittest.TestCase):
         #sa = sorted(kpa.keypoint_positions, lambda x: x.image_pos)
         #sb = sorted(ini_align.keypoints, lambda x: x.layer)
 
-
         # Check writeback
         eps = numpy.abs(numpy.identity(3) - il.transform_matrix).max()
         self.assertGreater(eps, 1)
@@ -101,11 +102,13 @@ class test_kpalign_initial_save(unittest.TestCase):
         eps = numpy.abs(il.transform_matrix[2][:2]).max()
         self.assertGreater(eps, 0)
 
+
 class test_rectalign_initial_save(unittest.TestCase):
+
     def test(self):
         p = Project()
-        il = ImageLayer("foo","b")
-        il.set_decoded_data(numpy.ndarray((800,600,3), dtype=numpy.float32))
+        il = ImageLayer("foo", "b")
+        il.set_decoded_data(numpy.ndarray((800, 600, 3), dtype=numpy.float32))
 
         ini_align = RectAlignmentModel(il)
 
@@ -128,7 +131,6 @@ class test_rectalign_initial_save(unittest.TestCase):
 
         ini_align.save(p)
 
-
         ra = il.alignment
         self.assertIsInstance(ra, RectAlignment)
         self.assertFalse(ra.dims_locked)
@@ -142,19 +144,16 @@ class test_rectalign_initial_save(unittest.TestCase):
         new_ram = RectAlignmentModel(il)
         new_ram.load(p)
 
-
         for a, b in zip(ini_align.all_handles(), new_ram.all_handles()):
             if a is None and b is not None or b is None and a is not None:
                 self.assertFalse(False, "handles mismatch")
             elif a is None and b is None:
                 continue
 
-            eps = float(numpy.abs(a-b).max())
+            eps = float(numpy.abs(a - b).max())
             self.assertAlmostEqual(eps, 0)
 
         self.assertEqual(new_ram.flip_x, ini_align.flip_x)
         self.assertEqual(new_ram.flip_y, ini_align.flip_y)
         self.assertAlmostEqual(new_ram.translate_x, ini_align.translate_x)
         self.assertAlmostEqual(new_ram.translate_y, ini_align.translate_y)
-
-

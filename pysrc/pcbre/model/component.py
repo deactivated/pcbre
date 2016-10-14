@@ -5,6 +5,7 @@ from pcbre.model.serialization import deserialize_point2, serialize_point2
 
 __author__ = 'davidc'
 
+
 class Component:
     TYPE_FLAGS = TFF.HAS_INST_INFO
 
@@ -22,7 +23,6 @@ class Component:
 
         self.__side_layer_oracle = side_layer_oracle
         self._project = None
-
 
     @property
     def _side_layer_oracle(self):
@@ -82,9 +82,8 @@ class Component:
         cmp_msg.theta = float(self.theta)
         cmp_msg.sid = self._project.scontext.sid_for(self)
 
-
         cmp_msg.init("pininfo", len(self.get_pads()))
-        for n,p in enumerate(self.get_pads()):
+        for n, p in enumerate(self.get_pads()):
             k = p.pad_no
             t = cmp_msg.pininfo[n]
 
@@ -93,7 +92,6 @@ class Component:
                 t.name = self.name_mapping[k]
 
             t.net = self._project.scontext.sid_for(self.net_mapping[k])
-
 
     @staticmethod
     def deserializeTo(project, msg, target):
@@ -108,7 +106,7 @@ class Component:
         target.theta = msg.theta
         target.center = deserialize_point2(msg.center)
         target.refdes = msg.refdes
-        target.partno = msg.partno;
+        target.partno = msg.partno
 
         project.scontext.set_sid(msg.sid, target)
 
@@ -129,6 +127,3 @@ class Component:
         r = self.theta_bbox.rotated_bbox(self.theta)
         r.translate(self.center)
         return r
-
-
-

@@ -11,7 +11,10 @@ NAME_COL = 0
 FIRST_VP_COL = 1
 
 # Header with fixed size
+
+
 class HHeader(QtGui.QHeaderView):
+
     def __init__(self, *args, **kwargs):
         QtGui.QHeaderView.__init__(self, *args, **kwargs)
         self.setResizeMode(self.Fixed)
@@ -19,7 +22,9 @@ class HHeader(QtGui.QHeaderView):
     def sizeHint(self):
         return QtCore.QSize(30, 0)
 
+
 class StackupSetupDialog(QtGui.QDialog):
+
     def __init__(self, parent, data_list, *args):
         QtGui.QDialog.__init__(self, parent, *args)
 
@@ -28,15 +33,15 @@ class StackupSetupDialog(QtGui.QDialog):
 
         self.table_model = MyTableModel(self, data_list)
 
-
         self.table_view = QtGui.QTableView()
 
-        self.table_view.setSelectionMode(QtGui.QAbstractItemView.SingleSelection)
-        self.table_view.setSelectionBehavior(QtGui.QAbstractItemView.SelectRows)
+        self.table_view.setSelectionMode(
+            QtGui.QAbstractItemView.SingleSelection)
+        self.table_view.setSelectionBehavior(
+            QtGui.QAbstractItemView.SelectRows)
 
         self.table_view.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.table_view.customContextMenuRequested.connect(self.handleAreaMenu)
-
 
         header = self.table_view.horizontalHeader()
         header.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
@@ -47,16 +52,15 @@ class StackupSetupDialog(QtGui.QDialog):
         self.table_view.setVerticalHeader(lb)
         lbar = self.table_view.verticalHeader()
 
-        #lbar.setMovable(True)
-        #lbar.setDragEnabled(True)
-        #lbar.setDragDropMode(QAbstractItemView.InternalMove)
+        # lbar.setMovable(True)
+        # lbar.setDragEnabled(True)
+        # lbar.setDragDropMode(QAbstractItemView.InternalMove)
 
         self.table_view.setModel(self.table_model)
         # set font
         font = QtGui.QFont("Courier New", 10)
         self.table_view.setFont(font)
         self.table_view.resizeColumnsToContents()
-
 
         layout = QtGui.QHBoxLayout(self)
         layout.addWidget(self.table_view)
@@ -97,7 +101,6 @@ class StackupSetupDialog(QtGui.QDialog):
 
         self.table_view.selectRow(0)
 
-
     def accept(self):
         self.table_model.update()
         return QtGui.QDialog.accept(self)
@@ -105,12 +108,12 @@ class StackupSetupDialog(QtGui.QDialog):
     def moveUpButtonPressed(self):
         row = self.table_view.selectedIndexes()[0].row()
         self.table_model.move(row, -1)
-        self.table_view.selectRow(row-1)
+        self.table_view.selectRow(row - 1)
 
     def moveDownButtonPressed(self):
         row = self.table_view.selectedIndexes()[0].row()
         self.table_model.move(row, 1)
-        self.table_view.selectRow(row+1)
+        self.table_view.selectRow(row + 1)
 
     def addLayer(self):
         indicies = self.table_view.selectedIndexes()
@@ -120,7 +123,7 @@ class StackupSetupDialog(QtGui.QDialog):
             row = indicies[0].row()
 
         self.table_model.addLayer(row)
-        self.table_view.selectRow(row+1)
+        self.table_view.selectRow(row + 1)
 
     def deleteLayer(self):
         indicies = self.table_view.selectedIndexes()
@@ -137,7 +140,7 @@ class StackupSetupDialog(QtGui.QDialog):
                 return
 
         self.table_model.delLayer(row)
-        self.table_view.selectRow(row - 1 if row -1 >= 0 else 0)
+        self.table_view.selectRow(row - 1 if row - 1 >= 0 else 0)
         self.updateSelection()
 
     def updateSelection(self, *args):
@@ -150,8 +153,8 @@ class StackupSetupDialog(QtGui.QDialog):
 
         self.upButton.setEnabled(bool(row) and not row.isFirst)
         self.downButton.setEnabled(bool(row) and not row.isLast)
-        self.deleteButton.setEnabled(bool(row) and bool(self.table_model.layerCount()))
-
+        self.deleteButton.setEnabled(
+            bool(row) and bool(self.table_model.layerCount()))
 
     def doMenu(self, row, col, is_header=False):
         menu = QtGui.QMenu()
@@ -173,7 +176,6 @@ class StackupSetupDialog(QtGui.QDialog):
         act.triggered.connect(
             lambda: self.table_model.delViaPair(vp)
         )
-
 
         if not is_header and col >= FIRST_VP_COL:
             menu.addSeparator()
@@ -208,11 +210,14 @@ class StackupSetupDialog(QtGui.QDialog):
         initial = QtGui.QColor(*cur)
         c = QtGui.QColorDialog.getColor(initial)
         if c.isValid():
-            r,g,b,_ = c.getRgb()
-            self.table_model.layer(idx).color = numpy.array([r,g,b])/255.0
-            self.table_model.headerDataChanged.emit(QtCore.Qt.Vertical, idx, idx)
+            r, g, b, _ = c.getRgb()
+            self.table_model.layer(idx).color = numpy.array([r, g, b]) / 255.0
+            self.table_model.headerDataChanged.emit(
+                QtCore.Qt.Vertical, idx, idx)
+
 
 class EditableLayer(object):
+
     def __init__(self, mdl, ref, name, col):
         self.mdl = mdl
         self.name = name
@@ -231,7 +236,9 @@ class EditableLayer(object):
     def index(self):
         return self.mdl._layers.index(self)
 
+
 class EditableVP(object):
+
     def __init__(self, mdl, ref, start, end):
         self.mdl = mdl
         self.startLayer = start
@@ -260,6 +267,7 @@ class EditableVP(object):
 
 
 class MyTableModel(QtCore.QAbstractTableModel):
+
     def __init__(self, parent, project, *args):
         QtCore.QAbstractTableModel.__init__(self, parent, *args)
         self.p = project
@@ -279,7 +287,6 @@ class MyTableModel(QtCore.QAbstractTableModel):
             la = find_layer_ref(_la)
             lb = find_layer_ref(_lb)
             self._via_pairs.append(EditableVP(self, _vp, la, lb))
-
 
     def update(self):
         to_remove = set(self.p.stackup.layers)
@@ -310,7 +317,8 @@ class MyTableModel(QtCore.QAbstractTableModel):
         to_remove = set(self.p.stackup.via_pairs)
         for i in self._via_pairs:
             if i.ref == None:
-                new_layer = pcbre.model.stackup.ViaPair(i.startLayer.ref, i.endLayer.ref)
+                new_layer = pcbre.model.stackup.ViaPair(
+                    i.startLayer.ref, i.endLayer.ref)
                 self.p.stackup.add_via_pair(new_layer)
             else:
                 i.ref.layers = i.startLayer.ref, i.endLayer.ref
@@ -325,11 +333,11 @@ class MyTableModel(QtCore.QAbstractTableModel):
         self._layers[index] = self._layers[index + direction]
         self._layers[index + direction] = a
 
-        first_row = min(index, index+direction)
-        second_row = max(index, index+direction)
+        first_row = min(index, index + direction)
+        second_row = max(index, index + direction)
 
         self.dataChanged.emit(self.index(first_row, 0),
-                              self.index(second_row,self.columnCount(None)))
+                              self.index(second_row, self.columnCount(None)))
 
     def layer(self, n):
         return self._layers[n]
@@ -357,7 +365,8 @@ class MyTableModel(QtCore.QAbstractTableModel):
     def addViaPair(self):
         if len(self._layers) >= 2:
             self.emit(QtCore.SIGNAL("layoutAboutToBeChanged()"))
-            self._via_pairs.append(EditableVP(self, None, self._layers[0], self._layers[-1]))
+            self._via_pairs.append(EditableVP(
+                self, None, self._layers[0], self._layers[-1]))
             self.emit(QtCore.SIGNAL("layoutChanged()"))
             return True
         else:
@@ -412,9 +421,9 @@ class MyTableModel(QtCore.QAbstractTableModel):
                 return None
 
             elif col >= FIRST_VP_COL:
-                vp = self._via_pairs[col-FIRST_VP_COL]
+                vp = self._via_pairs[col - FIRST_VP_COL]
                 if vp.startIndex <= row <= vp.endIndex:
-                    return QtGui.QBrush(QtGui.QColor(0,0,0))
+                    return QtGui.QBrush(QtGui.QColor(0, 0, 0))
                 return None
 
         return None
@@ -435,13 +444,11 @@ class MyTableModel(QtCore.QAbstractTableModel):
         col = index.column()
         row = index.row()
 
-
         flags = QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable
 
         if col == 0:
             flags |= QtCore.Qt.ItemIsEditable
             flags |= QtCore.Qt.ItemIsDragEnabled | QtCore.Qt.ItemIsDropEnabled
-
 
         return flags
 

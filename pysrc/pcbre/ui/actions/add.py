@@ -1,5 +1,5 @@
 import itertools
-from PySide import QtGui
+from pcbre.qt_compat import QtGui, getOpenFileName
 from pcbre.model.imagelayer import ImageLayer
 from pcbre.ui.dialogs.layeralignmentdialog.dialog import LayerAlignmentDialog
 
@@ -12,8 +12,9 @@ class AddImageDialogAction(QtGui.QAction):
     """
 
     def __init__(self, window):
-            self.window = window
-            QtGui.QAction.__init__(self, "Image", self.window, triggered=self.__action)
+        self.window = window
+        QtGui.QAction.__init__(self, "Image", self.window,
+                               triggered=self.__action)
 
     def __action(self):
 
@@ -22,16 +23,19 @@ class AddImageDialogAction(QtGui.QAction):
                              ('JPEG files', ['*.jpg', '*.jpeg']),
                              ('JPEG2K files', ['*.jp2']),
                              ('PNG Files', ['*.png']),
-                             ('Portable Image Format files', ['*.pbm', '*.pgm', '*.ppm']),
+                             ('Portable Image Format files',
+                              ['*.pbm', '*.pgm', '*.ppm']),
                              ('TIFF files', ['*.tiff', '*.tif'])
                              ]
 
         known_image_types.insert(0, ('All Images',
                                      list(itertools.chain.from_iterable(i[1] for i in known_image_types))))
 
-        filter_string = ";;".join("%s (%s)" % (i[0], " ".join(i[1])) for i in known_image_types)
+        filter_string = ";;".join("%s (%s)" % (
+            i[0], " ".join(i[1])) for i in known_image_types)
 
-        fname, _ = QtGui.QFileDialog.getOpenFileName(self.window, "Open Image", filter=filter_string)
+        fname, _ = getOpenFileName(
+            self.window, "Open Image", filter=filter_string)
 
         if not fname:
             return

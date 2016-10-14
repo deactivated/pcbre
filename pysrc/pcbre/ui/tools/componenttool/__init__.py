@@ -25,14 +25,17 @@ MDL_TYPE_DIP = 1
 MDL_TYPE_PASSIVE = 2
 
 
-mdl_meta_t = namedtuple("mdl_meta", ["cons", "widget_cons", "flow_cons", "get_comp", "text"])
+mdl_meta_t = namedtuple(
+    "mdl_meta", ["cons", "widget_cons", "flow_cons", "get_comp", "text"])
 mdl_meta = {
     MDL_TYPE_BASICSMD: mdl_meta_t(BasicSMDICModel, BasicSMDICEditWidget, BasicSMDFlow, BasicSMD_getComponent, "Basic 4-sided SMT"),
     MDL_TYPE_DIP: mdl_meta_t(DIPModel, DIPEditWidget, DIPEditFlow, DIP_getComponent, "DIP Component"),
     MDL_TYPE_PASSIVE: mdl_meta_t(PassiveModel, PassiveEditWidget, PassiveEditFlow, Passive_getComponent, "2-lead passive")
 }
 
+
 class ComponentSettings(MultiAutoSettingsDialog):
+
     def __init__(self, mdl, ctrl):
         super(ComponentSettings, self).__init__()
 
@@ -48,7 +51,6 @@ class ComponentSettings(MultiAutoSettingsDialog):
         ct_cmb.currentIndexChanged.connect(self.changeTab)
 
         hfl.addRow("Component Type", ct_cmb)
-
 
         self.w_x = UnitEditable(ctrl.flow, "center.x", UNIT_GROUP_MM)
         hfl.addRow("Position X:", self.w_x.widget)
@@ -81,6 +83,7 @@ class ComponentSettings(MultiAutoSettingsDialog):
 
 
 class ComponentModel(GenModel):
+
     def __init__(self):
         super(ComponentModel, self).__init__()
 
@@ -102,6 +105,7 @@ class ComponentModel(GenModel):
 
 
 class ComponentOverlay:
+
     def __init__(self, parent):
         """
         :type parent: ComponentController
@@ -119,7 +123,8 @@ class ComponentOverlay:
 
         cmp._project = self.parent.project
         with Timer() as t_cmp_render:
-            self.parent.view.render_component(vs.glMatrix, cmp, RENDER_OUTLINES, RENDER_HINT_ONCE)
+            self.parent.view.render_component(
+                vs.glMatrix, cmp, RENDER_OUTLINES, RENDER_HINT_ONCE)
 
         with Timer() as t_mp_edit_renderer:
             pr = MultipointEditRenderer(self.parent.flow, self.parent.view)
@@ -127,6 +132,7 @@ class ComponentOverlay:
 
 
 class ComponentController(BaseToolController):
+
     def __init__(self, mdl, project, view):
         """
 
@@ -185,7 +191,8 @@ class ComponentController(BaseToolController):
             self.restartFlow()
 
     def restartFlow(self):
-        self.flow = mdl_meta[self.mdl.cmptype].flow_cons(self.view, self.mdl.get_selected_model())
+        self.flow = mdl_meta[self.mdl.cmptype].flow_cons(
+            self.view, self.mdl.get_selected_model())
         self.flow.make_active(True)
 
     @property

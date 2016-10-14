@@ -12,6 +12,7 @@ from pcbre.view.rendersettings import RENDER_OUTLINES
 
 
 class TraceToolOverlay:
+
     def __init__(self, ctrl):
         """
         :type ctrl: TraceToolController
@@ -29,12 +30,12 @@ class TraceToolOverlay:
         self.gls = gls
 
     def render(self, viewport):
-        self.view.trace_renderer.render(viewport.glMatrix, self.ctrl.get_trace(), RENDER_OUTLINES)
-
-
+        self.view.trace_renderer.render(
+            viewport.glMatrix, self.ctrl.get_trace(), RENDER_OUTLINES)
 
 
 class TraceToolController(BaseToolController):
+
     def __init__(self, view, project, toolparammodel):
         """
 
@@ -48,7 +49,7 @@ class TraceToolController(BaseToolController):
         self.toolparammodel = toolparammodel
         self.toolparammodel.changed.connect(self.__modelchanged)
 
-        self.cur_pt = Point2(0,0)
+        self.cur_pt = Point2(0, 0)
         self.last_pt = None
 
         self.show = False
@@ -62,11 +63,8 @@ class TraceToolController(BaseToolController):
 
         return Trace(sp, self.cur_pt, self.toolparammodel.thickness, self.view.current_layer_hack(), None)
 
-
-
     def showSettingsDialog(self):
         pass
-
 
     def __modelchanged(self):
         self.changed.emit()
@@ -84,7 +82,6 @@ class TraceToolController(BaseToolController):
 
         self.last_pt = end_point
 
-
     def mouseReleaseEvent(self, evt):
         pass
 
@@ -96,12 +93,14 @@ class TraceToolController(BaseToolController):
     def mouseWheelEvent(self, event):
         if event.modifiers() & QtCore.Qt.ShiftModifier:
             # TODO: Remove hack on step
-            step = event.delta()/120.0 * 0.050 * units.MM
+            step = event.delta() / 120.0 * 0.050 * units.MM
             self.toolparammodel.thickness += step
             if self.toolparammodel.thickness <= 100:
                 self.toolparammodel.thickness = 100
 
+
 class TraceToolModel(QtCore.QObject):
+
     def __init__(self, project):
         super(TraceToolModel, self).__init__()
         self.project = project
@@ -136,6 +135,7 @@ class TraceToolModel(QtCore.QObject):
         if old != value:
             self.changed.emit()
 
+
 class TraceTool(BaseTool):
     ICON_NAME = "trace"
     NAME = "Trace"
@@ -150,4 +150,3 @@ class TraceTool(BaseTool):
 
     def getToolController(self, view):
         return TraceToolController(view, self.project, self.model)
-

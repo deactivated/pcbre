@@ -6,12 +6,14 @@ import re
 
 
 class _33ProbeWidget(QtOpenGL.QGLWidget):
+
     def __init__(self):
         f = QtOpenGL.QGLFormat()
         f.setVersion(3, 3)
         f.setProfile(QtOpenGL.QGLFormat.CoreProfile)
         c = QtOpenGL.QGLContext(f)
         QtOpenGL.QGLWidget.__init__(self, c)
+
 
 def probe():
     w = QtOpenGL.QGLWidget()
@@ -29,5 +31,3 @@ def probe():
     v2 = int(g[1])
 
     return v1, v2
-
-

@@ -11,6 +11,7 @@ import numpy.linalg
 
 def lazyprop(fn):
     attr_name = '_lazy_' + fn.__name__
+
     @property
     def _lazyprop(self):
         try:
@@ -48,7 +49,8 @@ class Pad(object):
         self.__rel_center = rel_center
 
         # Cached translation-only location matrix
-        self.__translate_mat = translate(self.__rel_center.x, self.__rel_center.y)
+        self.__translate_mat = translate(
+            self.__rel_center.x, self.__rel_center.y)
         self.__theta = theta
 
         self.w = w
@@ -70,8 +72,8 @@ class Pad(object):
 
         self.center = projectPoint(pmat, self.__rel_center)
 
-        self.layer = self.parent._side_layer_oracle.stackup.layer_for_side(self.side)
-
+        self.layer = self.parent._side_layer_oracle.stackup.layer_for_side(
+            self.side)
 
     @lazyprop
     def __p2p_mat(self):
@@ -96,7 +98,6 @@ class Pad(object):
     @lazyprop
     def trace_rel_repr(self):
         return self.__get_rel_trace_repr()
-
 
     @lazyprop
     def bbox(self):
@@ -139,13 +140,13 @@ class Pad(object):
         if self.l > self.w:
             l = self.l - self.w
             w = self.w
-            p0 = Point2(l/2, 0)
-            p1 = Point2(-l/2, 0)
+            p0 = Point2(l / 2, 0)
+            p1 = Point2(-l / 2, 0)
         else:
             l = self.w - self.l
             w = self.l
-            p0 = Point2(0, l/2)
-            p1 = Point2(0, -l/2)
+            p0 = Point2(0, l / 2)
+            p1 = Point2(0, -l / 2)
 
         return w, p0, p1
 
@@ -172,6 +173,3 @@ class Pad(object):
 
     def is_through(self):
         return self.th_diam > 0
-
-
-

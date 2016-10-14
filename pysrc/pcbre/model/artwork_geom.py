@@ -14,8 +14,10 @@ else:
 
 __author__ = 'davidc'
 
+
 class Geom:
     pass
+
 
 class Polygon(Geom):
     ISC = IntersectionClass.POLYGON
@@ -33,7 +35,6 @@ class Polygon(Geom):
         self.layer = layer
         self._project = None
 
-
         self.__triangulation = None
 
     def get_poly_repr(self):
@@ -41,7 +42,8 @@ class Polygon(Geom):
 
     def get_tris_repr(self):
         if self.__triangulation is None:
-            cdt = p2t.CDT([Point2(*i) for i in self.__geometry.exterior.coords[:-1]])
+            cdt = p2t.CDT([Point2(*i)
+                           for i in self.__geometry.exterior.coords[:-1]])
             for interior in self.__geometry.interiors:
                 cdt.add_hole([Point2(*i) for i in interior.coords[:-1]])
 
@@ -68,7 +70,8 @@ class Trace(Geom):
         self.bbox = Rect.fromPoints(self.p0, self.p1)
         self.bbox.feather(self.thickness, self.thickness)
 
-        self.__poly_repr = ShapelyLineString([self.p0, self.p1]).buffer(self.thickness/2)
+        self.__poly_repr = ShapelyLineString(
+            [self.p0, self.p1]).buffer(self.thickness / 2)
 
     def get_poly_repr(self):
         return self.__poly_repr
@@ -76,7 +79,6 @@ class Trace(Geom):
     def __repr__(self):
         netname = self.net.name if self.net is not None else "none"
         return "<Trace %s %s r=%f, layer=%s, net=%s>" % (self.p0, self.p1, self.thickness, self.layer.name, netname)
-
 
 
 class Airwire(Geom):
@@ -94,17 +96,18 @@ class Airwire(Geom):
 
         self._project = None
 
+
 class Via(Geom):
     ISC = IntersectionClass.VIA
     TYPE_FLAGS = TFF.HAS_GEOM | TFF.HAS_NET
 
-    def __init__(self, pt, viapair, r, net = None):
+    def __init__(self, pt, viapair, r, net=None):
         self.pt = pt
         self.r = r
         self.viapair = viapair
         self.net = net
 
-        self.bbox = Rect.fromCenterSize(pt, r*2, r*2)
+        self.bbox = Rect.fromCenterSize(pt, r * 2, r * 2)
 
         self._project = None
 
@@ -115,5 +118,6 @@ class Via(Geom):
 
     def __repr__(self):
         return "<Via %s r:%f ly=(%s:%s) net=%s>" % (self.pt, self.r,
-                                                   self.viapair.layers[0].name, self.viapair.layers[1].name,
-                                                   self.net.name if self.net is not None else "none")
+                                                    self.viapair.layers[
+                                                        0].name, self.viapair.layers[1].name,
+                                                    self.net.name if self.net is not None else "none")

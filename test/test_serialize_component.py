@@ -13,6 +13,7 @@ from pcbre.model.project import Project
 
 
 class test_ser_cmp_restore(unittest.TestCase):
+
     def __saverestore(self, p):
         with TemporaryFile(buffering=0) as fd:
 
@@ -21,17 +22,15 @@ class test_ser_cmp_restore(unittest.TestCase):
 
             p_new = Project.open_fd(fd)
 
-
         return p_new
 
     def test_save_pin_names_nets(self):
         p = Project()
-        l = Layer("test", [1,1,1])
+        l = Layer("test", [1, 1, 1])
         p.stackup.add_layer(l)
         d = DIPComponent(Point2(64, 54), 33.5, SIDE.Top, p, 12, 512, 640, 1111)
         d.refdes = "UFOO"
         d.partno = "BLAH"
-
 
         pads = d.get_pads()
         pads[0].pad_name = "NAME1"
@@ -39,7 +38,6 @@ class test_ser_cmp_restore(unittest.TestCase):
         p.artwork.merge_component(d)
 
         p_new = self.__saverestore(p)
-
 
         self.assertEqual(len(p_new.artwork.components), 1)
         c = next(iter(p_new.artwork.components))
@@ -57,7 +55,7 @@ class test_ser_cmp_restore(unittest.TestCase):
 
     def test_save_dip(self):
         p = Project()
-        l = Layer("test", [1,1,1])
+        l = Layer("test", [1, 1, 1])
         p.stackup.add_layer(l)
         d = DIPComponent(Point2(64, 54), 33.5, SIDE.Top, p, 12, 512, 640, 1111)
         d.refdes = "UFOO"
@@ -68,7 +66,7 @@ class test_ser_cmp_restore(unittest.TestCase):
 
         self.assertEqual(len(p_new.artwork.components), 1)
         c = next(iter(p_new.artwork.components))
-        
+
         self.assertIsInstance(c, DIPComponent)
         self.assertEqual(d.body_length(), c.body_length())
         self.assertEqual(d.body_width(), c.body_width())
@@ -78,20 +76,20 @@ class test_ser_cmp_restore(unittest.TestCase):
         self.assertEqual(d.pad_size, c.pad_size)
         self.assertEqual(d.theta, c.theta)
         self.assertEqual(d.refdes, c.refdes)
-    
+
     def test_save_smd(self):
         p = Project()
-        l = Layer("test", [1,1,1])
+        l = Layer("test", [1, 1, 1])
         p.stackup.add_layer(l)
         d = SMD4Component(Point2(64, 54), 33.5, SIDE.Top, p,
-                          32, 46,17,55, 801,914,3232, 604, 123, 456, 17)
-                          
+                          32, 46, 17, 55, 801, 914, 3232, 604, 123, 456, 17)
+
         d.refdes = "UFOO"
 
         p.artwork.merge_component(d)
 
         p_new = self.__saverestore(p)
-        
+
         self.assertEqual(len(p_new.artwork.components), 1)
         c = next(iter(p_new.artwork.components))
 
@@ -105,4 +103,3 @@ class test_ser_cmp_restore(unittest.TestCase):
         self.assertEqual(d.pin_contact_length, c.pin_contact_length)
         self.assertEqual(d.pin_contact_width, c.pin_contact_width)
         self.assertEqual(d.pin_spacing, c.pin_spacing)
-

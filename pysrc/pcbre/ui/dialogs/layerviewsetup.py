@@ -7,7 +7,10 @@ import pcbre.model.project
 import pcbre.model.stackup
 
 FIRST_VIEW_COL = 1
+
+
 class LayerViewSetupDialog(QtGui.QDialog):
+
     def __init__(self, parent, data_list):
         QtGui.QDialog.__init__(self, parent)
 
@@ -16,20 +19,18 @@ class LayerViewSetupDialog(QtGui.QDialog):
 
         self.table_model = MyTableModel(self, data_list)
 
-
         self.table_view = QtGui.QTableView()
 
-        self.table_view.setSelectionMode(QtGui.QAbstractItemView.SingleSelection)
-        self.table_view.setSelectionBehavior(QtGui.QAbstractItemView.SelectRows)
-
-
+        self.table_view.setSelectionMode(
+            QtGui.QAbstractItemView.SingleSelection)
+        self.table_view.setSelectionBehavior(
+            QtGui.QAbstractItemView.SelectRows)
 
         self.table_view.setModel(self.table_model)
         # set font
         font = QtGui.QFont("Courier New", 10)
         self.table_view.setFont(font)
         self.table_view.resizeColumnsToContents()
-
 
         layout = QtGui.QHBoxLayout(self)
         layout.addWidget(self.table_view)
@@ -50,15 +51,15 @@ class LayerViewSetupDialog(QtGui.QDialog):
 
         self.setLayout(layout)
 
-
         self.table_view.selectRow(0)
-
 
     def accept(self):
         self.table_model.update()
         return QtGui.QDialog.accept(self)
 
+
 class EditableLayer(object):
+
     def __init__(self, mdl, ref, name, ils):
         self.name = name
         self.mdl = mdl
@@ -67,20 +68,19 @@ class EditableLayer(object):
 
 
 class MyTableModel(QtCore.QAbstractTableModel):
+
     def __init__(self, parent, project, *args):
         QtCore.QAbstractTableModel.__init__(self, parent, *args)
         self.p = project
-        self._layers =  [
+        self._layers = [
             EditableLayer(self, pl, pl.name, pl.imagelayers)
             for pl in project.stackup.layers]
 
         self._views = project.imagery.imagelayers
 
-
     def update(self):
         for i in self._layers:
             i.ref.imagelayers = list(i.view_set)
-
 
     def rowCount(self, parent):
         return len(self._layers)
@@ -103,7 +103,6 @@ class MyTableModel(QtCore.QAbstractTableModel):
             layer = self._layers[row]
             view = self._views[col]
             return QtCore.Qt.Checked if view in layer.view_set else QtCore.Qt.Unchecked
-
 
         return None
 
@@ -135,13 +134,12 @@ class MyTableModel(QtCore.QAbstractTableModel):
         flags = QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsUserCheckable
         return flags
 
-
     def headerData(self, index, orientation, role):
         if orientation == QtCore.Qt.Vertical and role == QtCore.Qt.DisplayRole:
             return self._layers[index].name
 
         if orientation == QtCore.Qt.Horizontal and role == QtCore.Qt.DisplayRole:
-            #TODO HACK
+            # TODO HACK
             import os.path
             return os.path.basename(self._views[index].name)
         return None

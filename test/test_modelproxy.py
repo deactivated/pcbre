@@ -3,11 +3,14 @@ from pcbre.ui.uimodel import mdlacc, GenModel
 import unittest
 from mock import Mock
 
+
 class FakeModel(GenModel):
     j = mdlacc(3)
 
+
 class FakeOther(object):
     j = mdlacc(3)
+
 
 class test_mdlaccs(unittest.TestCase):
 
@@ -53,12 +56,14 @@ class test_mdlaccs(unittest.TestCase):
 
     def test_bad_set(self):
         o = FakeOther()
+
         def fun():
             o.j = 3
-        self.assertRaises(NotImplementedError,fun)
+        self.assertRaises(NotImplementedError, fun)
 
     def test_bad_get(self):
         o = FakeOther()
+
         def fun():
             x = o.j
-        self.assertRaises(NotImplementedError,fun)
+        self.assertRaises(NotImplementedError, fun)
