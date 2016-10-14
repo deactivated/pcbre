@@ -1,18 +1,21 @@
-from collections import defaultdict
 import math
 import time
 import numpy
 import OpenGL.GL as GL
 import OpenGL.arrays.vbo as VBO
 
-from pcbre.qt_compat import QtCore, QtGui, QtOpenGL, QGLContext
+from collections import defaultdict
+
+import pcbre.matrix as M
 
 from pcbre import units
+from pcbre.qt_compat import QtCore, QtGui, QtOpenGL, QGLContext, QtWidgets
 from pcbre.matrix import scale, translate, Point2, projectPoint
 from pcbre.model.const import SIDE
 from pcbre.model.dipcomponent import DIPComponent
 from pcbre.model.pad import Pad
-from pcbre.model.passivecomponent import PassiveComponent, PassiveSymType, PassiveBodyType
+from pcbre.model.passivecomponent import (PassiveComponent, PassiveSymType,
+                                          PassiveBodyType)
 from pcbre.model.smd4component import SMD4Component
 from pcbre.model.stackup import Layer
 
@@ -22,19 +25,21 @@ from pcbre.ui.gl.shadercache import ShaderCache
 from pcbre.ui.gl.textrender import TextBatcher, TextBatch
 from pcbre.ui.tools.airwiretool import AIRWIRE_COLOR
 from pcbre.util import Timer
-from pcbre.view.cachedpolygonrenderer import PolygonVBOPair, CachedPolygonRenderer
+from pcbre.view.cachedpolygonrenderer import (PolygonVBOPair,
+                                              CachedPolygonRenderer)
 from pcbre.view.componenttext import ComponentTextBatcher
 from pcbre.view.hairlinerenderer import HairlineRenderer
 from pcbre.view.imageview import ImageView
-from pcbre.view.rendersettings import RENDER_OUTLINES, RENDER_STANDARD, RENDER_SELECTED, RENDER_HINT_NORMAL, \
-    RENDER_HINT_ONCE
+from pcbre.view.rendersettings import (RENDER_OUTLINES, RENDER_STANDARD,
+                                       RENDER_SELECTED, RENDER_HINT_NORMAL,
+                                       RENDER_HINT_ONCE)
 from pcbre.view.traceview import TraceRender
 from pcbre.view.viaview import THRenderer, ViaBoardBatcher
 from pcbre.view.viewport import ViewPort
 from pcbre.model.artwork import Via
 from pcbre.model.artwork_geom import Trace, Via, Polygon, Airwire
-import pcbre.matrix as M
-from pcbre.view.componentview import PadRender, DIPRender, SMDRender, PassiveRender
+from pcbre.view.componentview import (PadRender, DIPRender, SMDRender,
+                                      PassiveRender)
 
 
 MOVE_MODIFIER_KEY = QtCore.Qt.Key_Space
@@ -187,7 +192,7 @@ class BaseViewWidget(QtOpenGL.QGLWidget):
         self.gls = GLShared()
 
     def _set_drag_cursor(self, dragging):
-        qapp = QtGui.QApplication.instance()
+        qapp = QtWidgets.QApplication.instance()
         if not qapp:
             return
 
@@ -267,9 +272,11 @@ class BaseViewWidget(QtOpenGL.QGLWidget):
         ed.changed.connect(self.update)
         ed.initialize()
 
-        # If we have an overlay, GLinit it only if we've initialized shared state
-        # If we haven't, self.initializeGL will be called anyways before render, which will end up calling
-        # overlay.initializeGL
+        # - If we have an overlay, GLinit it only if we've initialized shared
+        #   state
+        #
+        # - If we haven't, self.initializeGL will be called anyways before
+        #   render, which will end up calling overlay.initializeGL
         if ed.overlay is not None and self.gls:
             self.makeCurrent()
             ed.overlay.initializeGL(self.gls)
@@ -312,9 +319,8 @@ class BaseViewWidget(QtOpenGL.QGLWidget):
         needs_update = False
         if (event.buttons() & MOVE_MOUSE_BUTTON) and self.move_dragging:
             self.move_dragged = True
-
-            self.viewState.transform = M.translate(
-                *delta).dot(self.viewState.transform)
+            self.viewState.transform = \
+                M.translate(*delta).dot(self.viewState.transform)
             needs_update = True
 
         elif (event.buttons() & QtCore.Qt.MiddleButton):
@@ -323,6 +329,7 @@ class BaseViewWidget(QtOpenGL.QGLWidget):
             self.wheelEvent(QtGui.QWheelEvent(
                 event.pos(), delta, event.buttons(), event.modifiers()))
             needs_update = True
+
         elif not self.move_dragging and not self.mwemu:
             if self.interactionDelegate is not None:
                 self.interactionDelegate.mouseMoveEvent(event)
@@ -354,7 +361,8 @@ class BaseViewWidget(QtOpenGL.QGLWidget):
         :return:
         """
         if not event.modifiers():
-            step = event.delta() / 120.0
+            step = event.angleDelta()
+            step = step.y() / 120
 
             sf = 1.1 ** step
             fixed_center_dot(self.viewState, M.scale(sf),
@@ -378,7 +386,8 @@ class BaseViewWidget(QtOpenGL.QGLWidget):
 
         self.reinit()
 
-        if self.interactionDelegate is not None and self.interactionDelegate.overlay is not None:
+        if (self.interactionDelegate is not None and
+                self.interactionDelegate.overlay is not None):
             self.interactionDelegate.overlay.initializeGL(self.gls)
 
     def reinit(self):
@@ -406,8 +415,8 @@ class BaseViewWidget(QtOpenGL.QGLWidget):
         self.viewState.resize(width, height)
 
         # Allocate a new image buffer
-        #self.image = NPBackedImage(self.width(), self.height())
-        #super(BoardViewWidget, self).resizeEvent(event)
+        # self.image = NPBackedImage(self.width(), self.height())
+        # super(BoardViewWidget, self).resizeEvent(event)
 
     def isModified(self):
         return self.modified
@@ -496,8 +505,9 @@ class BoardViewWidget(BaseViewWidget):
         objects += self.project.artwork.airwires
         return objects
 
-    def render_component(
-            self, mat, cmp, render_mode=RENDER_STANDARD, render_hint=RENDER_HINT_NORMAL):
+    def render_component(self, mat, cmp,
+                         render_mode=RENDER_STANDARD,
+                         render_hint=RENDER_HINT_NORMAL):
         if not self.layer_visible_m(cmp.on_layers()):
             return
 
@@ -509,7 +519,7 @@ class BoardViewWidget(BaseViewWidget):
             self.passive_renderer.render(mat, cmp, render_mode, render_hint)
         else:
             pass
-            #raise TypeError("Can't render %s" % cmp)
+            # raise TypeError("Can't render %s" % cmp)
 
         cm = mat.dot(cmp.matrix)
 
@@ -523,13 +533,15 @@ class BoardViewWidget(BaseViewWidget):
             self.pad_renderer.render(cm, pad, pad_render_mode, render_hint)
 
     def _layer_visible(self, l):
-        return l is self.viewState.current_layer or self.viewState.draw_other_layers
+        return (l is self.viewState.current_layer or
+                self.viewState.draw_other_layers)
 
     def layer_visible(self, l):
         return self.__layer_visible_lut[l.number]
 
     def layer_visible_m(self, l):
-        return self.viewState.current_layer in l or self.viewState.draw_other_layers
+        return (self.viewState.current_layer in l or
+                self.viewState.draw_other_layers)
 
     def render(self):
         t_render_start = time.time()
@@ -661,4 +673,7 @@ class BoardViewWidget(BaseViewWidget):
 
         all_time = time.time() - t_render_start
         print("Render time all: %f ot: %f cmp: %f aw: %f gl: %f" % (
-            all_time, other_timer.interval, cmp_timer.interval, t_aw.interval, t.interval))
+            all_time, other_timer.interval,
+            cmp_timer.interval,
+            t_aw.interval,
+            t.interval))

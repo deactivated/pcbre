@@ -262,7 +262,7 @@ class Vec2:
 
     def homol(self):
         """
-            return homologous coordinate equivalent of Vec2 ([vec2.x, vec2.y, 1])
+        Return homologous coordinate equivalent of Vec2 ([vec2.x, vec2.y, 1])
         """
         return numpy.append(self, [1])
 

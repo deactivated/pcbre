@@ -1,5 +1,6 @@
-import itertools
-from pcbre.qt_compat import QtGui, getOpenFileName, QtWidgets
+from itertools import chain
+
+from pcbre.qt_compat import getOpenFileName, QtWidgets
 from pcbre.model.imagelayer import ImageLayer
 from pcbre.ui.dialogs.layeralignmentdialog.dialog import LayerAlignmentDialog
 
@@ -28,8 +29,9 @@ class AddImageDialogAction(QtWidgets.QAction):
                              ('TIFF files', ['*.tiff', '*.tif'])
                              ]
 
-        known_image_types.insert(0, ('All Images',
-                                     list(itertools.chain.from_iterable(i[1] for i in known_image_types))))
+        known_image_types.insert(
+            0, ('All Images',
+                list(chain.from_iterable(i[1] for i in known_image_types))))
 
         filter_string = ";;".join("%s (%s)" % (
             i[0], " ".join(i[1])) for i in known_image_types)
@@ -41,6 +43,10 @@ class AddImageDialogAction(QtWidgets.QAction):
             return
 
         il = ImageLayer.fromFile(self.window.project, fname)
+
+        if not il:
+            print("ImageLayer returned none...")
+            return
 
         # Allow the user to align the image
         dlg = LayerAlignmentDialog(self.window, self.window.project, il)

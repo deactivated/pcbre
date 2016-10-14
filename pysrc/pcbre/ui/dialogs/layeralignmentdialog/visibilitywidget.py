@@ -218,8 +218,8 @@ class VisibilityTree(QtWidgets.QTreeView):
         header = self.header()
         header.setStretchLastSection(False)
 
-        header.setResizeMode(0, QtWidgets.QHeaderView.Stretch)
-        header.setResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
+        header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
         header.hide()
 
 

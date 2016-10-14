@@ -1,8 +1,10 @@
-__author__ = "davidc"
-
-from pcbre.qt_compat import QtCore
-from contextlib import contextmanager
+import threading
 import numpy
+from contextlib import contextmanager
+from pcbre.qt_compat import QtCore
+
+
+__author__ = "davidc"
 
 
 class mdlbase(object):
@@ -66,12 +68,12 @@ class GenModelMeta(_base):
         return _base.__new__(mcs, name, bases, dict)
 
 wc = 0
-import threading
 
 
 class GenModel(QtCore.QObject, metaclass=GenModelMeta):
     """
-    GenModel is a smart "model" class that may be used to construct models that will
+    GenModel is a smart "model" class that may be used to construct models that
+    will
     """
 
     def __init__(self):

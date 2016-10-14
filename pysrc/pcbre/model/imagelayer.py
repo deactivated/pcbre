@@ -1,10 +1,11 @@
-# import cv2
-from pcbre.matrix import projectPoint, Point2
-import numpy
 import os.path
+import numpy
+import cv2
 import pcbre.model.serialization as ser
-from pcbre.model.serialization import deserialize_matrix, serialize_matrix, serialize_point2, deserialize_point2, \
-    serialize_point2f, deserialize_point2f
+from pcbre.matrix import projectPoint, Point2
+from pcbre.model.serialization import (deserialize_matrix, serialize_matrix,
+                                       serialize_point2, deserialize_point2,
+                                       serialize_point2f, deserialize_point2f)
 from pcbre.model.util import ImmutableListProxy
 
 
@@ -145,8 +146,10 @@ class RectAlignment:
             msg.dims[n] = i
 
         msg.lockedToDim = self.dims_locked
-        msg.originCorner = {0: "lowerLeft", 1: "lowerRight",
-                            2: "upperLeft", 3: "upperRight"}[self.origin_corner]
+        msg.originCorner = {
+            0: "lowerLeft", 1: "lowerRight",
+            2: "upperLeft", 3: "upperRight"
+        }[self.origin_corner]
         msg.originCenter = serialize_point2f(self.origin_center)
 
         for n, i in enumerate(self.handles):
@@ -195,11 +198,11 @@ class RectAlignment:
 class ImageLayer:
 
     def __init__(self, name, data, transform_matrix=numpy.identity(3)):
-        self.__cached_decode = None
-        self._project = None
         self.name = name
-        self.__data = data
+        self._project = None
         self.transform_matrix = transform_matrix
+        self.__cached_decode = None
+        self.__data = data
         self.__alignment = None
 
     @property
@@ -208,8 +211,10 @@ class ImageLayer:
 
     def set_alignment(self, align):
         """
-        Sets information on how the imagelayer was aligned. The transformmatrix is still the precise transform
-        that was calculated from the alignment data, but this info is kept around to allow for re-alignment
+        Sets information on how the imagelayer was aligned. The transformmatrix
+        is still the precise transform that was calculated from the alignment
+        data, but this info is kept around to allow for re-alignment
+
         :param align:
         :return:
         """
@@ -234,10 +239,11 @@ class ImageLayer:
 
     @property
     def decoded_image(self):
-        # if self.__cached_decode is None:
-        #     im = cv2.imdecode(numpy.frombuffer(self.data, dtype=numpy.uint8), 1)
-        #     im.flags.writeable = False
-        #     self.__cached_decode = im
+        if self.__cached_decode is None:
+            im_data = numpy.frombuffer(self.data, dtype=numpy.uint8)
+            im = cv2.imdecode(im_data, 1)
+            im.flags.writeable = False
+            self.__cached_decode = im
 
         return self.__cached_decode
 
@@ -255,7 +261,9 @@ class ImageLayer:
         self.__cached_p2norm = tmat
         self.__cached_norm2p = numpy.linalg.inv(tmat)
 
-    """ Transform matricies from pixel-space to normalized image space (-1..1) """
+    """
+    Transform matricies from pixel-space to normalized image space (-1..1)
+    """
     @property
     def pixel_to_normalized(self):
         self.__calculate_transform_matrix()
@@ -276,10 +284,10 @@ class ImageLayer:
     def fromFile(project, filename):
         assert os.path.exists(filename)
 
-        # im = cv2.imdecode(numpy.fromfile(filename, dtype=numpy.uint8), 1)
-        # tmat = numpy.identity(3)
-        # basename = os.path.basename(filename)
-        # return ImageLayer(name=basename, data=open(filename, "rb").read())
+        im = cv2.imdecode(numpy.fromfile(filename, dtype=numpy.uint8), 1)
+        tmat = numpy.identity(3)
+        basename = os.path.basename(filename)
+        return ImageLayer(name=basename, data=open(filename, "rb").read())
 
     @property
     def keypoint_positions(self):

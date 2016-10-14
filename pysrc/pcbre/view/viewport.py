@@ -82,27 +82,34 @@ class ViewPort(object):
         return projectPoint(self.revMatrix, pt)
 
     def tfV2P(self, pt):
-        return projectPoint(self.__v2w, pt)
+        return projectPoint(self.__v2p, pt)
 
     def tfP2V(self, pt):
+        # XXX
         return projectPoint(self.__w2ndc, pt)
 
     def tfW2V_s(self, s):
         return abs(self.fwdMatrix[0][0]) * s
 
     def __update(self):
+        print(self._transform)
         self.__fwdMatrix = self.__ndc2v.dot(self.__w2ndc.dot(self._transform))
-        self.__scale_factor = max(map(abs, [self.fwdMatrix[0][0], self.fwdMatrix[0][
-                                  1], self.fwdMatrix[1][0], self.fwdMatrix[1][1]]))
+        self.__scale_factor = max(abs(mat) for mat in [self.fwdMatrix[0][0],
+                                                       self.fwdMatrix[0][1],
+                                                       self.fwdMatrix[1][0],
+                                                       self.fwdMatrix[1][1]])
         self.__revMatrix = numpy.linalg.inv(self.fwdMatrix)
 
         self.__glMatrix = self.__w2ndc.dot(self._transform)
         self.__glWMatrix = numpy.linalg.inv(self.__ndc2v)
-        self.__v2w = numpy.linalg.inv(self.__ndc2v.dot(self.__w2ndc))
 
-    def resize(self, newwidth, newheight):
-        self.__width = newwidth
-        self.__height = newheight
+        self.__v2p = numpy.linalg.inv(self.__ndc2v.dot(self.__w2ndc))
+
+    def resize(self, new_width, new_height):
+        print("resize:", new_width, new_height)
+
+        self.__width = new_width
+        self.__height = new_height
 
         # World to natural device coordinates matrix
         self.__w2ndc = numpy.array([
@@ -117,9 +124,9 @@ class ViewPort(object):
 
         rs = max(self.__width, self.__height) / 2
         self.__ndc2v = numpy.array([
-            [rs, 0, xh],
+            [rs,  0, xh],
             [0, -rs, yh],
-            [0, 0, 1],
+            [0,   0,  1],
         ])
 
         self.__update()

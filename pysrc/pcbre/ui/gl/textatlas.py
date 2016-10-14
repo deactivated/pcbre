@@ -1,25 +1,29 @@
-__author__ = 'davidc'
-
-from collections import namedtuple, defaultdict
-from pcbre.algo.skyline import SkyLine
-import scipy.ndimage.morphology
-import scipy.ndimage.interpolation
 import time
 import freetype
+import json
 import numpy
+import scipy.ndimage.morphology
+import scipy.ndimage.interpolation
+
+from collections import namedtuple, defaultdict
+
+from pcbre.algo.skyline import SkyLine
 from pcbre.qt_compat import QtCore, QtGui
 from pcbre.ui.misc import QImage_from_numpy
-import json
-
-BASE_FONT = 32.
-# Constant used to determine how large to expand bitmaps
-PRESCALE = 4
-
 
 # Use compiled C implementation of EDTAA3
-# At some point, we'll want to rewrite this to do glyph-curve-distance based rendering
-# but that point isn't now.
+# At some point, we'll want to rewrite this to do glyph-curve-distance based
+# rendering but that point isn't now.
 from pcbre.accel.edtaa3 import edtaa3, compute_gradient, c_double_p, c_short_p
+
+
+__author__ = 'davidc'
+
+
+BASE_FONT = 32.
+
+# Constant used to determine how large to expand bitmaps
+PRESCALE = 4
 
 
 def saveCached(image, atlas):
@@ -45,6 +49,8 @@ def saveCached(image, atlas):
 
 
 def loadCached():
+    return None
+
     try:
         # TODO, rework to use app cache directory
         img = QtGui.QImage()
@@ -142,11 +148,12 @@ def distance_transform_bitmap(input, margin):
     # Combine inside and outside distance transform
     inside -= outside
 
-    old_w = inside.shape[1] / PRESCALE
-    old_h = inside.shape[0] / PRESCALE
+    old_w = int(inside.shape[1] / PRESCALE)
+    old_h = int(inside.shape[0] / PRESCALE)
 
     # Resample down to the low res version
-    rescaled = scipy.ndimage.interpolation.zoom(inside, 1. / PRESCALE, order=1)
+    rescaled = scipy.ndimage.interpolation.zoom(
+        inside, 1.0 / PRESCALE, order=1)
     rescaled = rescaled[:old_h, :old_w]
 
     # And transfer back to a uint8
@@ -190,11 +197,12 @@ class AtlasEntry(object):
 
     @staticmethod
     def fromGlyph(glyph):
-        return AtlasEntry(glyph.bitmap.width / PRESCALE, glyph.bitmap.rows / PRESCALE,
-                          0, 0, 0, 0,
-                          glyph.metrics.horiBearingX / 64.0 /
-                          PRESCALE, glyph.metrics.horiBearingY / 64.0 / PRESCALE,
-                          glyph.metrics.horiAdvance / 64.0 / PRESCALE)
+        return AtlasEntry(
+            glyph.bitmap.width / PRESCALE, glyph.bitmap.rows / PRESCALE,
+            0, 0, 0, 0,
+            glyph.metrics.horiBearingX / 64.0 /
+            PRESCALE, glyph.metrics.horiBearingY / 64.0 / PRESCALE,
+            glyph.metrics.horiAdvance / 64.0 / PRESCALE)
 
     def updatePos(self, texwidth, texheight, x0, y0, x1, y1):
         fw = float(texwidth)
@@ -232,7 +240,7 @@ class SDFTextAtlas(object):
         import string
         chars = string.digits + string.ascii_letters + string.punctuation + ' '
 
-        #self.addGlyphs(string.digits + string.letters + string.punctuation)
+        # self.addGlyphs(string.digits + string.letters + string.punctuation)
 
         for i in chars:
             self.getGlyph(i)
@@ -245,9 +253,11 @@ class SDFTextAtlas(object):
 
     def addGlyphs(self, multi):
         """
-        Add multiple glyphs at a time, packing by best-packing-score first
-        Execution time is poor, and gains don't seem to be worth increased execution time
-        The packer algorithm could almost certainly made smarter (specifically, the "find" algo)
+        Add multiple glyphs at a time, packing by best-packing-score first.
+
+        Execution time is poor, and gains don't seem to be worth increased
+        execution time The packer algorithm could almost certainly made smarter
+        (specifically, the "find" algo)
 
         :param multi:
         :return:
@@ -259,19 +269,19 @@ class SDFTextAtlas(object):
         # Pre-build the bitmap info
         for char in multi:
             self.face.load_char(char)
-            #bitmap = self.face.glyph.bitmap
-            #w,h = bitmap.width, bitmap.rows
-            #bl, bt = self.face.glyph.metrics.horiBearingX/64.0, self.face.glyph.metrics.horiBearingY/64.0
-            #bm = numpy.array(bitmap.buffer, dtype=numpy.ubyte).reshape(h,w)
-            #ha = self.face.glyph.metrics.horiAdvance/64.0
+            # bitmap = self.face.glyph.bitmap
+            # w,h = bitmap.width, bitmap.rows
+            # bl, bt = self.face.glyph.metrics.horiBearingX/64.0, self.face.glyph.metrics.horiBearingY/64.0
+            # bm = numpy.array(bitmap.buffer, dtype=numpy.ubyte).reshape(h,w)
+            # ha = self.face.glyph.metrics.horiAdvance/64.0
 
             ae = AtlasEntry.fromGlyph(self.face.glyph)
-            #bm = numpy.array(self.face.glyph.bitmap.buffer, dtype=numpy.ubyte).reshape(ae.h, ae.w)
+            # bm = numpy.array(self.face.glyph.bitmap.buffer, dtype=numpy.ubyte).reshape(ae.h, ae.w)
             w, h = self.face.glyph.bitmap.width, self.face.glyph.bitmap.rows
             bm = distance_transform_bitmap(self.face.glyph.bitmap, self.margin)
 
             # print char, bl, bt, self.face.glyph.metrics.horiBearingX/64.0, self.face.glyph.metrics.horiBearingY/64.0, ha/64.0, w
-            #glyphs.append((char, w, h, bl, bt, ha, bm))
+            # glyphs.append((char, w, h, bl, bt, ha, bm))
             glyphs.append((char, ae, bm))
 
         # Submit a list of rects to pack to the packer
@@ -296,20 +306,18 @@ class SDFTextAtlas(object):
 
         bitmap = self.face.glyph.bitmap
 
-        w, h = bitmap.width, bitmap.rows
+        # w, h = bitmap.width, bitmap.rows
 
         ae = AtlasEntry.fromGlyph(self.face.glyph)
 
         pos = self.packer.pack(ae.w + 2 * self.margin, ae.h + 2 * self.margin)
         if pos is not None:
+            transformed = distance_transform_bitmap(bitmap, self.margin)
 
             x0, y0 = pos
-            x1, y1 = x0 + ae.w, y0 + ae.h
-            x1 += 2 * self.margin
-            y1 += 2 * self.margin
-
-            self.image[y0:y1, x0:x1] = distance_transform_bitmap(
-                bitmap, self.margin)
+            x1 = x0 + transformed.shape[1]
+            y1 = y0 + transformed.shape[0]
+            self.image[y0:y1, x0:x1] = transformed
 
             ae.updatePos(self.packer.width, self.packer.height, x0, y0, x1, y1)
 

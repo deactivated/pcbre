@@ -1,9 +1,10 @@
-from OpenGL.arrays.vbo import VBO
-import OpenGL.GL as GL
 import numpy
 import ctypes
-from pcbre.ui.gl import vbobind, Texture, VAO
+import OpenGL.GL as GL
+from OpenGL.arrays.vbo import VBO
+
 import pcbre.matrix
+from pcbre.ui.gl import vbobind, Texture, VAO
 
 
 class ImageView(object):
@@ -39,8 +40,9 @@ class ImageView(object):
             GL.glTexParameteri(
                 GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP_TO_EDGE)
 
-            # numpy packs data tightly, whereas the openGL default is 4-byte-aligned
-            # fix line alignment to 1 byte so odd-sized textures load right
+            # Numpy packs data tightly, whereas the openGL default is
+            # 4-byte-aligned.  Fix line alignment to 1 byte so odd-sized
+            # textures load right.
             GL.glPixelStorei(GL.GL_UNPACK_ALIGNMENT, 1)
 
             # Download the data to the buffer. cv2 stores data in BGR format
@@ -68,6 +70,8 @@ class ImageView(object):
         y = self.im.shape[0] / float(sca)
         ar["vertex"] = [(-x, -y), (-x, y), (x, -y), (x, y)]
         ar["texpos"] = [(0, 0), (0, 1), (1, 0), (1, 1)]
+
+        print(ar)
 
         self.b1 = vbobind(self.prog, ar.dtype, "vertex")
         self.b2 = vbobind(self.prog, ar.dtype, "texpos")
