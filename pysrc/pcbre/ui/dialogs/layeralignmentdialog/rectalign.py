@@ -563,6 +563,7 @@ class RectAlignmentControllerView(BaseToolController, GenModel):
 
     def initializeGL(self, gls):
         self.gls = gls
+
         # Basic solid-color program
         self.prog = self.gls.shader_cache.get("vert2", "frag1")
         self.mat_loc = GL.glGetUniformLocation(self.prog, "mat")

@@ -1,7 +1,6 @@
 # Signed distance field based text rendering
 
 import numpy
-import json
 import ctypes
 import time
 import freetype
@@ -54,7 +53,8 @@ class TextBatch:
 
     def add(self, mat, str_info):
         """
-        Queues a text string to be rendered in the batch
+        Queues a text string to be rendered in the batch.
+
         :param mat: location matrix
         :param str_info:
         :type str_info: _StringMetrics
@@ -82,10 +82,12 @@ class TextBatch:
         self.__elem_count = len(arr)
 
     def render(self, mat):
-        with self.__text_render.sdf_shader, self.__text_render.tex.on(GL.GL_TEXTURE_2D), self.vao:
+        with self.__text_render.sdf_shader, \
+                self.__text_render.tex.on(GL.GL_TEXTURE_2D), \
+                self.vao:
             GL.glUniform1i(self.__text_render.sdf_shader.uniforms.tex1, 0)
-            GL.glUniformMatrix3fv(
-                self.__text_render.sdf_shader.uniforms.mat, 1, True, mat.astype(numpy.float32))
+            GL.glUniformMatrix3fv(self.__text_render.sdf_shader.uniforms.mat,
+                                  1, True, mat.astype(numpy.float32))
             GL.glUniform4f(
                 self.__text_render.sdf_shader.uniforms.color, *self.__color)
 
@@ -108,8 +110,8 @@ class TextBatcher(object):
 
     def initializeGL(self):
         # Working VBO that will contain glyph data
-        self.vbo = VBO(numpy.ndarray(
-            0, dtype=self.text_render.buffer_dtype), GL.GL_DYNAMIC_DRAW, GL.GL_ARRAY_BUFFER)
+        self.vbo = VBO(numpy.ndarray(0, dtype=self.text_render.buffer_dtype),
+                       GL.GL_DYNAMIC_DRAW, GL.GL_ARRAY_BUFFER)
         self.vao = VAO()
 
         with self.vao, self.vbo:
@@ -130,13 +132,16 @@ class TextBatcher(object):
 
         self.text_render.updateTexture()
 
-        with self.text_render.sdf_shader, self.text_render.tex.on(GL.GL_TEXTURE_2D), self.vao:
+        with self.text_render.sdf_shader, \
+                self.text_render.tex.on(GL.GL_TEXTURE_2D), \
+                self.vao:
             GL.glUniform1i(self.text_render.sdf_shader.uniforms.tex1, 0)
 
             for tag in self.__render_tags[key]:
                 mat_calc = tag.matrix
                 GL.glUniformMatrix3fv(
-                    self.text_render.sdf_shader.uniforms.mat, 1, True, mat_calc.astype(numpy.float32))
+                    self.text_render.sdf_shader.uniforms.mat,
+                    1, True, mat_calc.astype(numpy.float32))
                 GL.glUniform4f(
                     self.text_render.sdf_shader.uniforms.color, *tag.color)
 
@@ -187,7 +192,8 @@ class _StringMetrics(object):
         vscale = rect.height / self.__rect.height
 
         actual_scale = min(hscale, vscale)
-        return actual_scale * self.__rect.width, actual_scale * self.__rect.height
+        return (actual_scale * self.__rect.width,
+                actual_scale * self.__rect.height)
 
     def get_render_to_mat(self, rect):
         hscale = rect.width / self.__rect.width
@@ -201,11 +207,11 @@ class _StringMetrics(object):
         return translate(rect.center.x - cx.x, rect.center.y -
                          cx.y).dot(scale(actual_scale))
 
-#_tex_vertex = namedtuple("tex_vertex", ["x", "y", "tx", "ty"])
+
+# _tex_vertex = namedtuple("tex_vertex", ["x", "y", "tx", "ty"])
 
 
 def de_bruijn(n):
-    import operator
     """
     De Bruijn sequence for numeric alphabet of length n
 
@@ -254,7 +260,10 @@ class TextRender(object):
         self.tex = Texture()
 
         # TODO: implement short-int caching
-        # build a De-bruijn sequence (shorted substring containing all substrings)
+
+        # build a De-bruijn sequence (shorted substring containing all
+        # substrings)
+
         # self.int_seq = de_bruijn(4)
         # self.int_seq += self.int_seq[:3]
 
@@ -265,8 +274,8 @@ class TextRender(object):
         """
 
         # In the future, we'll probably want to move to a texture-buffer-object
-        # approach for storing glyph metrics, such that all we need to submit is an
-        # array of character indicies and X-offsets
+        # approach for storing glyph metrics, such that all we need to submit
+        # is an array of character indicies and X-offsets
         #
         # This would pack into 8 bytes/char quite nicely (4 byte char index,
         # float32 left). With this, streaming text to the GPU would be much
@@ -349,4 +358,5 @@ class TextRender(object):
                             0,
                             GL.GL_RED,
                             GL.GL_UNSIGNED_BYTE,
-                            self.sdf_atlas.image.ctypes.data_as(ctypes.POINTER(ctypes.c_uint8)))
+                            self.sdf_atlas.image.ctypes.data_as(
+                                ctypes.POINTER(ctypes.c_uint8)))

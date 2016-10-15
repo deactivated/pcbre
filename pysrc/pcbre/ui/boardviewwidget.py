@@ -36,8 +36,7 @@ from pcbre.view.rendersettings import (RENDER_OUTLINES, RENDER_STANDARD,
 from pcbre.view.traceview import TraceRender
 from pcbre.view.viaview import THRenderer, ViaBoardBatcher
 from pcbre.view.viewport import ViewPort
-from pcbre.model.artwork import Via
-from pcbre.model.artwork_geom import Trace, Via, Polygon, Airwire
+from pcbre.model.artwork_geom import Trace, Polygon, Airwire, Via
 from pcbre.view.componentview import (PadRender, DIPRender, SMDRender,
                                       PassiveRender)
 

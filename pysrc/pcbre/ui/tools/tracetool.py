@@ -1,8 +1,7 @@
 from pcbre import units
 from pcbre.qt_compat import QtCore, QtGui
 from pcbre.matrix import Point2, translate
-from pcbre.model.artwork import Via
-from pcbre.model.artwork_geom import Trace, Via
+from pcbre.model.artwork_geom import Trace
 from pcbre.ui.boardviewwidget import QPoint_to_pair
 from pcbre.ui.dialogs.settingsdialog import SettingsDialog
 from pcbre.ui.widgets.unitedit import UnitLineEdit, UNIT_GROUP_MM

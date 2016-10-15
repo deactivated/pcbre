@@ -1,11 +1,11 @@
-import capnp
-
-from .schema_capnp import Project, Stackup, ViaPair, Layer, Color3f, Artwork, Imagery, \
-    Net, Nets, Image, ImageTransform, Matrix3x3, Matrix4x4, Point2, Point2f, Keypoint, ImageTransform
-
-import pcbre.matrix
 import contextlib
 import numpy
+
+import pcbre.matrix
+
+from .schema_capnp import (Project, Stackup, ViaPair, Layer, Color3f, Artwork,
+                           Imagery, Net, Nets, Image, Matrix3x3, Matrix4x4,
+                           Point2, Point2f, Keypoint, ImageTransform)
 
 
 def serialize_color3f(*arg):
@@ -149,7 +149,7 @@ class SContext:
                 "Must be in restore mode to create objects with SID")
         if sid in self.sid_to_obj:
             return
-        assert not sid in self.sid_to_obj
+        assert sid not in self.sid_to_obj
         self.sid_to_obj[sid] = m
 
         self.obj_to_sid[self.key(m)] = sid

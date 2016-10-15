@@ -1,10 +1,13 @@
+import ctypes
+import numpy
 from collections import defaultdict
 from OpenGL import GL
 from OpenGL.arrays.vbo import VBO
-import ctypes
-import numpy
+
 from pcbre.matrix import Point2
-from pcbre.view.rendersettings import RENDER_STANDARD, RENDER_OUTLINES, RENDER_SELECTED, RENDER_HINT_NORMAL
+from pcbre.ui.gl import vbobind, VAO, glimports as GLI
+from pcbre.view.rendersettings import (RENDER_STANDARD, RENDER_OUTLINES,
+                                       RENDER_SELECTED, RENDER_HINT_NORMAL)
 from pcbre.view.util import get_consolidated_draws
 
 __author__ = 'davidc'
@@ -51,8 +54,8 @@ class PolygonVBOPair:
         self.__vert_vbo_current = False
 
         self.__index_vbo_dtype = numpy.uint32
-        self.__index_vbo = VBO(numpy.ndarray(
-            0, dtype=self.__index_vbo_dtype), GL.GL_DYNAMIC_DRAW, GL.GL_ELEMENT_ARRAY_BUFFER)
+        self.__index_vbo = VBO(numpy.ndarray(0, dtype=self.__index_vbo_dtype),
+                               GL.GL_DYNAMIC_DRAW, GL.GL_ELEMENT_ARRAY_BUFFER)
         self.__index_vbo_current = False
 
         self.__shader = self.__gls.shader_cache.get("vert2", "frag1")
@@ -80,7 +83,8 @@ class PolygonVBOPair:
 
         self.__outline_index_offset = len(self.__tri_index_list)
         self.__index_vbo.data = numpy.array(
-            self.__tri_index_list + self.__outline_index_list, dtype=self.__index_vbo_dtype)
+            self.__tri_index_list + self.__outline_index_list,
+            dtype=self.__index_vbo_dtype)
         self.__index_vbo.size = None
         self.__index_vbo.copied = False
         self.__index_vbo.bind()
@@ -157,8 +161,10 @@ class PolygonVBOPair:
                 return tuple(overall_color) + (1,)
 
         with self.__shader, self.__vao:
-            GL.glUniformMatrix3fv(self.__shader.uniforms.mat,
-                                  1, True, matrix.ctypes.data_as(GLI.c_float_p))
+            GL.glUniformMatrix3fv(
+                self.__shader.uniforms.mat,
+                1, True,
+                matrix.ctypes.data_as(GLI.c_float_p))
 
             for rs, ranges in self.__deferred_tri_render_ranges.items():
                 tri_draw_list = get_consolidated_draws(ranges)
@@ -166,7 +172,9 @@ class PolygonVBOPair:
 
                 for first, last in tri_draw_list:
                     GL.glDrawElements(
-                        GL.GL_TRIANGLES, last - first, GL.GL_UNSIGNED_INT, ctypes.c_void_p(first * 4))
+                        GL.GL_TRIANGLES,
+                        last - first, GL.GL_UNSIGNED_INT,
+                        ctypes.c_void_p(first * 4))
 
             GL.glEnable(GL.GL_PRIMITIVE_RESTART)
             GL.glPrimitiveRestartIndex(self.__RESTART_INDEX)
@@ -174,8 +182,11 @@ class PolygonVBOPair:
                 GL.glUniform4f(self.__shader.uniforms.color, *_c_for_rs(rs))
                 line_draw_list = get_consolidated_draws(ranges)
                 for first, last in line_draw_list:
-                    GL.glDrawElements(GL.GL_LINE_STRIP, last - first, GL.GL_UNSIGNED_INT,
-                                      ctypes.c_void_p((first + self.__outline_index_offset) * 4))
+                    GL.glDrawElements(
+                        GL.GL_LINE_STRIP,
+                        last - first, GL.GL_UNSIGNED_INT,
+                        ctypes.c_void_p(
+                            (first + self.__outline_index_offset) * 4))
             GL.glDisable(GL.GL_PRIMITIVE_RESTART)
 
 

@@ -3,7 +3,6 @@ from pcbre.matrix import Point2, Rect
 from pcbre.model.component import Component
 from pcbre.model.const import OnSide, IntersectionClass
 from pcbre.model.pad import Pad
-from pcbre.model.component import Component
 
 __author__ = 'davidc'
 

@@ -8,14 +8,15 @@ class RectSize(object):
     def __init__(self, *args, **kwargs):
         if len(args) == 2:
             self.width, self.height = args
-        elif len(args) == 1 and isinstance(args[0], (QtCore.QRect, QtCore.QRectF)):
+        elif (len(args) == 1 and
+              isinstance(args[0], (QtCore.QRect, QtCore.QRectF))):
             self.width = args[0].width()
             self.width = args[0].height()
         elif len(args) == 1 and len(args[0]) == 2:
             self.width, self.height = args[0]
         elif len(kwargs) == 2 and "width" in kwargs and "height" in kwargs:
             self.width = kwargs["width"]
-            self.height = kwards["height"]
+            self.height = kwargs["height"]
         else:
             raise TypeError
 
@@ -129,7 +130,8 @@ class Rect(object):
     def point_test(self, pt):
         """
         :param pt:
-        :return: 2 for point-in-rect, 1 for point on/in rect, 0 for point outside rect
+        :return: 2 for point-in-rect, 1 for point on/in rect, 0 for point
+                 outside rect
         """
         if self.left <= pt.x <= self.right and self.bottom <= pt.y <= self.top:
             if self.left < pt.x < self.right and self.bottom < pt.y < self.top:

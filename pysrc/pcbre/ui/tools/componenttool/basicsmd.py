@@ -1,18 +1,21 @@
-from pcbre.qt_compat import QtGui, QtCore
 import math
 import numpy
 
 from OpenGL import GL as GL
 from OpenGL.arrays.vbo import VBO
 
-from pcbre.matrix import Point2, rotate, Vec2, projectPoint, translate, project_point_line
+from pcbre.qt_compat import QtGui, QtCore
+from pcbre.matrix import (Point2, rotate, Vec2, projectPoint, translate,
+                          project_point_line)
 from pcbre.model.const import SIDE
 from pcbre.model.smd4component import SMD4Component
-from pcbre.ui.dialogs.settingsdialog import AutoSettingsWidget, LineEditable, FloatTrait, IntTrait, UnitEditable
-from pcbre.ui.tools.multipoint import MultipointEditFlow, EditablePoint, OffsetDefaultPoint
+from pcbre.ui.dialogs.settingsdialog import (AutoSettingsWidget, LineEditable,
+                                             FloatTrait, IntTrait,
+                                             UnitEditable)
+from pcbre.ui.tools.multipoint import (MultipointEditFlow, EditablePoint,
+                                       OffsetDefaultPoint)
 from pcbre.ui.uimodel import mdlacc, GenModel
 from pcbre.ui.widgets.unitedit import UNIT_GROUP_MM
-import math
 
 
 class BodyCornerPoint:
@@ -122,7 +125,10 @@ class BasicSMDFlow(MultipointEditFlow):
 
             if self.p_side_2_1.is_set:
                 v, _ = project_point_line(
-                    self.p_side_2_1.get() - self.center, Point2(0, 0), self.v_base, False)
+                    self.p_side_2_1.get() - self.center,
+                    Point2(0, 0),
+                    self.v_base,
+                    False)
 
                 self._model.dim_1_pincenter = v.mag() * 2
 
@@ -270,7 +276,9 @@ class BasicSMDICEditWidget(AutoSettingsWidget):
     def sym_value_changed(self, is_pinc=False):
         """
         Recalculate the pin-count values on user input
-        :param is_pinc: user input was to the overall pincount box, sets which fields are recalculated
+
+        :param is_pinc: user input was to the overall pincount box, sets which
+                        fields are recalculated
         :return:
         """
         if is_pinc and self.sym in [SYM_4_SQUARE, SYM_2]:
@@ -280,9 +288,11 @@ class BasicSMDICEditWidget(AutoSettingsWidget):
 
         if self.sym == SYM_4_SQUARE:
             if is_pinc:
-                self.s1pw.value = self.s2pw.value = self.s3pw.value = self.s4pw.value = self.pincw.value / 4
+                self.s1pw.value = self.s2pw.value = \
+                    self.s3pw.value = self.s4pw.value = self.pincw.value / 4
             else:
-                self.s4pw.value = self.s3pw.value = self.s2pw.value = self.s1pw.value
+                self.s4pw.value = self.s3pw.value = \
+                    self.s2pw.value = self.s1pw.value
                 self.pincw.value = self.s1pw.value * 4
         elif self.sym == SYM_4_RECT:
             assert not is_pinc
@@ -325,7 +335,9 @@ class BasicSMDICModel(GenModel):
 
 
 def BasicSMD_getComponent(mdl, ctrl, flow):
-    return SMD4Component(flow.center, flow.theta + math.pi / 2, flow.side, ctrl.project,
-                         mdl.side1_pins, mdl.side2_pins, mdl.side3_pins, mdl.side4_pins,
-                         mdl.dim_1_body, mdl.dim_1_pincenter, mdl.dim_2_body, mdl.dim_2_pincenter,
-                         mdl.pin_contact_length, mdl. pin_contact_width, mdl.pin_spacing)
+    return SMD4Component(flow.center, flow.theta + math.pi / 2, flow.side,
+                         ctrl.project, mdl.side1_pins, mdl.side2_pins,
+                         mdl.side3_pins, mdl.side4_pins, mdl.dim_1_body,
+                         mdl.dim_1_pincenter, mdl.dim_2_body,
+                         mdl.dim_2_pincenter, mdl.pin_contact_length,
+                         mdl. pin_contact_width, mdl.pin_spacing)

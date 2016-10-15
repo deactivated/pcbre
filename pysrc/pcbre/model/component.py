@@ -48,14 +48,14 @@ class Component:
 
     def pin_name_for_no(self, pinno):
         """
-
-        :param pinno: String "pin number". The pin number is a unique identifier for the pin/ball/land of the IC
-                      can be numeric or alnum. Must be unique
+        :param pinno: String "pin number". The pin number is a unique
+                      identifier for the pin/ball/land of the IC can be numeric
+                      or alnum. Must be unique
         :type pinno: str
         :return:
         """
         assert isinstance(pinno, str)
-        if not pinno in self.name_mapping:
+        if pinno not in self.name_mapping:
             return ""
         return self.name_mapping[pinno]
 
