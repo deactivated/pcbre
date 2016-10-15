@@ -1,20 +1,23 @@
 # Signed distance field based text rendering
 
-from OpenGL.arrays.vbo import VBO
-from collections import namedtuple, defaultdict
-from pcbre.matrix import Rect, translate, scale, Point2, projectPoint
-from pcbre.ui.gl import Texture, vbobind, VAO
-from OpenGL import GL
+import numpy
+import json
 import ctypes
 import time
 import freetype
 import scipy.ndimage.morphology
 import scipy.ndimage.interpolation
-import numpy
-import json
+
+from collections import namedtuple, defaultdict
+from OpenGL.arrays.vbo import VBO
+from OpenGL import GL
+
+from pcbre.matrix import Rect, translate, scale, Point2, projectPoint
+from pcbre.ui.gl import Texture, vbobind, VAO
 from pcbre.qt_compat import QtCore, QtGui
 from pcbre.ui.misc import QImage_from_numpy
 from pcbre.ui.gl.textatlas import BASE_FONT
+
 
 __author__ = 'davidc'
 
@@ -28,8 +31,8 @@ class TextBatch:
         self.__color = [1.0, 1.0, 1.0, 1.0]
 
     def initializeGL(self):
-        self.vbo = VBO(numpy.ndarray(
-            0, dtype=self.__text_render.buffer_dtype), GL.GL_STATIC_DRAW, GL.GL_ARRAY_BUFFER)
+        self.vbo = VBO(numpy.ndarray(0, dtype=self.__text_render.buffer_dtype),
+                       GL.GL_STATIC_DRAW, GL.GL_ARRAY_BUFFER)
         self.vao = VAO()
 
         with self.vao, self.vbo:
@@ -87,8 +90,6 @@ class TextBatch:
                 self.__text_render.sdf_shader.uniforms.color, *self.__color)
 
             GL.glDrawArrays(GL.GL_TRIANGLES, 0, self.__elem_count)
-
-        print("Drawing %d elements" % self.__elem_count)
 
 
 class TextBatcher(object):
@@ -267,13 +268,13 @@ class TextRender(object):
         # approach for storing glyph metrics, such that all we need to submit is an
         # array of character indicies and X-offsets
         #
-        # This would pack into 8 bytes/char quite nicely (4 byte char index, float32 left)
-        # With this, streaming text to the GPU would be much more effective
+        # This would pack into 8 bytes/char quite nicely (4 byte char index,
+        # float32 left). With this, streaming text to the GPU would be much
+        # more effective
 
         # Starting pen X coordinate
         q = []
         pen_x = 0
-        print(text)
         left, right, top, bottom = 0, 0, 0, 0
 
         for ch in text:
@@ -285,10 +286,13 @@ class TextRender(object):
             margin = self.sdf_atlas.margin
             w = (gp.w + margin * 2)
             h = (gp.h + margin * 2)
+
             # Calculate the offset to the corner of the character.
             c_off_x = pen_x + gp.l - margin
-            # Y position is a bit tricky. the "top" of the glyph is whats specified, but we care about the bottom-left
-            # so subtract the height
+
+            # Y position is a bit tricky. the "top" of the glyph is whats
+            # specified, but we care about the bottom-left so subtract the
+            # height
             c_off_y = gp.t - gp.h - margin
 
             left = min(left, (c_off_x + margin) / BASE_FONT)
@@ -331,8 +335,9 @@ class TextRender(object):
             GL.glTexParameteri(
                 GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP_TO_EDGE)
 
-            # numpy packs data tightly, whereas the openGL default is 4-byte-aligned
-            # fix line alignment to 1 byte so odd-sized textures load right
+            # numpy packs data tightly, whereas the openGL default is
+            # 4-byte-aligned fix line alignment to 1 byte so odd-sized textures
+            # load right
             GL.glPixelStorei(GL.GL_UNPACK_ALIGNMENT, 1)
 
             # Download the data to the buffer.

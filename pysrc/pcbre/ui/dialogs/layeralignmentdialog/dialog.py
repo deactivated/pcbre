@@ -13,7 +13,7 @@ from pcbre.ui.gl.textrender import TextBatcher
 from pcbre.ui.undo import UndoStack, undofunc, sig
 from pcbre.view.imageview import ImageView
 from pcbre.view.originview import OriginView
-from pcbre.qt_compat import QtGui, QtCore, QtWidgets
+from pcbre.qt_compat import QtCore, QtWidgets
 from pcbre.ui.uimodel import mdlacc, GenModel
 
 from .rectalign import RectAlignmentControllerView, RectAlignmentModel

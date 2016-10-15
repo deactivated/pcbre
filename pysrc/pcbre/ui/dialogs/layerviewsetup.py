@@ -1,6 +1,3 @@
-import random
-import numpy
-
 from pcbre.qt_compat import QtCore, QtGui, QtWidgets
 
 import pcbre.model.project
@@ -46,7 +43,7 @@ class LayerViewSetupDialog(QtWidgets.QDialog):
         l2.addWidget(self.cancelButton)
         l2.addWidget(self.okButton)
 
-        #l2.addRow("test", None)
+        # l2.addRow("test", None)
         layout.addLayout(l2)
 
         self.setLayout(layout)
@@ -102,7 +99,8 @@ class MyTableModel(QtCore.QAbstractTableModel):
         elif role == QtCore.Qt.CheckStateRole:
             layer = self._layers[row]
             view = self._views[col]
-            return QtCore.Qt.Checked if view in layer.view_set else QtCore.Qt.Unchecked
+            return (QtCore.Qt.Checked if view in layer.view_set
+                    else QtCore.Qt.Unchecked)
 
         return None
 
@@ -138,11 +136,13 @@ class MyTableModel(QtCore.QAbstractTableModel):
         if orientation == QtCore.Qt.Vertical and role == QtCore.Qt.DisplayRole:
             return self._layers[index].name
 
-        if orientation == QtCore.Qt.Horizontal and role == QtCore.Qt.DisplayRole:
+        if (orientation == QtCore.Qt.Horizontal and
+                role == QtCore.Qt.DisplayRole):
             # TODO HACK
             import os.path
             return os.path.basename(self._views[index].name)
         return None
+
 
 # Test harness
 if __name__ == "__main__":

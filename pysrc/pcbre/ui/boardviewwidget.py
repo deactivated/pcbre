@@ -675,7 +675,8 @@ class BoardViewWidget(BaseViewWidget):
 
         all_time = time.time() - t_render_start
         print("Render time all: %f ot: %f cmp: %f aw: %f gl: %f" % (
-            all_time, other_timer.interval,
+            all_time,
+            other_timer.interval,
             cmp_timer.interval,
             t_aw.interval,
-            t.interval))
+            gl_draw_timer.interval))

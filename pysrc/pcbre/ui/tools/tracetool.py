@@ -1,14 +1,13 @@
-from pcbre.qt_compat import QtCore, QtGui
-from .basetool import BaseTool, BaseToolController
 from pcbre import units
+from pcbre.qt_compat import QtCore, QtGui
 from pcbre.matrix import Point2, translate
 from pcbre.model.artwork import Via
 from pcbre.model.artwork_geom import Trace, Via
 from pcbre.ui.boardviewwidget import QPoint_to_pair
-
 from pcbre.ui.dialogs.settingsdialog import SettingsDialog
 from pcbre.ui.widgets.unitedit import UnitLineEdit, UNIT_GROUP_MM
 from pcbre.view.rendersettings import RENDER_OUTLINES
+from .basetool import BaseTool, BaseToolController
 
 
 class TraceToolOverlay:
@@ -93,8 +92,11 @@ class TraceToolController(BaseToolController):
 
     def mouseWheelEvent(self, event):
         if event.modifiers() & QtCore.Qt.ShiftModifier:
+            angle = event.angleDelta().y()
+
             # TODO: Remove hack on step
-            step = event.delta() / 120.0 * 0.050 * units.MM
+            step = angle / 120.0 * 0.050 * units.MM
+
             self.toolparammodel.thickness += step
             if self.toolparammodel.thickness <= 100:
                 self.toolparammodel.thickness = 100

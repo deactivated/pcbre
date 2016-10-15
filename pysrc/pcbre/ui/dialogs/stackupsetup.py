@@ -7,17 +7,17 @@ from pcbre.qt_compat import QtCore, QtGui, QtWidgets
 import pcbre.model.project
 import pcbre.model.stackup
 
+
 NAME_COL = 0
 FIRST_VP_COL = 1
 
+
 # Header with fixed size
-
-
 class HHeader(QtWidgets.QHeaderView):
 
     def __init__(self, *args, **kwargs):
-        QtWidgets.QHeaderView.__init__(self, *args, **kwargs)
-        self.setResizeMode(self.Fixed)
+        super().__init__(*args, **kwargs)
+        self.setSectionResizeMode(self.Fixed)
 
     def sizeHint(self):
         return QtCore.QSize(30, 0)
@@ -91,7 +91,7 @@ class StackupSetupDialog(QtWidgets.QDialog):
         l2.addWidget(self.cancelButton)
         l2.addWidget(self.okButton)
 
-        #l2.addRow("test", None)
+        # l2.addRow("test", None)
         layout.addLayout(l2)
 
         self.setLayout(layout)
@@ -116,22 +116,21 @@ class StackupSetupDialog(QtWidgets.QDialog):
         self.table_view.selectRow(row + 1)
 
     def addLayer(self):
-        indicies = self.table_view.selectedIndexes()
-        if not indicies:
+        indices = self.table_view.selectedIndexes()
+        if not indices:
             row = -1
         else:
-            row = indicies[0].row()
+            row = indices[0].row()
 
         self.table_model.addLayer(row)
         self.table_view.selectRow(row + 1)
 
     def deleteLayer(self):
-        indicies = self.table_view.selectedIndexes()
-
-        if not indicies:
+        indices = self.table_view.selectedIndexes()
+        if not indices:
             return
 
-        row = indicies[0].row()
+        row = indices[0].row()
         l = self.table_model.layer(row)
 
         # refuse to delete a layer that is the start/end of a viapair
@@ -144,11 +143,11 @@ class StackupSetupDialog(QtWidgets.QDialog):
         self.updateSelection()
 
     def updateSelection(self, *args):
-        indicies = self.table_view.selectedIndexes()
-        row = None
+        indices = self.table_view.selectedIndexes()
 
-        if indicies and indicies[0].isValid():
-            row_n = indicies[0].row()
+        row = None
+        if indices and indices[0].isValid():
+            row_n = indices[0].row()
             row = self.table_model.layer(row_n)
 
         self.upButton.setEnabled(bool(row) and not row.isFirst)
@@ -268,8 +267,12 @@ class EditableVP(object):
 
 class MyTableModel(QtCore.QAbstractTableModel):
 
+    layoutAboutToBeChanged = QtCore.pyqtSignal()
+    layoutChanged = QtCore.pyqtSignal()
+
     def __init__(self, parent, project, *args):
-        QtCore.QAbstractTableModel.__init__(self, parent, *args)
+        super().__init__(parent, *args)
+
         self.p = project
         self._layers = [EditableLayer(self, l, l.name, l.color) for l in
                         self.p.stackup.layers]
@@ -340,34 +343,36 @@ class MyTableModel(QtCore.QAbstractTableModel):
                               self.index(second_row, self.columnCount(None)))
 
     def layer(self, n):
-        return self._layers[n]
+        if n < len(self._layers):
+            return self._layers[n]
 
     def viapair(self, n):
-        return self._via_pairs[n]
+        if n < len(self._via_pairs):
+            return self._via_pairs[n]
 
     def addLayer(self, idx):
-        self.emit(QtCore.SIGNAL("layoutAboutToBeChanged()"))
-
+        self.layoutAboutToBeChanged.emit()
         col = numpy.array(colorsys.hsv_to_rgb(random.random(), 1, 1))
 
         l = EditableLayer(self, None, "New Layer", col)
         self._layers.insert(idx, l)
-        self.emit(QtCore.SIGNAL("layoutChanged()"))
+        self.layoutChanged.emit()
 
     def delLayer(self, idx):
-        self.emit(QtCore.SIGNAL("layoutAboutToBeChanged()"))
-        del self._layers[idx]
-        self.emit(QtCore.SIGNAL("layoutChanged()"))
+        self.layoutAboutToBeChanged.emit()
+        if idx < len(self._layers):
+            del self._layers[idx]
+        self.layoutChanged.emit()
 
     def layerCount(self):
         return len(self._layers)
 
     def addViaPair(self):
         if len(self._layers) >= 2:
-            self.emit(QtCore.SIGNAL("layoutAboutToBeChanged()"))
+            self.layoutAboutToBeChanged.emit()
             self._via_pairs.append(EditableVP(
                 self, None, self._layers[0], self._layers[-1]))
-            self.emit(QtCore.SIGNAL("layoutChanged()"))
+            self.layoutChanged.emit()
             return True
         else:
             return False
@@ -391,11 +396,9 @@ class MyTableModel(QtCore.QAbstractTableModel):
         self.vpChanged(vp)
 
     def delViaPair(self, vp):
-        self.emit(QtCore.SIGNAL("layoutAboutToBeChanged()"))
-
+        self.layoutAboutToBeChanged.emit()
         del self._via_pairs[self._via_pairs.index(vp)]
-
-        self.emit(QtCore.SIGNAL("layoutChanged()"))
+        self.layoutChanged.emit()
 
     def rowCount(self, parent):
         return len(self._layers)
@@ -453,16 +456,19 @@ class MyTableModel(QtCore.QAbstractTableModel):
         return flags
 
     def headerData(self, index, orientation, role):
-        if orientation == QtCore.Qt.Horizontal and role == QtCore.Qt.DisplayRole:
+        if (orientation == QtCore.Qt.Horizontal and
+                role == QtCore.Qt.DisplayRole):
             if index == 0:
                 return "Layer Name"
             else:
                 return "Via pair"
-        elif orientation == QtCore.Qt.Vertical and role == QtCore.Qt.BackgroundRole:
+        elif (orientation == QtCore.Qt.Vertical and
+              role == QtCore.Qt.BackgroundRole):
             colors = [i * 255 for i in self._layers[index].color]
             return QtGui.QBrush(QtGui.QColor(*colors))
 
         return None
+
 
 # Test harness
 if __name__ == "__main__":

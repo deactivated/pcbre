@@ -3,6 +3,7 @@ import numpy
 from pcbre.matrix import projectPoint
 
 # We use 4 types of coordinates:
+#
 # V - Viewport Coordinates - coords in the on-screen viewport. QT-style.
 #    Used for mouse-picking, rendering handles/controls
 #    0,0 = top-left
@@ -92,7 +93,6 @@ class ViewPort(object):
         return abs(self.fwdMatrix[0][0]) * s
 
     def __update(self):
-        print(self._transform)
         self.__fwdMatrix = self.__ndc2v.dot(self.__w2ndc.dot(self._transform))
         self.__scale_factor = max(abs(mat) for mat in [self.fwdMatrix[0][0],
                                                        self.fwdMatrix[0][1],
@@ -106,8 +106,6 @@ class ViewPort(object):
         self.__v2p = numpy.linalg.inv(self.__ndc2v.dot(self.__w2ndc))
 
     def resize(self, new_width, new_height):
-        print("resize:", new_width, new_height)
-
         self.__width = new_width
         self.__height = new_height
 
@@ -117,8 +115,8 @@ class ViewPort(object):
         hr = self.__height / rs
 
         self.__w2ndc = numpy.array([
-            [1/wr, 0, 0],
-            [0, 1/hr, 0],
+            [1 / wr, 0, 0],
+            [0, 1 / hr, 0],
             [0, 0, 1]
         ], dtype=numpy.float32)
 
