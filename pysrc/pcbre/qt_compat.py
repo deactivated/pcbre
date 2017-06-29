@@ -3,7 +3,7 @@ import os
 default_binding = "pyqt5"
 
 requested_binding = os.environ.get('QT_API', '').lower()
-if requested_binding not in ("pyqt5"):
+if requested_binding not in ("pyqt5",):
     requested_binding = default_binding
 
 if requested_binding == "pyqt5":
