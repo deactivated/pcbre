@@ -4,15 +4,15 @@ from pcbre.ui.dialogs.stackupsetup import StackupSetupDialog
 from pcbre.qt_compat import QtGui, QtCore, QtWidgets
 
 
-__author__ = 'davidc'
+__author__ = "davidc"
 
 
 class StackupSetupDialogAction(QtWidgets.QAction):
-
     def __init__(self, window):
         self.__window = window
-        QtWidgets.QAction.__init__(self, "Edit Stackup",
-                                   window, triggered=self.__action)
+        QtWidgets.QAction.__init__(
+            self, "Edit Stackup", window, triggered=self.__action
+        )
 
     def __action(self):
         dlg = StackupSetupDialog(self.__window, self.__window.project)
@@ -20,12 +20,12 @@ class StackupSetupDialogAction(QtWidgets.QAction):
 
 
 class RebuildConnectivityAction(QtWidgets.QAction):
-
     def __init__(self, window):
         self.__window = window
 
-        QtWidgets.QAction.__init__(self, "Rebuild Connectivity",
-                                   window, triggered=self.__action)
+        QtWidgets.QAction.__init__(
+            self, "Rebuild Connectivity", window, triggered=self.__action
+        )
 
     class CancelException(Exception):
         pass
@@ -35,7 +35,8 @@ class RebuildConnectivityAction(QtWidgets.QAction):
 
         try:
             self.__window.project.artwork.rebuild_connectivity(
-                progress_cb=self.__progress)
+                progress_cb=self.__progress
+            )
         except RebuildConnectivityAction.CancelException as e:
             pass
 
@@ -48,7 +49,8 @@ class RebuildConnectivityAction(QtWidgets.QAction):
         if self.__pd is None:
             self.__pd_last_evt = now
             self.__pd = QtWidgets.QProgressDialog(
-                "Rebuilding Connectivity....", "Cancel", 0, max, self.__window)
+                "Rebuilding Connectivity....", "Cancel", 0, max, self.__window
+            )
             self.__pd.show()
 
         elif now - self.__pd_last_evt > 0.05:
@@ -62,11 +64,11 @@ class RebuildConnectivityAction(QtWidgets.QAction):
 
 
 class LayerViewSetupDialogAction(QtWidgets.QAction):
-
     def __init__(self, window):
         self.__window = window
         QtWidgets.QAction.__init__(
-            self, "Edit Stackup/Imagery pairing", self.__window, triggered=self.__action)
+            self, "Edit Stackup/Imagery pairing", self.__window, triggered=self.__action
+        )
 
     def __action(self):
         dlg = LayerViewSetupDialog(self.__window, self.__window.project)

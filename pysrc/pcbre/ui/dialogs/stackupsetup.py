@@ -14,7 +14,6 @@ FIRST_VP_COL = 1
 
 # Header with fixed size
 class HHeader(QtWidgets.QHeaderView):
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.setSectionResizeMode(self.Fixed)
@@ -24,7 +23,6 @@ class HHeader(QtWidgets.QHeaderView):
 
 
 class StackupSetupDialog(QtWidgets.QDialog):
-
     def __init__(self, parent, data_list, *args):
         QtWidgets.QDialog.__init__(self, parent, *args)
 
@@ -35,10 +33,8 @@ class StackupSetupDialog(QtWidgets.QDialog):
 
         self.table_view = QtWidgets.QTableView()
 
-        self.table_view.setSelectionMode(
-            QtWidgets.QAbstractItemView.SingleSelection)
-        self.table_view.setSelectionBehavior(
-            QtWidgets.QAbstractItemView.SelectRows)
+        self.table_view.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
+        self.table_view.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
 
         self.table_view.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.table_view.customContextMenuRequested.connect(self.handleAreaMenu)
@@ -152,8 +148,7 @@ class StackupSetupDialog(QtWidgets.QDialog):
 
         self.upButton.setEnabled(bool(row) and not row.isFirst)
         self.downButton.setEnabled(bool(row) and not row.isLast)
-        self.deleteButton.setEnabled(
-            bool(row) and bool(self.table_model.layerCount()))
+        self.deleteButton.setEnabled(bool(row) and bool(self.table_model.layerCount()))
 
     def doMenu(self, row, col, is_header=False):
         menu = QtWidgets.QMenu()
@@ -166,29 +161,23 @@ class StackupSetupDialog(QtWidgets.QDialog):
         if row >= 0:
             layer = self.table_model.layer(row)
 
-        act = menu.addAction('Add Via Pair')
+        act = menu.addAction("Add Via Pair")
         act.triggered.connect(self.table_model.addViaPair)
 
         # Delete via pair only shown for via pair cols
-        act = menu.addAction('Delete Via Pair')
+        act = menu.addAction("Delete Via Pair")
         act.setEnabled(col >= FIRST_VP_COL)
-        act.triggered.connect(
-            lambda: self.table_model.delViaPair(vp)
-        )
+        act.triggered.connect(lambda: self.table_model.delViaPair(vp))
 
         if not is_header and col >= FIRST_VP_COL:
             menu.addSeparator()
 
-            act = menu.addAction('Set Top')
-            act.triggered.connect(
-                lambda: self.table_model.viaPairSetTop(vp, layer)
-            )
+            act = menu.addAction("Set Top")
+            act.triggered.connect(lambda: self.table_model.viaPairSetTop(vp, layer))
             act.setEnabled(vp.endIndex > row)
 
-            act = menu.addAction('Set Bottom')
-            act.triggered.connect(
-                lambda: self.table_model.viaPairSetBottom(vp, layer)
-            )
+            act = menu.addAction("Set Bottom")
+            act.triggered.connect(lambda: self.table_model.viaPairSetBottom(vp, layer))
             act.setEnabled(vp.startIndex < row)
 
         menu.exec_(QtGui.QCursor.pos())
@@ -211,12 +200,10 @@ class StackupSetupDialog(QtWidgets.QDialog):
         if c.isValid():
             r, g, b, _ = c.getRgb()
             self.table_model.layer(idx).color = numpy.array([r, g, b]) / 255.0
-            self.table_model.headerDataChanged.emit(
-                QtCore.Qt.Vertical, idx, idx)
+            self.table_model.headerDataChanged.emit(QtCore.Qt.Vertical, idx, idx)
 
 
 class EditableLayer(object):
-
     def __init__(self, mdl, ref, name, col):
         self.mdl = mdl
         self.name = name
@@ -237,7 +224,6 @@ class EditableLayer(object):
 
 
 class EditableVP(object):
-
     def __init__(self, mdl, ref, start, end):
         self.mdl = mdl
         self.startLayer = start
@@ -274,8 +260,9 @@ class MyTableModel(QtCore.QAbstractTableModel):
         super().__init__(parent, *args)
 
         self.p = project
-        self._layers = [EditableLayer(self, l, l.name, l.color) for l in
-                        self.p.stackup.layers]
+        self._layers = [
+            EditableLayer(self, l, l.name, l.color) for l in self.p.stackup.layers
+        ]
 
         def find_layer_ref(l):
             for i in self._layers:
@@ -321,7 +308,8 @@ class MyTableModel(QtCore.QAbstractTableModel):
         for i in self._via_pairs:
             if i.ref is None:
                 new_layer = pcbre.model.stackup.ViaPair(
-                    i.startLayer.ref, i.endLayer.ref)
+                    i.startLayer.ref, i.endLayer.ref
+                )
                 self.p.stackup.add_via_pair(new_layer)
             else:
                 i.ref.layers = i.startLayer.ref, i.endLayer.ref
@@ -339,8 +327,9 @@ class MyTableModel(QtCore.QAbstractTableModel):
         first_row = min(index, index + direction)
         second_row = max(index, index + direction)
 
-        self.dataChanged.emit(self.index(first_row, 0),
-                              self.index(second_row, self.columnCount(None)))
+        self.dataChanged.emit(
+            self.index(first_row, 0), self.index(second_row, self.columnCount(None))
+        )
 
     def layer(self, n):
         if n < len(self._layers):
@@ -370,8 +359,9 @@ class MyTableModel(QtCore.QAbstractTableModel):
     def addViaPair(self):
         if len(self._layers) >= 2:
             self.layoutAboutToBeChanged.emit()
-            self._via_pairs.append(EditableVP(
-                self, None, self._layers[0], self._layers[-1]))
+            self._via_pairs.append(
+                EditableVP(self, None, self._layers[0], self._layers[-1])
+            )
             self.layoutChanged.emit()
             return True
         else:
@@ -456,14 +446,12 @@ class MyTableModel(QtCore.QAbstractTableModel):
         return flags
 
     def headerData(self, index, orientation, role):
-        if (orientation == QtCore.Qt.Horizontal and
-                role == QtCore.Qt.DisplayRole):
+        if orientation == QtCore.Qt.Horizontal and role == QtCore.Qt.DisplayRole:
             if index == 0:
                 return "Layer Name"
             else:
                 return "Via pair"
-        elif (orientation == QtCore.Qt.Vertical and
-              role == QtCore.Qt.BackgroundRole):
+        elif orientation == QtCore.Qt.Vertical and role == QtCore.Qt.BackgroundRole:
             colors = [i * 255 for i in self._layers[index].color]
             return QtGui.QBrush(QtGui.QColor(*colors))
 
@@ -474,7 +462,8 @@ class MyTableModel(QtCore.QAbstractTableModel):
 if __name__ == "__main__":
     app = QtCore.QApplication([])
     import os.path
-    PATH = '/tmp/test.pcbre'
+
+    PATH = "/tmp/test.pcbre"
     if os.path.exists(PATH):
         project = pcbre.model.project.Project.open(PATH)
     else:

@@ -2,17 +2,25 @@ from pcbre.matrix import Rect, Point2
 from pcbre.model.const import IntersectionClass, TFF
 
 # Shapely library is used for polygon operations
-from shapely.geometry import Polygon as ShapelyPolygon, Point as ShapelyPoint, LineString as ShapelyLineString
+from shapely.geometry import (
+    Polygon as ShapelyPolygon,
+    Point as ShapelyPoint,
+    LineString as ShapelyLineString,
+)
 import shapely.speedups
 import p2t
 
 if shapely.speedups.available:
     shapely.speedups.enable()
 else:
-    print("Shapely was compiled without GEOS development headers available; therefore, speedups are not available!")
-    print("Please install GEOS development headers and reinstall Shapely for improved performance.")
+    print(
+        "Shapely was compiled without GEOS development headers available; therefore, speedups are not available!"
+    )
+    print(
+        "Please install GEOS development headers and reinstall Shapely for improved performance."
+    )
 
-__author__ = 'davidc'
+__author__ = "davidc"
 
 
 class Geom:
@@ -42,8 +50,7 @@ class Polygon(Geom):
 
     def get_tris_repr(self):
         if self.__triangulation is None:
-            cdt = p2t.CDT([Point2(*i)
-                           for i in self.__geometry.exterior.coords[:-1]])
+            cdt = p2t.CDT([Point2(*i) for i in self.__geometry.exterior.coords[:-1]])
             for interior in self.__geometry.interiors:
                 cdt.add_hole([Point2(*i) for i in interior.coords[:-1]])
 
@@ -70,8 +77,9 @@ class Trace(Geom):
         self.bbox = Rect.fromPoints(self.p0, self.p1)
         self.bbox.feather(self.thickness, self.thickness)
 
-        self.__poly_repr = ShapelyLineString(
-            [self.p0, self.p1]).buffer(self.thickness / 2)
+        self.__poly_repr = ShapelyLineString([self.p0, self.p1]).buffer(
+            self.thickness / 2
+        )
 
     def get_poly_repr(self):
         return self.__poly_repr
@@ -79,7 +87,12 @@ class Trace(Geom):
     def __repr__(self):
         netname = self.net.name if self.net is not None else "none"
         return "<Trace %s %s r=%f, layer=%s, net=%s>" % (
-            self.p0, self.p1, self.thickness, self.layer.name, netname)
+            self.p0,
+            self.p1,
+            self.thickness,
+            self.layer.name,
+            netname,
+        )
 
 
 class Airwire(Geom):
@@ -118,7 +131,10 @@ class Via(Geom):
         return self.__poly_repr
 
     def __repr__(self):
-        return "<Via %s r:%f ly=(%s:%s) net=%s>" % (self.pt, self.r,
-                                                    self.viapair.layers[
-                                                        0].name, self.viapair.layers[1].name,
-                                                    self.net.name if self.net is not None else "none")
+        return "<Via %s r:%f ly=(%s:%s) net=%s>" % (
+            self.pt,
+            self.r,
+            self.viapair.layers[0].name,
+            self.viapair.layers[1].name,
+            self.net.name if self.net is not None else "none",
+        )

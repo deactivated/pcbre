@@ -20,7 +20,6 @@ import time
 
 
 class Timer:
-
     def __enter__(self):
         self.start = time.clock()
         return self

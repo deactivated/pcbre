@@ -10,7 +10,6 @@ from .basetool import BaseTool, BaseToolController
 
 
 class TraceToolOverlay:
-
     def __init__(self, ctrl):
         """
         :type ctrl: TraceToolController
@@ -29,11 +28,11 @@ class TraceToolOverlay:
 
     def render(self, viewport):
         self.view.trace_renderer.render(
-            viewport.glMatrix, self.ctrl.get_trace(), RENDER_OUTLINES)
+            viewport.glMatrix, self.ctrl.get_trace(), RENDER_OUTLINES
+        )
 
 
 class TraceToolController(BaseToolController):
-
     def __init__(self, view, project, toolparammodel):
         """
 
@@ -59,8 +58,13 @@ class TraceToolController(BaseToolController):
         if sp is None:
             sp = self.cur_pt
 
-        return Trace(sp, self.cur_pt, self.toolparammodel.thickness,
-                     self.view.current_layer_hack(), None)
+        return Trace(
+            sp,
+            self.cur_pt,
+            self.toolparammodel.thickness,
+            self.view.current_layer_hack(),
+            None,
+        )
 
     def showSettingsDialog(self):
         pass
@@ -74,9 +78,13 @@ class TraceToolController(BaseToolController):
         end_point = Point2(self.view.viewState.tfV2W(pt))
 
         if self.last_pt is not None:
-            t = Trace(self.last_pt, end_point, self.toolparammodel.thickness,
-                      self.view.current_layer_hack(),
-                      None)
+            t = Trace(
+                self.last_pt,
+                end_point,
+                self.toolparammodel.thickness,
+                self.view.current_layer_hack(),
+                None,
+            )
             self.project.artwork.merge_artwork(t)
 
         self.last_pt = end_point
@@ -102,7 +110,6 @@ class TraceToolController(BaseToolController):
 
 
 class TraceToolModel(QtCore.QObject):
-
     def __init__(self, project):
         super(TraceToolModel, self).__init__()
         self.project = project
@@ -141,8 +148,8 @@ class TraceToolModel(QtCore.QObject):
 class TraceTool(BaseTool):
     ICON_NAME = "trace"
     NAME = "Trace"
-    SHORTCUT = 't'
-    TOOLTIP = 'Trace (t)'
+    SHORTCUT = "t"
+    TOOLTIP = "Trace (t)"
 
     def __init__(self, project):
         super(TraceTool, self).__init__(project)

@@ -5,7 +5,7 @@ from pcbre.model.const import IntersectionClass
 from pcbre.model.pad import Pad
 from shapely.geometry import Point as ShapelyPoint
 
-__author__ = 'davidc'
+__author__ = "davidc"
 
 
 def dist_pt_trace(pt, trace):
@@ -33,13 +33,11 @@ def dist_trace_trace(trace_1, trace_2):
 def dist_via_trace(via, trace):
     if trace.layer not in via.viapair.all_layers:
         return float("inf")
-    return dist_pt_line_seg(via.pt, trace.p0, trace.p1) - \
-        trace.thickness / 2 - via.r
+    return dist_pt_line_seg(via.pt, trace.p0, trace.p1) - trace.thickness / 2 - via.r
 
 
 def dist_via_via(via_1, via_2):
-    if not set(via_1.viapair.all_layers).intersection(
-            via_2.viapair.all_layers):
+    if not set(via_1.viapair.all_layers).intersection(via_2.viapair.all_layers):
         return float("inf")
     d = (via_1.pt - via_2.pt).mag()
     return d - via_1.r - via_2.r
@@ -81,8 +79,11 @@ def dist_trace_pad(trace, p1):
 
     # Degenerate case where pad is a circle
     if p1.w == p1.l:
-        return dist_pt_line_seg(p1.center, trace.p0,
-                                trace.p1) - trace.thickness / 2 - p1.w / 2
+        return (
+            dist_pt_line_seg(p1.center, trace.p0, trace.p1)
+            - trace.thickness / 2
+            - p1.w / 2
+        )
     else:
         ptr = p1.trace_repr
         return dist_trace_trace(ptr, trace)
@@ -93,6 +94,7 @@ def dist_polygon_polygon(p1, p2):
         return float("inf")
 
     return p1.get_poly_repr().distance(p2.get_poly_repr())
+
 
 # Trace is the same, has a layer and a poly repr
 dist_polygon_trace = dist_polygon_polygon
@@ -119,6 +121,7 @@ def dist_virtual_line_XX(airwire, trace):
     elif airwire.p1_layer == trace.layer and point_inside(trace, airwire.p1):
         return 0
     return float("inf")
+
 
 dist_virtual_line_trace = dist_virtual_line_XX
 dist_virtual_line_polygon = dist_virtual_line_XX
@@ -151,6 +154,7 @@ def dist_virtual_line_virtual_line(_, __):
 def swapped(fn):
     def _(a, b):
         return fn(b, a)
+
     return _
 
 
@@ -174,7 +178,7 @@ def pt_inside_trace(trace, pt):
 
 
 def pt_inside_via(via, pt):
-    return (pt - via.pt).mag2() <= via.r**2
+    return (pt - via.pt).mag2() <= via.r ** 2
 
 
 def pt_inside_polygon(poly, pt):
@@ -194,6 +198,7 @@ _geom_ops = {}
 def _dist_name(a, b):
     fn_name = "dist_%s_%s" % (a.name.lower(), b.name.lower())
     return fn_name
+
 
 for n, a in enumerate(_geom_types):
     for b in _geom_types[n:]:
@@ -218,6 +223,7 @@ def distance(a, b):
 def intersect(a, b):
     return distance(a, b) <= 0
 
+
 _pt_inside_ops = {}
 for i in _geom_types:
     _pt_inside_ops[i] = globals()["pt_inside_%s" % i.name.lower()]
@@ -231,13 +237,13 @@ def point_inside(geom, pt):
 
 
 def can_self_intersect(geom):
-    return geom.ISC not in [IntersectionClass.NONE,
-                            IntersectionClass.VIRTUAL_LINE]
+    return geom.ISC not in [IntersectionClass.NONE, IntersectionClass.VIRTUAL_LINE]
 
 
 # layer_for finds a layer (or None) for the geometry queried.
 def _layer_for_XX(geom):
     return geom.layer
+
 
 _layer_for_polygon = _layer_for_trace = _layer_for_pad = _layer_for_XX
 
@@ -248,6 +254,7 @@ def _layer_for_via(via):
 
 def _layer_for_virtual_line(vl):
     return None
+
 
 _layer_for_ops = {}
 for i in _geom_types:

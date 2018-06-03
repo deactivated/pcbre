@@ -1,4 +1,4 @@
-__author__ = 'davidc'
+__author__ = "davidc"
 
 import pkg_resources
 import OpenGL.GL as GL
@@ -6,7 +6,6 @@ from pcbre.ui.gl.shader import compileProgram, compileShader
 
 
 class UniformProxy(object):
-
     def __init__(self, parent):
         self._prog = parent
 
@@ -21,7 +20,6 @@ class UniformProxy(object):
 
 
 class ShaderCache(object):
-
     def __init__(self):
         self.cache = {}
 
@@ -39,11 +37,13 @@ class ShaderCache(object):
     @staticmethod
     def __get_shader_text(name):
         byte_str = pkg_resources.resource_string(
-            'pcbre.resources', "shaders/%s.glsl" % name)
-        return byte_str.decode('ascii')
+            "pcbre.resources", "shaders/%s.glsl" % name
+        )
+        return byte_str.decode("ascii")
 
-    def get(self, vert_name, frag_name, defines={},
-            vertex_defines={}, fragment_defines={}):
+    def get(
+        self, vert_name, frag_name, defines={}, vertex_defines={}, fragment_defines={}
+    ):
 
         _fragment_defines = {}
         _fragment_defines.update(fragment_defines)
@@ -57,8 +57,10 @@ class ShaderCache(object):
         vert_prepend = self.__build_s(_vertex_defines)
 
         # The defines to a shader affect compilation, create an unordered key
-        _defines_key = (frozenset(_fragment_defines.items()),
-                        frozenset(_vertex_defines.items()))
+        _defines_key = (
+            frozenset(_fragment_defines.items()),
+            frozenset(_vertex_defines.items()),
+        )
 
         key = vert_name, frag_name, _defines_key
 
@@ -70,14 +72,16 @@ class ShaderCache(object):
             vert_version, vert1s = self.extract_version(vert1s)
             try:
                 frag = compileShader(
-                    [frag_version, frag_prepend, frag1s], GL.GL_FRAGMENT_SHADER)
+                    [frag_version, frag_prepend, frag1s], GL.GL_FRAGMENT_SHADER
+                )
                 vert = compileShader(
-                    [vert_version, vert_prepend, vert1s], GL.GL_VERTEX_SHADER)
+                    [vert_version, vert_prepend, vert1s], GL.GL_VERTEX_SHADER
+                )
                 obj = compileProgram(vert, frag)
             except RuntimeError as e:
                 msg, shader, _ = e.args
                 print("During Shader Compilation: ", msg)
-                shader_body = b"".join(shader).decode('ascii')
+                shader_body = b"".join(shader).decode("ascii")
                 lines = shader_body.split("\n")
                 for i in lines:
                     print("\t%s" % i.strip())

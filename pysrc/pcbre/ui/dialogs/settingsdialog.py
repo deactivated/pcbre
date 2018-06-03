@@ -5,7 +5,6 @@ from pcbre.ui.widgets.unitedit import UnitLineEdit
 
 
 class SettingsDialog(QtWidgets.QDialog):
-
     def __init__(self):
         super(SettingsDialog, self).__init__()
 
@@ -17,7 +16,8 @@ class SettingsDialog(QtWidgets.QDialog):
         vl.addLayout(self.layout)
 
         bb = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel)
+            QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel
+        )
         vl.addWidget(bb)
 
         bb.accepted.connect(self.accept)
@@ -32,7 +32,6 @@ class SettingsDialog(QtWidgets.QDialog):
 
 
 class FloatTrait:
-
     @staticmethod
     def validator():
         return QtGui.QDoubleValidator()
@@ -47,7 +46,6 @@ class FloatTrait:
 
 
 class IntTrait:
-
     @staticmethod
     def validator():
         return QtGui.QIntValidator()
@@ -62,7 +60,6 @@ class IntTrait:
 
 
 class LineEditable(object):
-
     def __init__(self, model, attr, traits):
         self.widget = QtWidgets.QLineEdit()
         self.model = model
@@ -86,7 +83,6 @@ class LineEditable(object):
 
 
 class DegreeEditable(object):
-
     def __init__(self, model, attr):
         self.widget = QtWidgets.QLineEdit()
         self.model = model
@@ -109,14 +105,13 @@ class DegreeEditable(object):
 
 
 class UnitEditable(object):
-
     def __init__(self, model, attr, unitgroup, defaultunit=None):
         self.widget = UnitLineEdit(unitgroup)
         self.widget.suppress_enter = False
 
         self.model = model
         self.attr = attr
-        path = self.attr.split('.')
+        path = self.attr.split(".")
         self.path = path[:-1]
         self.subattr = path[-1]
 
@@ -150,11 +145,9 @@ class UnitEditable(object):
 
 
 class PointUnitEditable(UnitEditable):
-
     def __init__(self, model, attr, axis, unitgroup, defaultunit=None):
         self.axis = axis
-        super(PointUnitEditable, self).__init__(
-            model, attr, unitgroup, defaultunit)
+        super(PointUnitEditable, self).__init__(model, attr, unitgroup, defaultunit)
 
     def load(self):
         par = self._get_par_obj()
@@ -164,14 +157,13 @@ class PointUnitEditable(UnitEditable):
     def save(self):
         par = self._get_par_obj()
         cur = getattr(par, self.subattr)
-        kw = {'x': cur.x, 'y': cur.y}
+        kw = {"x": cur.x, "y": cur.y}
         kw[self.axis] = self.value
         v = Point2(**kw)
         setattr(par, self.subattr, v)
 
 
 class CheckedEditable(object):
-
     def __init__(self, model, attr):
         self.widget = QtWidgets.QCheckBox()
         self.model = model
@@ -183,7 +175,6 @@ class CheckedEditable(object):
 
 
 class AutoSettingsDialog(SettingsDialog):
-
     def __init__(self):
         super(AutoSettingsDialog, self).__init__()
         self.editables = []
@@ -222,7 +213,6 @@ class AutoSettingsWidget(QtWidgets.QWidget):
 
 
 class MultiAutoSettingsDialog(QtWidgets.QDialog):
-
     def __init__(self):
         super(MultiAutoSettingsDialog, self).__init__()
 
@@ -238,7 +228,8 @@ class MultiAutoSettingsDialog(QtWidgets.QDialog):
         vl.addLayout(self.__qsw)
 
         bb = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel)
+            QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel
+        )
         vl.addWidget(bb)
 
         bb.accepted.connect(self.accept)

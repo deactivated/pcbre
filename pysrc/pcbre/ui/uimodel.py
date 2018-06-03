@@ -12,7 +12,6 @@ class mdlbase(object):
 
 
 class mdlacc(mdlbase):
-
     def __init__(self, initial, on=lambda self: None):
         self.value = initial
         self.on = on
@@ -26,7 +25,8 @@ class mdlacc(mdlbase):
             name = self.name
         except AttributeError:
             raise NotImplementedError(
-                "mdlacc only works when the setup metaclass has been called")
+                "mdlacc only works when the setup metaclass has been called"
+            )
 
         try:
             return getattr(instance, self.name)
@@ -39,7 +39,8 @@ class mdlacc(mdlbase):
             name = self.name
         except AttributeError:
             raise NotImplementedError(
-                "mdlacc only works when the setup metaclass has been called")
+                "mdlacc only works when the setup metaclass has been called"
+            )
 
         old = getattr(instance, self.name)
         setattr(instance, self.name, value)
@@ -55,17 +56,18 @@ class mdlacc(mdlbase):
             instance.change()
             self.on(instance)
 
+
 _base = type(QtCore.QObject)
 
 
 class GenModelMeta(_base):
-
     def __new__(mcs, name, bases, dict):
         for k, v in list(dict.items()):
             if isinstance(v, mdlbase):
                 v.fixup("_%s" % k)
 
         return _base.__new__(mcs, name, bases, dict)
+
 
 wc = 0
 

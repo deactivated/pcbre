@@ -1,4 +1,4 @@
-__author__ = 'davidc'
+__author__ = "davidc"
 
 
 def get_consolidated_draws(dr):

@@ -2,17 +2,18 @@ from pcbre.ui.gl.shadercache import ShaderCache
 from pcbre.ui.gl.textrender import TextRender
 from pcbre.ui.gl.textatlas import SDFTextAtlas
 import OpenGL.GL as GL
-__author__ = 'davidc'
+
+__author__ = "davidc"
 
 import pkg_resources
 
 
 sans_serif_atlas = SDFTextAtlas(
-    pkg_resources.resource_filename('pcbre.resources', 'Vera.ttf'))
+    pkg_resources.resource_filename("pcbre.resources", "Vera.ttf")
+)
 
 
 class GLShared(object):
-
     def __init__(self):
         self.shader_cache = ShaderCache()
 

@@ -1,4 +1,4 @@
-__author__ = 'davidc'
+__author__ = "davidc"
 
 from enum import Enum
 
@@ -10,7 +10,6 @@ class ChangeType(Enum):
 
 
 class ModelChange:
-
     def __init__(self, container, what, reason):
         """
 

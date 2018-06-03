@@ -17,7 +17,7 @@ from pcbre.ui.misc import QImage_from_numpy
 from pcbre.accel.edtaa3 import edtaa3, compute_gradient, c_double_p, c_short_p
 
 
-__author__ = 'davidc'
+__author__ = "davidc"
 
 
 BASE_FONT = 32.
@@ -61,15 +61,27 @@ def loadCached():
             ptr = newimg.constBits()
 
             # Extract the first channel
-            data = numpy.array(ptr, dtype=numpy.uint8).reshape(
-                newimg.height(), newimg.width(), 4)[:, :, 0].copy()
+            data = (
+                numpy.array(ptr, dtype=numpy.uint8)
+                .reshape(newimg.height(), newimg.width(), 4)[:, :, 0]
+                .copy()
+            )
 
             st = json.load(open("/tmp/shader.json", "r"))
 
             atlas = {}
             for k, v in list(st.items()):
-                atlas[k] = AtlasEntry(v['w'], v['h'], v['sx'], v['sy'], v[
-                                      'tx'], v['ty'], v['l'], v['t'], v['hb'])
+                atlas[k] = AtlasEntry(
+                    v["w"],
+                    v["h"],
+                    v["sx"],
+                    v["sy"],
+                    v["tx"],
+                    v["ty"],
+                    v["l"],
+                    v["t"],
+                    v["hb"],
+                )
 
             return atlas, data
 
@@ -91,7 +103,8 @@ def distance_transform_bitmap(input, margin):
     data = numpy.zeros(shape, dtype=numpy.double)
     if input._FT_Bitmap.buffer:
         data[mp:-mp, mp:-mp] = numpy.ctypeslib.as_array(
-            input._FT_Bitmap.buffer, (input.rows, input.width))[::-1]
+            input._FT_Bitmap.buffer, (input.rows, input.width)
+        )[::-1]
 
     # And rescale said buffer to be in the range 0..1
     data /= 255.0
@@ -107,19 +120,24 @@ def distance_transform_bitmap(input, margin):
     inside = numpy.zeros(shape, dtype=numpy.double)
 
     # Distance transform for the outside
-    compute_gradient(data.ctypes.data_as(c_double_p),
-                     width, height,
-                     gx.ctypes.data_as(c_double_p),
-                     gy.ctypes.data_as(c_double_p))
+    compute_gradient(
+        data.ctypes.data_as(c_double_p),
+        width,
+        height,
+        gx.ctypes.data_as(c_double_p),
+        gy.ctypes.data_as(c_double_p),
+    )
 
-    edtaa3(data.ctypes.data_as(c_double_p),
-           gx.ctypes.data_as(c_double_p),
-           gy.ctypes.data_as(c_double_p),
-           width,
-           height,
-           xdist.ctypes.data_as(c_short_p),
-           ydist.ctypes.data_as(c_short_p),
-           outside.ctypes.data_as(c_double_p))
+    edtaa3(
+        data.ctypes.data_as(c_double_p),
+        gx.ctypes.data_as(c_double_p),
+        gy.ctypes.data_as(c_double_p),
+        width,
+        height,
+        xdist.ctypes.data_as(c_short_p),
+        ydist.ctypes.data_as(c_short_p),
+        outside.ctypes.data_as(c_double_p),
+    )
 
     outside.clip(min=0, out=outside)
 
@@ -129,19 +147,24 @@ def distance_transform_bitmap(input, margin):
     gx.fill(0)
     gy.fill(0)
 
-    compute_gradient(data.ctypes.data_as(c_double_p),
-                     width, height,
-                     gx.ctypes.data_as(c_double_p),
-                     gy.ctypes.data_as(c_double_p))
+    compute_gradient(
+        data.ctypes.data_as(c_double_p),
+        width,
+        height,
+        gx.ctypes.data_as(c_double_p),
+        gy.ctypes.data_as(c_double_p),
+    )
 
-    edtaa3(data.ctypes.data_as(c_double_p),
-           gx.ctypes.data_as(c_double_p),
-           gy.ctypes.data_as(c_double_p),
-           width,
-           height,
-           xdist.ctypes.data_as(c_short_p),
-           ydist.ctypes.data_as(c_short_p),
-           inside.ctypes.data_as(c_double_p))
+    edtaa3(
+        data.ctypes.data_as(c_double_p),
+        gx.ctypes.data_as(c_double_p),
+        gy.ctypes.data_as(c_double_p),
+        width,
+        height,
+        xdist.ctypes.data_as(c_short_p),
+        ydist.ctypes.data_as(c_short_p),
+        inside.ctypes.data_as(c_double_p),
+    )
 
     inside.clip(min=0, out=inside)
 
@@ -152,8 +175,7 @@ def distance_transform_bitmap(input, margin):
     old_h = int(inside.shape[0] / PRESCALE)
 
     # Resample down to the low res version
-    rescaled = scipy.ndimage.interpolation.zoom(
-        inside, 1.0 / PRESCALE, order=1)
+    rescaled = scipy.ndimage.interpolation.zoom(inside, 1.0 / PRESCALE, order=1)
     rescaled = rescaled[:old_h, :old_w]
 
     # And transfer back to a uint8
@@ -175,7 +197,6 @@ def distance_transform_bitmap(input, margin):
 
 
 class AtlasEntry(object):
-
     def __init__(self, w, h, sx, sy, tx, ty, l, t, hb):
         # Texture Coordinates
         self.sx = sx
@@ -198,11 +219,16 @@ class AtlasEntry(object):
     @staticmethod
     def fromGlyph(glyph):
         return AtlasEntry(
-            glyph.bitmap.width / PRESCALE, glyph.bitmap.rows / PRESCALE,
-            0, 0, 0, 0,
-            glyph.metrics.horiBearingX / 64.0 /
-            PRESCALE, glyph.metrics.horiBearingY / 64.0 / PRESCALE,
-            glyph.metrics.horiAdvance / 64.0 / PRESCALE)
+            glyph.bitmap.width / PRESCALE,
+            glyph.bitmap.rows / PRESCALE,
+            0,
+            0,
+            0,
+            0,
+            glyph.metrics.horiBearingX / 64.0 / PRESCALE,
+            glyph.metrics.horiBearingY / 64.0 / PRESCALE,
+            glyph.metrics.horiAdvance / 64.0 / PRESCALE,
+        )
 
     def updatePos(self, texwidth, texheight, x0, y0, x1, y1):
         fw = float(texwidth)
@@ -214,7 +240,6 @@ class AtlasEntry(object):
 
 
 class SDFTextAtlas(object):
-
     def __init__(self, fontname):
         self.face = freetype.Face(fontname)
         pre = time.time()
@@ -238,7 +263,8 @@ class SDFTextAtlas(object):
         old_set = frozenset(list(self.atlas.keys()))
 
         import string
-        chars = string.digits + string.ascii_letters + string.punctuation + ' '
+
+        chars = string.digits + string.ascii_letters + string.punctuation + " "
 
         # self.addGlyphs(string.digits + string.letters + string.punctuation)
 
@@ -285,8 +311,9 @@ class SDFTextAtlas(object):
             glyphs.append((char, ae, bm))
 
         # Submit a list of rects to pack to the packer
-        packlist = [(x[1].w + 2 * self.margin, x[1].h + 2 * self.margin)
-                    for x in glyphs]
+        packlist = [
+            (x[1].w + 2 * self.margin, x[1].h + 2 * self.margin) for x in glyphs
+        ]
         multiple = self.packer.pack_multiple(packlist)
         assert len(multiple) == len(packlist)
 

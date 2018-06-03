@@ -12,16 +12,24 @@ from pcbre.ui.widgets.unitedit import UnitLineEdit, UNIT_GROUP_MM
 
 from pcbre.qt_compat import QtCore, QtWidgets
 from pcbre.ui.tools.basetool import BaseToolController
-from pcbre.matrix import (translate, scale, Vec2, project_point_line, rotate,
-                          line_intersect, INTERSECT_NORMAL, Point2,
-                          projectPoint)
+from pcbre.matrix import (
+    translate,
+    scale,
+    Vec2,
+    project_point_line,
+    rotate,
+    line_intersect,
+    INTERSECT_NORMAL,
+    Point2,
+    projectPoint,
+)
 from pcbre.ui.uimodel import GenModel, mdlacc
 from pcbre.ui.gl import VAO, vbobind
 from pcbre.util import float_or_None
 from pcbre.units import MM
 
 
-__author__ = 'davidc'
+__author__ = "davidc"
 
 
 corners = [(-1, -1), (1, -1), (1, 1), (-1, 1)]
@@ -64,6 +72,7 @@ def IDX_IS_ANCHOR(x):
 def IDX_IS_HANDLE(x):
     return x < PERIM_HANDLE_MAX
 
+
 # Comparison function for type Maybe(numpy.ndarray)
 
 
@@ -75,6 +84,7 @@ def none_compare(old, value):
     else:
         return old != value
 
+
 # cmd pattern objects for updating the model
 
 
@@ -83,8 +93,9 @@ def cmd_set_dimensions(model, dim_a, dim_b, translate_x, translate_y):
     """
     Command to set the realspace parameters for the dimensions
     """
-    av = sig(model.dim_values[0], model.dim_values[
-             1], model.translate_x, model.translate_y)
+    av = sig(
+        model.dim_values[0], model.dim_values[1], model.translate_x, model.translate_y
+    )
 
     with model.edit():
         model.dim_values[0] = dim_a
@@ -121,7 +132,6 @@ def cmd_set_rotate(model, theta, flip_x, flip_y):
 
 
 class cmd_set_handle_position(QtWidgets.QUndoCommand):
-
     def __init__(self, model, index, position, merge=False):
         super(cmd_set_handle_position, self).__init__()
 
@@ -147,10 +157,13 @@ class cmd_set_handle_position(QtWidgets.QUndoCommand):
             self.model.dim_handles[n] = i
 
     def mergeWith(self, new):
-        if (self.merge and new.merge and
-                self.model is new.model and
-                self.index == new.index and
-                (self.position is None) == (new.position is None)):
+        if (
+            self.merge
+            and new.merge
+            and self.model is new.model
+            and self.index == new.index
+            and (self.position is None) == (new.position is None)
+        ):
             self.position = new.position
             return True
 
@@ -165,7 +178,6 @@ def point2_or_none(p):
 
 
 class RectAlignmentModel(GenModel):
-
     def __init__(self, image):
         GenModel.__init__(self)
 
@@ -177,13 +189,16 @@ class RectAlignmentModel(GenModel):
         x = ini_shape[1] / max_dim
         y = ini_shape[0] / max_dim
 
-        self.__align_handles = [
-            Vec2(-x, -y), Vec2(x, -y), Vec2(x, y), Vec2(-x, y)] + [None] * 8
+        self.__align_handles = [Vec2(-x, -y), Vec2(x, -y), Vec2(x, y), Vec2(-x, y)] + [
+            None
+        ] * 8
 
-        self.__dim_handles = [self.__align_handles[0],
-                              self.__align_handles[1],
-                              self.align_handles[1],
-                              self.align_handles[2]]
+        self.__dim_handles = [
+            self.__align_handles[0],
+            self.__align_handles[1],
+            self.align_handles[1],
+            self.align_handles[2],
+        ]
 
         self.__placeholder_dim_values = [100, 100]
         self.__dim_values = [None, None]
@@ -227,10 +242,16 @@ class RectAlignmentModel(GenModel):
         self.flip_y = ra.flip_y
 
     def save(self, project):
-        align = RectAlignment(self.__align_handles, self.__dim_handles,
-                              self.__active_dims(), self.dims_locked,
-                              Point2(self.translate_x, self.translate_y),
-                              self.origin_idx, self.flip_x, self.flip_y)
+        align = RectAlignment(
+            self.__align_handles,
+            self.__dim_handles,
+            self.__active_dims(),
+            self.dims_locked,
+            Point2(self.translate_x, self.translate_y),
+            self.origin_idx,
+            self.flip_x,
+            self.flip_y,
+        )
         self.__image.set_alignment(align)
 
         self.__image.transform_matrix = self.image_matrix
@@ -238,21 +259,23 @@ class RectAlignmentModel(GenModel):
     @property
     def flip_rotate_matrix(self):
         return rotate(self.rotate_theta).dot(
-            scale(-1 if self.flip_x else 1, -1 if self.flip_y else 1))
+            scale(-1 if self.flip_x else 1, -1 if self.flip_y else 1)
+        )
 
     @property
     def translate_matrix(self):
-        pt = self.scale_matrix.dot(self.persp_matrix.dot(
-            self.align_handles[self.origin_idx].homol()))
+        pt = self.scale_matrix.dot(
+            self.persp_matrix.dot(self.align_handles[self.origin_idx].homol())
+        )
         pt /= pt[2]
 
-        return translate(self.translate_x - pt[0],
-                         self.translate_y - pt[1])
+        return translate(self.translate_x - pt[0], self.translate_y - pt[1])
 
     @property
     def placeholder_dim_values(self):
         return RectAlignmentModel._lprox(
-            self, self.__placeholder_dim_values, coerce=None)
+            self, self.__placeholder_dim_values, coerce=None
+        )
 
     @property
     def dim_values(self):
@@ -260,8 +283,9 @@ class RectAlignmentModel(GenModel):
 
     @property
     def image_matrix(self):
-        return self.translate_matrix.dot(self.flip_rotate_matrix.dot(
-            self.scale_matrix.dot(self.persp_matrix)))
+        return self.translate_matrix.dot(
+            self.flip_rotate_matrix.dot(self.scale_matrix.dot(self.persp_matrix))
+        )
 
     def all_handles(self):
         if self.dims_locked:
@@ -282,7 +306,6 @@ class RectAlignmentModel(GenModel):
         self.update_matricies()
 
     class _lprox(object):
-
         def __init__(self, par, backing, n=None, start=0, coerce=Point2):
             self.par = par
             self.backing = backing
@@ -309,12 +332,16 @@ class RectAlignmentModel(GenModel):
                 else:
                     new_stop = item.stop + self.start
 
-                if (new_start < 0 or new_start >= self.n or
-                        (item.step != 1 and item.step is not None) or
-                        (new_stop <= new_start or new_stop > self.n)):
+                if (
+                    new_start < 0
+                    or new_start >= self.n
+                    or (item.step != 1 and item.step is not None)
+                    or (new_stop <= new_start or new_stop > self.n)
+                ):
                     raise IndexError("slice %s is not valid" % item)
                 return RectAlignmentModel._lprox(
-                    self.par, self.backing, new_stop - new_start, new_start)
+                    self.par, self.backing, new_stop - new_start, new_start
+                )
 
             raise TypeError
 
@@ -331,7 +358,7 @@ class RectAlignmentModel(GenModel):
                 self.par.change()
 
         def __iter__(self):
-            return iter(self.backing[self.start: self.start + self.n])
+            return iter(self.backing[self.start : self.start + self.n])
 
         def __len__(self):
             return self.n
@@ -346,20 +373,27 @@ class RectAlignmentModel(GenModel):
     @property
     def dim_handles(self):
         if self.dims_locked:
-            return [self.__align_handles[0], self.__align_handles[1],
-                    self.align_handles[1], self.align_handles[2]]
+            return [
+                self.__align_handles[0],
+                self.__align_handles[1],
+                self.align_handles[1],
+                self.align_handles[2],
+            ]
         else:
             return RectAlignmentModel._lprox(self, self.__dim_handles, 4)
 
     def line_iter(self):
-        return list(zip(self.align_handles[:PERIM_HANDLE_MAX],
-                        self.align_handles[1:PERIM_HANDLE_MAX] +
-                        self.align_handles[0:1]))
+        return list(
+            zip(
+                self.align_handles[:PERIM_HANDLE_MAX],
+                self.align_handles[1:PERIM_HANDLE_MAX] + self.align_handles[0:1],
+            )
+        )
 
     def get_anchors(self, idx):
         assert IDX_IS_HANDLE(idx)
         base = 2 * idx + PERIM_HANDLE_MAX
-        return [i for i in self.align_handles[base:base + 2] if i is not None]
+        return [i for i in self.align_handles[base : base + 2] if i is not None]
 
     def __active_dims(self):
         if self.dim_values[0] is not None and self.dim_values[1] is not None:
@@ -400,20 +434,24 @@ class RectAlignmentModel(GenModel):
             # the line for motion
             elif len(anchors_ahead) == 2:
                 pos, _ = project_point_line(
-                    pos, anchors_ahead[0], anchors_ahead[1], False)
+                    pos, anchors_ahead[0], anchors_ahead[1], False
+                )
             elif len(anchors_prev) == 2:
                 pos, _ = project_point_line(
-                    pos, anchors_prev[0], anchors_prev[1], False)
+                    pos, anchors_prev[0], anchors_prev[1], False
+                )
 
             if len(anchors_ahead) == 1:
                 itype, pt_ahead_2 = line_intersect(
-                    pos, anchors_ahead[0], line_ahead_2[0], line_ahead_2[1])
+                    pos, anchors_ahead[0], line_ahead_2[0], line_ahead_2[1]
+                )
                 if itype != INTERSECT_NORMAL:
                     return
 
             if len(anchors_prev) == 1:
                 itype, pt_behind_2 = line_intersect(
-                    pos, anchors_prev[0], line_behind_2[0], line_behind_2[1])
+                    pos, anchors_prev[0], line_behind_2[0], line_behind_2[1]
+                )
                 if itype != INTERSECT_NORMAL:
                     return
 
@@ -452,13 +490,15 @@ class RectAlignmentModel(GenModel):
 
             # Recalculate the endpoints
             intersect_cond, pt_prev = line_intersect(
-                pt_a, pt_b, prev_line[0], prev_line[1])
+                pt_a, pt_b, prev_line[0], prev_line[1]
+            )
 
             if intersect_cond != INTERSECT_NORMAL:
                 return
 
             intersect_cond, pt_next = line_intersect(
-                pt_a, pt_b, next_line[0], next_line[1])
+                pt_a, pt_b, next_line[0], next_line[1]
+            )
 
             if intersect_cond != INTERSECT_NORMAL:
                 return
@@ -502,7 +542,7 @@ class RectAlignmentModel(GenModel):
 
         da = handles_pp[1] - handles_pp[0]
         db = handles_pp[3] - handles_pp[2]
-        A = numpy.vstack([da**2, db**2])
+        A = numpy.vstack([da ** 2, db ** 2])
         B = numpy.array(dims) ** 2
         res = numpy.abs(numpy.linalg.solve(A, B)) ** .5
 
@@ -570,12 +610,12 @@ class RectAlignmentControllerView(BaseToolController, GenModel):
         self.col_loc = GL.glGetUniformLocation(self.prog, "color")
 
         # Build a VBO for rendering square "drag-handles"
-        self.vbo_handles_ar = numpy.ndarray(
-            4, dtype=[("vertex", numpy.float32, 2)])
+        self.vbo_handles_ar = numpy.ndarray(4, dtype=[("vertex", numpy.float32, 2)])
         self.vbo_handles_ar["vertex"] = numpy.array(corners) * HANDLE_HALF_SIZE
 
-        self.vbo_handles = VBO(self.vbo_handles_ar,
-                               GL.GL_STATIC_DRAW, GL.GL_ARRAY_BUFFER)
+        self.vbo_handles = VBO(
+            self.vbo_handles_ar, GL.GL_STATIC_DRAW, GL.GL_ARRAY_BUFFER
+        )
 
         self.vao_handles = VAO()
         with self.vbo_handles, self.vao_handles:
@@ -585,11 +625,11 @@ class RectAlignmentControllerView(BaseToolController, GenModel):
         # We don't initialize it here because it is updated every render
         # 4 verticies for outside perimeter
         # 6 verticies for each dim
-        self.vbo_per_dim_ar = numpy.zeros(
-            16, dtype=[("vertex", numpy.float32, 2)])
+        self.vbo_per_dim_ar = numpy.zeros(16, dtype=[("vertex", numpy.float32, 2)])
 
-        self.vbo_per_dim = VBO(self.vbo_per_dim_ar,
-                               GL.GL_DYNAMIC_DRAW, GL.GL_ARRAY_BUFFER)
+        self.vbo_per_dim = VBO(
+            self.vbo_per_dim_ar, GL.GL_DYNAMIC_DRAW, GL.GL_ARRAY_BUFFER
+        )
 
         self.vao_per_dim = VAO()
         with self.vao_per_dim, self.vbo_per_dim:
@@ -636,14 +676,16 @@ class RectAlignmentControllerView(BaseToolController, GenModel):
             if numpy.cross(Vec2(1, 0), normal) > 0:
                 normal = -normal
 
-        res = numpy.array([
-            a + normal * 8,
-            a + normal * 20,
-            a + normal * 15,
-            b + normal * 15,
-            b + normal * 8,
-            b + normal * 20,
-        ])
+        res = numpy.array(
+            [
+                a + normal * 8,
+                a + normal * 20,
+                a + normal * 15,
+                b + normal * 15,
+                b + normal * 8,
+                b + normal * 20,
+            ]
+        )
 
         return res
 
@@ -654,14 +696,17 @@ class RectAlignmentControllerView(BaseToolController, GenModel):
 
         # Perimeter is defined by the first 4 handles
         self.vbo_per_dim_ar["vertex"][:4] = [
-            self.im2V(pt) for pt in self.model.align_handles[:4]]
+            self.im2V(pt) for pt in self.model.align_handles[:4]
+        ]
 
         # Generate the dimension lines. For ease of use, we always draw the
         # dim-lines above when dims are manual or below when dims are unlocked
         self.vbo_per_dim_ar["vertex"][4:10] = self.gen_dim(
-            0, not self.model.dims_locked)
+            0, not self.model.dims_locked
+        )
         self.vbo_per_dim_ar["vertex"][10:16] = self.gen_dim(
-            2, not self.model.dims_locked)
+            2, not self.model.dims_locked
+        )
 
         self.vbo_per_dim.set_array(self.vbo_per_dim_ar)
 
@@ -675,8 +720,8 @@ class RectAlignmentControllerView(BaseToolController, GenModel):
         # ... and draw the perimeter
         with self.vao_per_dim, self.prog:
             GL.glUniformMatrix3fv(
-                self.mat_loc, 1, True,
-                self.viewState.glWMatrix.astype(numpy.float32))
+                self.mat_loc, 1, True, self.viewState.glWMatrix.astype(numpy.float32)
+            )
 
             # Draw the outer perimeter
             if disabled:
@@ -718,8 +763,7 @@ class RectAlignmentControllerView(BaseToolController, GenModel):
                 self.render_handle(corner_pos, color, is_anchor, True)
 
                 if self.idx_handle_sel == n:
-                    self.render_handle(
-                        corner_pos, [0, 0, 0, 1], is_anchor, False)
+                    self.render_handle(corner_pos, [0, 0, 0, 1], is_anchor, False)
 
             if self.ghost_handle is not None:
                 self.render_handle(self.ghost_handle, [0.8, 0.8, 0, 0.5], True)
@@ -735,8 +779,7 @@ class RectAlignmentControllerView(BaseToolController, GenModel):
                         color = [0.0, 0.0, 0.8, 1]
                     self.render_handle(handle_pos, color, False, True)
                     if self.idx_handle_sel == n:
-                        self.render_handle(
-                            corner_pos, [0, 0, 0, 1], is_anchor, False)
+                        self.render_handle(corner_pos, [0, 0, 0, 1], is_anchor, False)
 
     def render_handle(self, position, color, diagonal=False, filled=False):
         if diagonal:
@@ -747,8 +790,7 @@ class RectAlignmentControllerView(BaseToolController, GenModel):
         m = self.viewState.glWMatrix.dot(translate(*position).dot(r))
         GL.glUniformMatrix3fv(self.mat_loc, 1, True, m.astype(numpy.float32))
         GL.glUniform4f(self.col_loc, *color)
-        GL.glDrawArrays(GL.GL_TRIANGLE_FAN if filled else GL.GL_LINE_LOOP,
-                        0, 4)
+        GL.glDrawArrays(GL.GL_TRIANGLE_FAN if filled else GL.GL_LINE_LOOP, 0, 4)
 
     def get_handle_for_mouse(self, pos):
         for n, handle in enumerate(self.model.all_handles()):
@@ -758,8 +800,9 @@ class RectAlignmentControllerView(BaseToolController, GenModel):
             # Get the pix-wise bbox of the handle
             p = self.im2V(handle)
             r = QtCore.QRect(p[0], p[1], 0, 0)
-            r.adjust(-HANDLE_HALF_SIZE, -HANDLE_HALF_SIZE,
-                     HANDLE_HALF_SIZE, HANDLE_HALF_SIZE)
+            r.adjust(
+                -HANDLE_HALF_SIZE, -HANDLE_HALF_SIZE, HANDLE_HALF_SIZE, HANDLE_HALF_SIZE
+            )
 
             print(handle, p, pos)
 
@@ -786,8 +829,9 @@ class RectAlignmentControllerView(BaseToolController, GenModel):
 
         handle = self.get_handle_for_mouse(event.pos())
 
-        if (event.button() == QtCore.Qt.LeftButton and
-                (event.modifiers() & ADD_MODIFIER)):
+        if event.button() == QtCore.Qt.LeftButton and (
+            event.modifiers() & ADD_MODIFIER
+        ):
             idx, p = self.get_line_query_for_mouse(event.pos())
             if idx is not None:
                 anchors = self.model.get_anchors(idx)
@@ -801,9 +845,11 @@ class RectAlignmentControllerView(BaseToolController, GenModel):
                     self.idx_handle_sel = idx
                     self.idx_handle_hover = None
 
-        elif (event.button() == QtCore.Qt.LeftButton and
-              (event.modifiers() & DEL_MODIFIER) and
-              (handle is not None and handle >= 4)):
+        elif (
+            event.button() == QtCore.Qt.LeftButton
+            and (event.modifiers() & DEL_MODIFIER)
+            and (handle is not None and handle >= 4)
+        ):
             cmd = cmd_set_handle_position(self.model, handle, None)
             self._parent.undoStack.push(cmd)
             # self.model.set_handle(handle, None)
@@ -827,8 +873,7 @@ class RectAlignmentControllerView(BaseToolController, GenModel):
         if disabled:
             return False
 
-        if (event.button() == QtCore.Qt.LeftButton and
-                self.behave_mode == MODE_DRAGGING):
+        if event.button() == QtCore.Qt.LeftButton and self.behave_mode == MODE_DRAGGING:
             self.behave_mode = MODE_NONE
         else:
             return False
@@ -863,7 +908,8 @@ class RectAlignmentControllerView(BaseToolController, GenModel):
             w_pos = self.V2im(Vec2(event.pos()))
 
             cmd = cmd_set_handle_position(
-                self.model, self.idx_handle_sel, w_pos, merge=True)
+                self.model, self.idx_handle_sel, w_pos, merge=True
+            )
             self._parent.undoStack.push(cmd)
             # self.model.set_handle(self.idx_handle_sel, w_pos)
 
@@ -882,18 +928,22 @@ class RectAlignmentControllerView(BaseToolController, GenModel):
 
         elif self.idx_handle_sel is not None:
 
-            if (evt.key() in (QtCore.Qt.Key_Delete,
-                              QtCore.Qt.Key_Backspace) and
-                    IDX_IS_ANCHOR(self.idx_handle_sel)):
-                cmd = cmd_set_handle_position(
-                    self.model, self.idx_handle_sel, None)
+            if evt.key() in (
+                QtCore.Qt.Key_Delete,
+                QtCore.Qt.Key_Backspace,
+            ) and IDX_IS_ANCHOR(self.idx_handle_sel):
+                cmd = cmd_set_handle_position(self.model, self.idx_handle_sel, None)
                 self._parent.undoStack.push(cmd)
                 # self.model.set_handle(self.idx_handle_sel, None)
                 self.idx_handle_sel = None
 
             # Basic 1-px nudging
-            elif evt.key() in (QtCore.Qt.Key_Left, QtCore.Qt.Key_Right,
-                               QtCore.Qt.Key_Up, QtCore.Qt.Key_Down):
+            elif evt.key() in (
+                QtCore.Qt.Key_Left,
+                QtCore.Qt.Key_Right,
+                QtCore.Qt.Key_Up,
+                QtCore.Qt.Key_Down,
+            ):
                 nudge = {
                     QtCore.Qt.Key_Left: (-1, 0),
                     QtCore.Qt.Key_Right: (1, 0),
@@ -901,11 +951,11 @@ class RectAlignmentControllerView(BaseToolController, GenModel):
                     QtCore.Qt.Key_Down: (0, 1),
                 }[evt.key()]
 
-                current = Vec2(
-                    self.im2V(self.model.align_handles[self.idx_handle_sel]))
+                current = Vec2(self.im2V(self.model.align_handles[self.idx_handle_sel]))
                 viewspace = self.V2im(current + nudge)
                 cmd = cmd_set_handle_position(
-                    self.model, self.idx_handle_sel, viewspace)
+                    self.model, self.idx_handle_sel, viewspace
+                )
                 self._parent.undoStack.push(cmd)
                 # self.model.set_handle(self.idx_handle_sel, viewspace)
 
@@ -935,14 +985,12 @@ class RectAlignmentControllerView(BaseToolController, GenModel):
 
 
 class ThetaLineEdit(PLineEdit):
-
     def sizeHint(self):
         size = super(ThetaLineEdit, self).sizeHint()
         return QtCore.QSize(2.5 * size.height(), size.height())
 
 
 class RectAlignSettingsWidget(QtWidgets.QWidget):
-
     def __init__(self, parent, model):
         super(RectAlignSettingsWidget, self).__init__()
         self._parent = parent
@@ -1043,13 +1091,13 @@ class RectAlignSettingsWidget(QtWidgets.QWidget):
 
     def rotate_changed(self):
         theta = math.radians(float(self.theta_le.text()))
-        cmd = cmd_set_rotate(self.model, theta, self.flip_x_btn.isChecked(),
-                             self.flip_y_btn.isChecked())
+        cmd = cmd_set_rotate(
+            self.model, theta, self.flip_x_btn.isChecked(), self.flip_y_btn.isChecked()
+        )
         self._parent.undoStack.push(cmd)
 
     def set_dims_locked(self):
-        cmd = cmd_set_dimensions_locked(
-            self.model, self.dims_locked_cb.isChecked())
+        cmd = cmd_set_dimensions_locked(self.model, self.dims_locked_cb.isChecked())
         self._parent.undoStack.push(cmd)
 
     def changed_dim(self):
@@ -1058,12 +1106,13 @@ class RectAlignSettingsWidget(QtWidgets.QWidget):
 
         translate_x = float(self.origin_x.text())
         translate_y = float(self.origin_y.text())
-        if (dim_a != self.model.dim_values[0] or
-                dim_b != self.model.dim_values[1] or
-                translate_x != self.model.translate_x or
-                translate_y != self.model.translate_y):
-            cmd = cmd_set_dimensions(
-                self.model, dim_a, dim_b, translate_x, translate_y)
+        if (
+            dim_a != self.model.dim_values[0]
+            or dim_b != self.model.dim_values[1]
+            or translate_x != self.model.translate_x
+            or translate_y != self.model.translate_y
+        ):
+            cmd = cmd_set_dimensions(self.model, dim_a, dim_b, translate_x, translate_y)
             self._parent.undoStack.push(cmd)
 
     def ref_changed(self, idx):

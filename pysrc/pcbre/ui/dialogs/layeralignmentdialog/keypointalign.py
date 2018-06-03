@@ -6,14 +6,22 @@ import colorsys
 from pcbre.qt_compat import QtCore, QtGui, QtWidgets
 from pcbre.model.imagelayer import KeyPointAlignment, KeyPoint
 from pcbre.ui.tools.basetool import BaseToolController
-from pcbre.matrix import (translate, scale, Vec2, project_point_line, rotate,
-                          line_intersect, INTERSECT_NORMAL, Point2, Rect,
-                          projectPoint)
+from pcbre.matrix import (
+    translate,
+    scale,
+    Vec2,
+    project_point_line,
+    rotate,
+    line_intersect,
+    INTERSECT_NORMAL,
+    Point2,
+    Rect,
+    projectPoint,
+)
 from pcbre.ui.uimodel import GenModel, mdlacc
 from pcbre.ui.gl import VAO, vbobind
 from pcbre.ui.widgets.lineedit import PLineEdit
-from pcbre.ui.widgets.unitedit import (UnitLineEdit, UNIT_GROUP_MM,
-                                       UNIT_GROUP_PX)
+from pcbre.ui.widgets.unitedit import UnitLineEdit, UNIT_GROUP_MM, UNIT_GROUP_PX
 from pcbre.util import float_or_None
 from OpenGL.arrays.vbo import VBO
 
@@ -137,7 +145,8 @@ class KeypointAlignmentModel(GenModel):
 
         # Remove all keypoints that were deleted
         still_exist_pkp = set(
-            i._orig_kp for i in self.keypoints if hasattr(i, "_orig_kp"))
+            i._orig_kp for i in self.keypoints if hasattr(i, "_orig_kp")
+        )
         for pkp in list(project.imagery.keypoints):
             if pkp not in still_exist_pkp:
                 project.imagery.del_keypoint(pkp)
@@ -291,8 +300,8 @@ class KeypointAlignmentModel(GenModel):
                 w = kp.world
 
                 #            a       b       c       d       e       f        #
-                rows.append([lw.x, lw.y, 1, 0, 0, 0, ])
-                rows.append([0, 0, 0, lw.x, lw.y, 1, ])
+                rows.append([lw.x, lw.y, 1, 0, 0, 0])
+                rows.append([0, 0, 0, lw.x, lw.y, 1])
 
                 b.append(w.x)
                 b.append(w.y)
@@ -327,8 +336,7 @@ class KeypointAlignmentModel(GenModel):
             #       plus provide error estimations and visualize
             src = numpy.ones((4, 2), dtype=numpy.float32)
             dst = numpy.ones((4, 2), dtype=numpy.float32)
-            src[:, :2] = [self.__image.p2n(kp.layer)
-                          for kp in relevant_keypoints]
+            src[:, :2] = [self.__image.p2n(kp.layer) for kp in relevant_keypoints]
             dst[:, :2] = [kp.world for kp in relevant_keypoints]
 
             return CONS_PERSPECTIVE, cv2.getPerspectiveTransform(src, dst)
@@ -370,8 +378,8 @@ class KeypointAlignmentModel(GenModel):
 
 # Command objects for undo.
 
-class cmd_add_keypoint(QtWidgets.QUndoCommand):
 
+class cmd_add_keypoint(QtWidgets.QUndoCommand):
     def __init__(self, model):
         super(cmd_add_keypoint, self).__init__()
         self.index = None
@@ -385,7 +393,6 @@ class cmd_add_keypoint(QtWidgets.QUndoCommand):
 
 
 class cmd_set_keypoint_world(QtWidgets.QUndoCommand):
-
     def __init__(self, model, index, world, merge=False, final=False):
         super(cmd_set_keypoint_world, self).__init__()
         self.world = world
@@ -398,10 +405,13 @@ class cmd_set_keypoint_world(QtWidgets.QUndoCommand):
         return 0x20000
 
     def mergeWith(self, new):
-        if (self.merge and new.merge and
-            self.model is new.model and
-            self.index == new.index and
-                (self.world is None) == (new.world is None)):
+        if (
+            self.merge
+            and new.merge
+            and self.model is new.model
+            and self.index == new.index
+            and (self.world is None) == (new.world is None)
+        ):
 
             self.world = new.world
             if new.final:
@@ -418,7 +428,6 @@ class cmd_set_keypoint_world(QtWidgets.QUndoCommand):
 
 
 class cmd_set_keypoint_px(QtWidgets.QUndoCommand):
-
     def __init__(self, model, index, pxpos, merge=False, final=False):
         super(cmd_set_keypoint_px, self).__init__()
         self.model = model
@@ -434,10 +443,13 @@ class cmd_set_keypoint_px(QtWidgets.QUndoCommand):
         return 0x20001
 
     def mergeWith(self, new):
-        if (self.merge and new.merge and
-            self.model is new.model and
-            self.index == new.index and
-                (self.pxpos is None) == (new.pxpos is None)):
+        if (
+            self.merge
+            and new.merge
+            and self.model is new.model
+            and self.index == new.index
+            and (self.pxpos is None) == (new.pxpos is None)
+        ):
 
             self.pxpos = new.pxpos
             if new.final:
@@ -454,7 +466,6 @@ class cmd_set_keypoint_px(QtWidgets.QUndoCommand):
 
 
 class cmd_set_keypoint_used(QtWidgets.QUndoCommand):
-
     def __init__(self, model, idx, use):
         super(cmd_set_keypoint_used, self).__init__()
         self.model = model
@@ -470,7 +481,6 @@ class cmd_set_keypoint_used(QtWidgets.QUndoCommand):
 
 
 class cmd_del_keypoint(QtWidgets.QUndoCommand):
-
     def __init__(self, model, idx):
         super(cmd_del_keypoint, self).__init__()
         self.model = model
@@ -491,7 +501,6 @@ class cmd_del_keypoint(QtWidgets.QUndoCommand):
 
 # View-area interaction controller and overlay
 class KeypointAlignmentControllerView(BaseToolController):
-
     def __init__(self, parent, model):
         super(KeypointAlignmentControllerView, self).__init__()
         self.model = model
@@ -529,15 +538,23 @@ class KeypointAlignmentControllerView(BaseToolController):
 
         points["vertex"] = [
             # Lines making up keypoint cross (rendered with GL_LINES)
-            (-d1, -d1), (-d1, d1),
-            (-d1, d1), (d1, d1),
-            (d1, d1), (d1, -d1),
-            (d1, -d1), (-d1, -d1),
-            (0, -d1), (0, d1),
-            (-d1, 0), (d1, 0),
-
+            (-d1, -d1),
+            (-d1, d1),
+            (-d1, d1),
+            (d1, d1),
+            (d1, d1),
+            (d1, -d1),
+            (d1, -d1),
+            (-d1, -d1),
+            (0, -d1),
+            (0, d1),
+            (-d1, 0),
+            (d1, 0),
             # flag (rendered with GL_TRIANGLE_STRIP)
-            (-d1, -d1), (-d1, -d1 - th), (-tw, -d1), (-tw, -d1 - th)
+            (-d1, -d1),
+            (-d1, -d1 - th),
+            (-tw, -d1),
+            (-tw, -d1 - th),
         ]
 
         # Pack it all into a VBO
@@ -584,8 +601,8 @@ class KeypointAlignmentControllerView(BaseToolController):
 
             with self.prog, self.handle_vao:
                 GL.glUniformMatrix3fv(
-                    self.prog.uniforms.mat, 1, True,
-                    center_point.astype(numpy.float32))
+                    self.prog.uniforms.mat, 1, True, center_point.astype(numpy.float32)
+                )
                 GL.glUniform4f(self.prog.uniforms.color, *frame_color)
                 # Render the frame
                 GL.glDrawArrays(GL.GL_LINES, 0, 12)
@@ -685,20 +702,27 @@ class KeypointAlignmentControllerView(BaseToolController):
         w_pos = self.V2im(pos)
         if self.model.view_mode == 0:
             cmd = cmd_set_keypoint_px(
-                self.model.kp, self.model.kp.selected_idx, w_pos,
-                merge=True, final=final)
+                self.model.kp,
+                self.model.kp.selected_idx,
+                w_pos,
+                merge=True,
+                final=final,
+            )
         else:
             cmd = cmd_set_keypoint_world(
-                self.model.kp, self.model.kp.selected_idx, w_pos,
-                merge=True, final=final)
+                self.model.kp,
+                self.model.kp.selected_idx,
+                w_pos,
+                merge=True,
+                final=final,
+            )
 
         self._parent.undoStack.push(cmd)
 
     def mousePressEvent(self, event):
         handle = self.get_keypoint_for_mouse(event.pos())
 
-        if (event.button() == QtCore.Qt.LeftButton and
-                event.modifiers() & ADD_MODIFIER):
+        if event.button() == QtCore.Qt.LeftButton and event.modifiers() & ADD_MODIFIER:
             # If we're in world view mode, we need to figure out where this
             # keypoint would be in image space as well
             if self.model.view_mode == 1:
@@ -736,9 +760,11 @@ class KeypointAlignmentControllerView(BaseToolController):
 
             return
 
-        elif (event.button() == QtCore.Qt.LeftButton and
-              event.modifiers() & DEL_MODIFIER and
-              handle is not None):
+        elif (
+            event.button() == QtCore.Qt.LeftButton
+            and event.modifiers() & DEL_MODIFIER
+            and handle is not None
+        ):
             cmd = cmd_del_keypoint(self.model.kp, self.model.kp.selected_idx)
             self._parent.undoStack.push(cmd)
             self.model.kp.selected_idx = None
@@ -755,8 +781,7 @@ class KeypointAlignmentControllerView(BaseToolController):
         return True
 
     def mouseReleaseEvent(self, event):
-        if (event.button() == QtCore.Qt.LeftButton and
-                self.behave_mode == MODE_DRAGGING):
+        if event.button() == QtCore.Qt.LeftButton and self.behave_mode == MODE_DRAGGING:
             self.behave_mode = MODE_NONE
 
             # only update position if we've dragged the handle
@@ -780,28 +805,33 @@ class KeypointAlignmentControllerView(BaseToolController):
         elif self.model.kp.selected_idx is not None:
 
             if evt.key() in (QtCore.Qt.Key_Delete, QtCore.Qt.Key_Backspace):
-                cmd = cmd_del_keypoint(
-                    self.model.kp, self.model.kp.selected_idx)
+                cmd = cmd_del_keypoint(self.model.kp, self.model.kp.selected_idx)
                 self._parent.undoStack.push(cmd)
                 self.model.kp.selected_idx = None
 
             # Basic 1-px nudging
-            elif evt.key() in (QtCore.Qt.Key_Left, QtCore.Qt.Key_Right,
-                               QtCore.Qt.Key_Up, QtCore.Qt.Key_Down):
-                nudge = Point2({
-                    QtCore.Qt.Key_Left: (-1, 0),
-                    QtCore.Qt.Key_Right: (1, 0),
-                    QtCore.Qt.Key_Up: (0, -1),
-                    QtCore.Qt.Key_Down: (0, 1),
-                }[evt.key()])
+            elif evt.key() in (
+                QtCore.Qt.Key_Left,
+                QtCore.Qt.Key_Right,
+                QtCore.Qt.Key_Up,
+                QtCore.Qt.Key_Down,
+            ):
+                nudge = Point2(
+                    {
+                        QtCore.Qt.Key_Left: (-1, 0),
+                        QtCore.Qt.Key_Right: (1, 0),
+                        QtCore.Qt.Key_Up: (0, -1),
+                        QtCore.Qt.Key_Down: (0, 1),
+                    }[evt.key()]
+                )
 
                 current = self.get_keypoint_viewport_center(
-                    self.model.kp.keypoints[self.model.kp.selected_idx])
+                    self.model.kp.keypoints[self.model.kp.selected_idx]
+                )
                 self.do_set_cmd(current + nudge, True)
 
 
 class KeypointAlignmentWidget(QtWidgets.QWidget):
-
     def __init__(self, parent, model):
         super(KeypointAlignmentWidget, self).__init__()
         self.model = model
@@ -865,8 +895,7 @@ class KeypointAlignmentWidget(QtWidgets.QWidget):
         self._parent.undoStack.push(cmd)
 
     def modelChanged(self):
-        cmb_index = -1 if self.model.selected_idx is None \
-            else self.model.selected_idx
+        cmb_index = -1 if self.model.selected_idx is None else self.model.selected_idx
         self.kpts_sel.blockSignals(True)
         self.kpts_sel.setCurrentIndex(cmb_index)
         self.kpts_sel.blockSignals(False)
@@ -896,8 +925,7 @@ class KeypointAlignmentWidget(QtWidgets.QWidget):
 
     def update_used(self):
         idx = self.kpts_sel.currentIndex()
-        cmd = cmd_set_keypoint_used(
-            self.model, idx, self.use_for_alignment.isChecked())
+        cmd = cmd_set_keypoint_used(self.model, idx, self.use_for_alignment.isChecked())
         self._parent.undoStack.push(cmd)
 
     def updateTextViews(self):
@@ -905,8 +933,7 @@ class KeypointAlignmentWidget(QtWidgets.QWidget):
 
         # Disable keypoint delete when we selected a prior-existing keypoint
         # Also disable delete button when no kp is selected
-        self.del_btn.setEnabled(
-            idx is not None and self.model.keypoints[idx].is_new)
+        self.del_btn.setEnabled(idx is not None and self.model.keypoints[idx].is_new)
 
         self.updateConstraintLabel()
 
@@ -946,27 +973,41 @@ class KeypointAlignmentWidget(QtWidgets.QWidget):
         cs = self.model.constraint_info
 
         if cs == CONS_UNCONSTRAINED:
-            self.constraint_status_lbl.setText("Image is unconstrained. Will not be aligned in world space. " +
-                                               "This is probably not what you want")
+            self.constraint_status_lbl.setText(
+                "Image is unconstrained. Will not be aligned in world space. "
+                + "This is probably not what you want"
+            )
         elif cs == CONS_TRANSLATION:
-            self.constraint_status_lbl.setText("Image is constrained only by one keypoint. This will only position " +
-                                               "the image in space, but not provide scale or alignment information. " +
-                                               "This is probably not what you want")
+            self.constraint_status_lbl.setText(
+                "Image is constrained only by one keypoint. This will only position "
+                + "the image in space, but not provide scale or alignment information. "
+                + "This is probably not what you want"
+            )
         elif cs == CONS_ROTATE_SCALE:
-            self.constraint_status_lbl.setText("Image is constrained by two keypoints. This will only position, " +
-                                               "proportionally scale and rotate the image. That may be OK for " +
-                                               "scanned images")
+            self.constraint_status_lbl.setText(
+                "Image is constrained by two keypoints. This will only position, "
+                + "proportionally scale and rotate the image. That may be OK for "
+                + "scanned images"
+            )
         elif cs == CONS_ORTHOGONAL:
-            self.constraint_status_lbl.setText("Image is constrained by three keypoints. This allows alignment of " +
-                                               "scale, rotation, translation and shear. This is probably not what " +
-                                               "you want, but may be useful for synthetically transformed images")
+            self.constraint_status_lbl.setText(
+                "Image is constrained by three keypoints. This allows alignment of "
+                + "scale, rotation, translation and shear. This is probably not what "
+                + "you want, but may be useful for synthetically transformed images"
+            )
         elif cs == CONS_PERSPECTIVE:
-            self.constraint_status_lbl.setText("Image is constrained by four keypoints. This allows for full recovery" +
-                                               " of the perspective transform. This is probably what you want " +
-                                               "for camera imagery.")
+            self.constraint_status_lbl.setText(
+                "Image is constrained by four keypoints. This allows for full recovery"
+                + " of the perspective transform. This is probably what you want "
+                + "for camera imagery."
+            )
         elif cs == CONS_SINGULAR:
-            self.constraint_status_lbl.setText("Can't solve for these constraints. Are keypoints overlapping or " +
-                                               "colinear in either world or image space?")
+            self.constraint_status_lbl.setText(
+                "Can't solve for these constraints. Are keypoints overlapping or "
+                + "colinear in either world or image space?"
+            )
         elif cs == CONS_OVERCONSTRAINED:
-            self.constraint_status_lbl.setText("Too many constraints to solve for. " +
-                                               "Max 4 enabled keypoints for alignment.")
+            self.constraint_status_lbl.setText(
+                "Too many constraints to solve for. "
+                + "Max 4 enabled keypoints for alignment."
+            )

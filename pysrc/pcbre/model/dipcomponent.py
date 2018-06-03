@@ -4,21 +4,29 @@ from pcbre.model.component import Component
 from pcbre.model.const import OnSide, IntersectionClass
 from pcbre.model.pad import Pad
 
-__author__ = 'davidc'
+__author__ = "davidc"
 
 
 class DIPComponent(Component):
     ISC = IntersectionClass.NONE
 
-    def __init__(self, center, theta, side, side_layer_oracle,
-                 pin_count, pin_space, pin_width, pad_size=units.MM):
-        Component.__init__(self, center, theta, side,
-                           side_layer_oracle=side_layer_oracle)
-        self.__my_init(pin_count, pin_space, pin_width,
-                       pad_size, side_layer_oracle)
+    def __init__(
+        self,
+        center,
+        theta,
+        side,
+        side_layer_oracle,
+        pin_count,
+        pin_space,
+        pin_width,
+        pad_size=units.MM,
+    ):
+        Component.__init__(
+            self, center, theta, side, side_layer_oracle=side_layer_oracle
+        )
+        self.__my_init(pin_count, pin_space, pin_width, pad_size, side_layer_oracle)
 
-    def __my_init(self, pin_count, pin_space, pin_width,
-                  pad_size, side_layer_oracle):
+    def __my_init(self, pin_count, pin_space, pin_width, pad_size, side_layer_oracle):
         # Center and theta don't affect the pin settings
 
         self.__pin_count = pin_count
@@ -56,8 +64,15 @@ class DIPComponent(Component):
                 y = -pin_edge_center_delta + dx
 
             center = Point2(x, y)
-            newpad = Pad(self, "%s" % (i + 1), center, 0,
-                         self.__pad_size, self.__pad_size, th_diam=500)
+            newpad = Pad(
+                self,
+                "%s" % (i + 1),
+                center,
+                0,
+                self.__pad_size,
+                self.__pad_size,
+                th_diam=500,
+            )
             self.__pins_cache.append(newpad)
 
     @property
@@ -104,8 +119,7 @@ class DIPComponent(Component):
 
     @property
     def theta_bbox(self):
-        return Rect.fromCenterSize(
-            self.center, self.body_width(), self.body_length())
+        return Rect.fromCenterSize(self.center, self.body_width(), self.body_length())
 
     def serializeTo(self, dip_msg):
         super(DIPComponent, self).serializeTo(dip_msg.common)

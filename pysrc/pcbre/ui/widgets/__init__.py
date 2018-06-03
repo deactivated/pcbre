@@ -1,3 +1,3 @@
-__author__ = 'davidc'
+__author__ = "davidc"
 
 from .lineedit import PLineEdit

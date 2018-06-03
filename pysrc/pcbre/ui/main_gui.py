@@ -2,20 +2,31 @@
 
 import pcbre.model.project as P
 
-from pcbre.qt_compat import (QtCore, QtGui, QtWidgets, getOpenFileName,
-                             getSaveFileName)
+from pcbre.qt_compat import QtCore, QtGui, QtWidgets, getOpenFileName, getSaveFileName
 from pcbre.ui.actions.add import AddImageDialogAction
-from pcbre.ui.actions.misc import (NudgeUpAction, NudgeLeftAction,
-                                   NudgeDownAction, NudgeRightAction,
-                                   ShowToolSettingsAction)
-from pcbre.ui.actions.pcb import (RebuildConnectivityAction,
-                                  LayerViewSetupDialogAction,
-                                  StackupSetupDialogAction)
+from pcbre.ui.actions.misc import (
+    NudgeUpAction,
+    NudgeLeftAction,
+    NudgeDownAction,
+    NudgeRightAction,
+    ShowToolSettingsAction,
+)
+from pcbre.ui.actions.pcb import (
+    RebuildConnectivityAction,
+    LayerViewSetupDialogAction,
+    StackupSetupDialogAction,
+)
 from pcbre.ui.actions.save import checkCloseSave
-from pcbre.ui.actions.view import (LayerJumpAction, FlipXAction, FlipYAction,
-                                   RotateLAction, CycleDrawOrderAction,
-                                   RotateRAction, ToggleShowImageryAction,
-                                   ToggleDrawOtherLayersAction)
+from pcbre.ui.actions.view import (
+    LayerJumpAction,
+    FlipXAction,
+    FlipYAction,
+    RotateLAction,
+    CycleDrawOrderAction,
+    RotateRAction,
+    ToggleShowImageryAction,
+    ToggleDrawOtherLayersAction,
+)
 from pcbre.ui.boardviewwidget import BoardViewWidget
 from pcbre.ui.panes.info import InfoWidget
 from pcbre.ui.panes.layerlist import LayerListWidget
@@ -25,7 +36,6 @@ from pcbre.ui.actions.save import SaveAction, SaveAsDialogAction, ExitAction
 
 
 class MainWindowActions:
-
     def __init__(self, window):
         # File actions
         self.file_add_image = AddImageDialogAction(window)
@@ -40,10 +50,10 @@ class MainWindowActions:
         self.view_rotate_r = RotateRAction(window)
         self.view_cycle_draw_order = CycleDrawOrderAction(window)
 
-        self.view_toggle_show_imagery = ToggleShowImageryAction(
-            window, window.viewArea)
+        self.view_toggle_show_imagery = ToggleShowImageryAction(window, window.viewArea)
         self.view_toggle_draw_other_layers = ToggleDrawOtherLayersAction(
-            window, window.viewArea)
+            window, window.viewArea
+        )
 
         # PCB Actions
         self.pcb_stackup_setup_dialog = StackupSetupDialogAction(window)
@@ -63,7 +73,6 @@ class MainWindowActions:
 
 
 class MainWindow(QtWidgets.QMainWindow):
-
     def __init__(self, p):
         super(MainWindow, self).__init__()
 
@@ -160,13 +169,14 @@ def main():
     import signal
 
     import pcbre.version_checks
+
     pcbre.version_checks.check_pkg_versions()
 
     signal.signal(signal.SIGINT, signal.SIG_DFL)
 
     ap = argparse.ArgumentParser()
     ap.add_argument("--create-if-not-exists", action="store_true")
-    ap.add_argument("project", nargs='?')
+    ap.add_argument("project", nargs="?")
     args = ap.parse_args()
 
     if args.project is None:
@@ -196,5 +206,6 @@ def main():
 
     sys.exit(app.exec_())
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

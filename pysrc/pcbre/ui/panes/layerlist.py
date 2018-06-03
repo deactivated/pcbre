@@ -2,7 +2,6 @@ from pcbre.qt_compat import QtCore, QtGui, QtWidgets
 
 
 class LayerListModel(QtCore.QAbstractListModel):
-
     def __init__(self, project, parent=None):
         QtCore.QAbstractListModel.__init__(self, parent)
         self.p = project
@@ -22,11 +21,11 @@ class LayerListModel(QtCore.QAbstractListModel):
 
 
 class LayerListWidget(QtWidgets.QDockWidget):
-
     def __init__(self, project, viewState):
         super(LayerListWidget, self).__init__("Layer List")
-        self.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea |
-                             QtCore.Qt.RightDockWidgetArea)
+        self.setAllowedAreas(
+            QtCore.Qt.LeftDockWidgetArea | QtCore.Qt.RightDockWidgetArea
+        )
 
         model = LayerListModel(project)
         customerList = QtWidgets.QListView(self)
@@ -35,8 +34,7 @@ class LayerListWidget(QtWidgets.QDockWidget):
         self.p = project
 
         def layerSelectionChanged(index, b):
-            viewState.current_layer = self.p.stackup.layers[
-                index.indexes()[0].row()]
+            viewState.current_layer = self.p.stackup.layers[index.indexes()[0].row()]
 
         selm.selectionChanged.connect(layerSelectionChanged)
 

@@ -18,11 +18,11 @@ from pcbre.ui.misc import QImage_from_numpy
 from pcbre.ui.gl.textatlas import BASE_FONT
 
 
-__author__ = 'davidc'
+__author__ = "davidc"
 
 
 class TextBatch:
-    __tag = namedtuple("tag", ['mat', 'inf'])
+    __tag = namedtuple("tag", ["mat", "inf"])
 
     def __init__(self, tr):
         self.__text_render = tr
@@ -30,8 +30,11 @@ class TextBatch:
         self.__color = [1.0, 1.0, 1.0, 1.0]
 
     def initializeGL(self):
-        self.vbo = VBO(numpy.ndarray(0, dtype=self.__text_render.buffer_dtype),
-                       GL.GL_STATIC_DRAW, GL.GL_ARRAY_BUFFER)
+        self.vbo = VBO(
+            numpy.ndarray(0, dtype=self.__text_render.buffer_dtype),
+            GL.GL_STATIC_DRAW,
+            GL.GL_ARRAY_BUFFER,
+        )
         self.vao = VAO()
 
         with self.vao, self.vbo:
@@ -82,14 +85,17 @@ class TextBatch:
         self.__elem_count = len(arr)
 
     def render(self, mat):
-        with self.__text_render.sdf_shader, \
-                self.__text_render.tex.on(GL.GL_TEXTURE_2D), \
-                self.vao:
+        with self.__text_render.sdf_shader, self.__text_render.tex.on(
+            GL.GL_TEXTURE_2D
+        ), self.vao:
             GL.glUniform1i(self.__text_render.sdf_shader.uniforms.tex1, 0)
-            GL.glUniformMatrix3fv(self.__text_render.sdf_shader.uniforms.mat,
-                                  1, True, mat.astype(numpy.float32))
-            GL.glUniform4f(
-                self.__text_render.sdf_shader.uniforms.color, *self.__color)
+            GL.glUniformMatrix3fv(
+                self.__text_render.sdf_shader.uniforms.mat,
+                1,
+                True,
+                mat.astype(numpy.float32),
+            )
+            GL.glUniform4f(self.__text_render.sdf_shader.uniforms.color, *self.__color)
 
             GL.glDrawArrays(GL.GL_TRIANGLES, 0, self.__elem_count)
 
@@ -110,8 +116,11 @@ class TextBatcher(object):
 
     def initializeGL(self):
         # Working VBO that will contain glyph data
-        self.vbo = VBO(numpy.ndarray(0, dtype=self.text_render.buffer_dtype),
-                       GL.GL_DYNAMIC_DRAW, GL.GL_ARRAY_BUFFER)
+        self.vbo = VBO(
+            numpy.ndarray(0, dtype=self.text_render.buffer_dtype),
+            GL.GL_DYNAMIC_DRAW,
+            GL.GL_ARRAY_BUFFER,
+        )
         self.vao = VAO()
 
         with self.vao, self.vbo:
@@ -121,8 +130,7 @@ class TextBatcher(object):
 
     def render(self, key=None):
         if self.__vbo_needs_update:
-            arr = numpy.array(
-                self.__clist, dtype=self.text_render.buffer_dtype)
+            arr = numpy.array(self.__clist, dtype=self.text_render.buffer_dtype)
 
             self.vbo.data = arr
             self.vbo.size = None
@@ -132,21 +140,22 @@ class TextBatcher(object):
 
         self.text_render.updateTexture()
 
-        with self.text_render.sdf_shader, \
-                self.text_render.tex.on(GL.GL_TEXTURE_2D), \
-                self.vao:
+        with self.text_render.sdf_shader, self.text_render.tex.on(
+            GL.GL_TEXTURE_2D
+        ), self.vao:
             GL.glUniform1i(self.text_render.sdf_shader.uniforms.tex1, 0)
 
             for tag in self.__render_tags[key]:
                 mat_calc = tag.matrix
                 GL.glUniformMatrix3fv(
                     self.text_render.sdf_shader.uniforms.mat,
-                    1, True, mat_calc.astype(numpy.float32))
-                GL.glUniform4f(
-                    self.text_render.sdf_shader.uniforms.color, *tag.color)
+                    1,
+                    True,
+                    mat_calc.astype(numpy.float32),
+                )
+                GL.glUniform4f(self.text_render.sdf_shader.uniforms.color, *tag.color)
 
-                GL.glDrawArrays(GL.GL_TRIANGLES,
-                                tag.textinfo.start, tag.textinfo.count)
+                GL.glDrawArrays(GL.GL_TRIANGLES, tag.textinfo.start, tag.textinfo.count)
 
     def submit(self, ts, mat, color, k=None):
         self.__render_tags[k].append(self.__tag_type(ts, mat, color))
@@ -171,11 +180,14 @@ class TextBatcher(object):
 
 
 class _StringMetrics(object):
-
     def __init__(self, arr, metrics):
         self.__rect = Rect()
-        (self.__rect.left, self.__rect.right,
-         self.__rect.bottom, self.__rect.top) = metrics
+        (
+            self.__rect.left,
+            self.__rect.right,
+            self.__rect.bottom,
+            self.__rect.top,
+        ) = metrics
         self.arr = arr
 
     def get_metrics(self):
@@ -192,8 +204,7 @@ class _StringMetrics(object):
         vscale = rect.height / self.__rect.height
 
         actual_scale = min(hscale, vscale)
-        return (actual_scale * self.__rect.width,
-                actual_scale * self.__rect.height)
+        return (actual_scale * self.__rect.width, actual_scale * self.__rect.height)
 
     def get_render_to_mat(self, rect):
         hscale = rect.width / self.__rect.width
@@ -204,8 +215,9 @@ class _StringMetrics(object):
         cx = self.__rect.center
         cx *= actual_scale
 
-        return translate(rect.center.x - cx.x, rect.center.y -
-                         cx.y).dot(scale(actual_scale))
+        return translate(rect.center.x - cx.x, rect.center.y - cx.y).dot(
+            scale(actual_scale)
+        )
 
 
 # _tex_vertex = namedtuple("tex_vertex", ["x", "y", "tx", "ty"])
@@ -233,12 +245,12 @@ def de_bruijn(n):
             for j in range(a[t - p] + 1, k):
                 a[t] = j
                 db(t + 1, t)
+
     db(1, 1)
     return "".join(map(str, sequence))
 
 
 class TextRender(object):
-
     def __init__(self, gls, sdf_atlas):
         self.gls = gls
 
@@ -249,10 +261,9 @@ class TextRender(object):
     def initializeGL(self):
         self.sdf_shader = self.gls.shader_cache.get("image_vert", "tex_frag")
 
-        self.buffer_dtype = numpy.dtype([
-            ("vertex", numpy.float32, 2),
-            ("texpos", numpy.float32, 2)
-        ])
+        self.buffer_dtype = numpy.dtype(
+            [("vertex", numpy.float32, 2), ("texpos", numpy.float32, 2)]
+        )
 
         self.b1 = vbobind(self.sdf_shader, self.buffer_dtype, "vertex")
         self.b2 = vbobind(self.sdf_shader, self.buffer_dtype, "texpos")
@@ -293,8 +304,8 @@ class TextRender(object):
             # width and height of the rendered quad is proportional to the
             # glpyh size
             margin = self.sdf_atlas.margin
-            w = (gp.w + margin * 2)
-            h = (gp.h + margin * 2)
+            w = gp.w + margin * 2
+            h = gp.h + margin * 2
 
             # Calculate the offset to the corner of the character.
             c_off_x = pen_x + gp.l - margin
@@ -334,15 +345,15 @@ class TextRender(object):
 
         # Setup the basic texture parameters
         with self.tex.on(GL.GL_TEXTURE_2D):
-            GL.glTexParameteri(
-                GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR)
-            GL.glTexParameteri(
-                GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR)
+            GL.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR)
+            GL.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR)
 
             GL.glTexParameteri(
-                GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP_TO_EDGE)
+                GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP_TO_EDGE
+            )
             GL.glTexParameteri(
-                GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP_TO_EDGE)
+                GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP_TO_EDGE
+            )
 
             # numpy packs data tightly, whereas the openGL default is
             # 4-byte-aligned fix line alignment to 1 byte so odd-sized textures
@@ -350,13 +361,14 @@ class TextRender(object):
             GL.glPixelStorei(GL.GL_UNPACK_ALIGNMENT, 1)
 
             # Download the data to the buffer.
-            GL.glTexImage2D(GL.GL_TEXTURE_2D,
-                            0,
-                            GL.GL_RED,
-                            self.sdf_atlas.image.shape[1],
-                            self.sdf_atlas.image.shape[0],
-                            0,
-                            GL.GL_RED,
-                            GL.GL_UNSIGNED_BYTE,
-                            self.sdf_atlas.image.ctypes.data_as(
-                                ctypes.POINTER(ctypes.c_uint8)))
+            GL.glTexImage2D(
+                GL.GL_TEXTURE_2D,
+                0,
+                GL.GL_RED,
+                self.sdf_atlas.image.shape[1],
+                self.sdf_atlas.image.shape[0],
+                0,
+                GL.GL_RED,
+                GL.GL_UNSIGNED_BYTE,
+                self.sdf_atlas.image.ctypes.data_as(ctypes.POINTER(ctypes.c_uint8)),
+            )

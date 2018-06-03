@@ -5,11 +5,15 @@ import weakref
 from pcbre import units
 from pcbre.matrix import Rect, Point2, projectPoint, projectPoints
 from pcbre.model.passivecomponent import PassiveBodyType
-from pcbre.view.rendersettings import RENDER_STANDARD, RENDER_SELECTED, RENDER_HINT_NORMAL, \
-    RENDER_HINT_ONCE
+from pcbre.view.rendersettings import (
+    RENDER_STANDARD,
+    RENDER_SELECTED,
+    RENDER_HINT_NORMAL,
+    RENDER_HINT_ONCE,
+)
 
 
-__author__ = 'davidc'
+__author__ = "davidc"
 
 
 TRANSITION_POINT_1 = 20
@@ -43,8 +47,9 @@ def _text_to(view, pad, r, mat, textcol_a):
             if text_height_px > TRANSITION_POINT_2:
                 alpha = 1
             else:
-                alpha = (text_height_px - TRANSITION_POINT_1) / \
-                    (TRANSITION_POINT_2 - TRANSITION_POINT_1)
+                alpha = (text_height_px - TRANSITION_POINT_1) / (
+                    TRANSITION_POINT_2 - TRANSITION_POINT_1
+                )
         else:
             alpha = 0
 
@@ -56,14 +61,12 @@ def _text_to(view, pad, r, mat, textcol_a):
 
     r.top = r.bottom + h_delta_2
 
-    view.text_batch.submit_text_box(
-        mat, "%s" % pad.pad_no, r_top, textcol_a, None)
+    view.text_batch.submit_text_box(mat, "%s" % pad.pad_no, r_top, textcol_a, None)
     if alpha:
         view.text_batch.submit_text_box(mat, "%s" % pname, r, textcol_a, None)
 
 
 class PadRender:
-
     def __init__(self, parent_view):
         self.parent = parent_view
         pass
@@ -78,8 +81,9 @@ class PadRender:
         self.view = view
         self.text_cache = {}
 
-    def render(self, mat, pad, render_mode=RENDER_STANDARD,
-               render_hint=RENDER_HINT_NORMAL):
+    def render(
+        self, mat, pad, render_mode=RENDER_STANDARD, render_hint=RENDER_HINT_NORMAL
+    ):
         """
         :type pad: Pad
         :param mat:
@@ -97,20 +101,20 @@ class PadRender:
 
         if pad.is_through():
             self.parent.via_renderer.deferred(
-                pad.center, pad.l / 2, pad.th_diam / 2, render_mode, render_hint)
+                pad.center, pad.l / 2, pad.th_diam / 2, render_mode, render_hint
+            )
 
-            #r = Rect.fromCenterSize(Point2(0,0), pad.l * 0.6, pad.w * 0.6)
+            # r = Rect.fromCenterSize(Point2(0,0), pad.l * 0.6, pad.w * 0.6)
 
-            #_text_to(self.view, pad,r, mat, textcol_a)
+            # _text_to(self.view, pad,r, mat, textcol_a)
         else:
             t = pad.trace_repr
             self.parent.trace_renderer.deferred(t, render_mode, render_hint)
-            #r = Rect.fromCenterSize(Point2(0,0), pad.l*0.8, pad.w*0.8)
-            #_text_to(self.view, pad, r, mat, textcol_a)
+            # r = Rect.fromCenterSize(Point2(0,0), pad.l*0.8, pad.w*0.8)
+            # _text_to(self.view, pad, r, mat, textcol_a)
 
 
 class ComponentRender:
-
     def __init__(self, view):
         self.__cache = weakref.WeakKeyDictionary()
         self.view = view
@@ -141,8 +145,9 @@ class ComponentRender:
 
         self.__text_cache = weakref.WeakKeyDictionary()
 
-    def render(self, mat, cmp, render_mode=RENDER_STANDARD,
-               render_hint=RENDER_HINT_NORMAL):
+    def render(
+        self, mat, cmp, render_mode=RENDER_STANDARD, render_hint=RENDER_HINT_NORMAL
+    ):
         group = None
 
         color = (1, 0, 1)
@@ -150,7 +155,8 @@ class ComponentRender:
             geom = self._build_points(cmp)
             for p1, p2 in geom:
                 self.view.hairline_renderer.deferred(
-                    p1, p2, color, group, RENDER_HINT_ONCE)
+                    p1, p2, color, group, RENDER_HINT_ONCE
+                )
         else:
             res = self.__get_cached_reservation(cmp, group)
             self.view.hairline_renderer.deferred_reservation(res, color, group)
@@ -160,7 +166,6 @@ class ComponentRender:
 
 
 class PassiveRender(ComponentRender):
-
     def _build_points(self, cmp):
         """
         :type cmp: pcbre.model.passivecomponent.PassiveComponent
@@ -173,13 +178,15 @@ class PassiveRender(ComponentRender):
             bx = cmp.body_corner_vec.x
             by = cmp.body_corner_vec.y
             circ_groups.append(
-                map(Point2, [(-bx, by), (-bx, -by), (bx, -by), (bx, by)]))
+                map(Point2, [(-bx, by), (-bx, -by), (bx, -by), (bx, by)])
+            )
 
         elif cmp.body_type == PassiveBodyType.TH_AXIAL:
             bx = cmp.body_corner_vec.x
             by = cmp.body_corner_vec.y
             circ_groups.append(
-                map(Point2, [(-bx, by), (-bx, -by), (bx, -by), (bx, by)]))
+                map(Point2, [(-bx, by), (-bx, -by), (bx, -by), (bx, by)])
+            )
 
             d = cmp.pin_d - cmp.pin_corner_vec.x
             print(bx, d)
@@ -202,34 +209,41 @@ class PassiveRender(ComponentRender):
 
 
 class DIPRender(ComponentRender):
-
     def _build_points(self, dip):
         bx = dip.body_width() / 2
         by = dip.body_length() / 2
 
         points = []
-        points.extend(projectPoints(dip.matrix, map(
-            Point2, [(-bx, by), (-bx, -by), (bx, -by), (bx, by)])))
+        points.extend(
+            projectPoints(
+                dip.matrix, map(Point2, [(-bx, by), (-bx, -by), (bx, -by), (bx, by)])
+            )
+        )
 
         for i in range(28):
             theta = -math.pi * i / 27
 
-            points.append(projectPoint(dip.matrix, Point2(
-                math.cos(theta) * units.MM, math.sin(theta) * units.MM + by)))
+            points.append(
+                projectPoint(
+                    dip.matrix,
+                    Point2(math.cos(theta) * units.MM, math.sin(theta) * units.MM + by),
+                )
+            )
 
         return list(zip(points, points[1:] + points[0:1]))
 
 
 class SMDRender(ComponentRender):
-
     def _build_points(self, smd):
         lines = []
 
         by = smd.dim_1_body / 2
         bx = smd.dim_2_body / 2
 
-        corners = [projectPoint(smd.matrix, Point2(t))
-                   for t in [(-bx, by), (-bx, -by), (bx, -by), (bx, by)]]
+        corners = [
+            projectPoint(smd.matrix, Point2(t))
+            for t in [(-bx, by), (-bx, -by), (bx, -by), (bx, by)]
+        ]
 
         for p1, p2 in zip(corners, corners[1:] + corners[0:1]):
             lines.append((p1, p2))
@@ -254,8 +268,7 @@ class SMDRender(ComponentRender):
             d = Point2(math.cos(theta) * size, math.sin(theta) * size)
             circle_points.append(d + circ_center)
 
-        for p1, p2 in zip(circle_points, circle_points[
-                          1:] + circle_points[0:1]):
+        for p1, p2 in zip(circle_points, circle_points[1:] + circle_points[0:1]):
             lines.append((p1, p2))
 
         return lines

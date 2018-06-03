@@ -2,7 +2,7 @@ from collections import defaultdict
 from pcbre.view.rendersettings import RENDER_STANDARD, RENDER_OUTLINES, RENDER_SELECTED
 from pcbre.view.util import get_consolidated_draws_1
 
-__author__ = 'davidc'
+__author__ = "davidc"
 import math
 from OpenGL import GL
 from OpenGL.arrays.vbo import VBO
@@ -23,7 +23,6 @@ LINE_LOOP_SIZE = NUM_ENDCAP_SEGMENTS * 2
 
 
 class _TraceRenderBatch:
-
     def __init__(self, parent):
         self.parent = parent
 
@@ -32,7 +31,6 @@ class _TraceRenderBatch:
 
 
 class TraceRender:
-
     def __init__(self, parent_view):
         self.parent = parent_view
 
@@ -41,20 +39,18 @@ class TraceRender:
     def __initialize_uniform(self, gls):
         self.__uniform_shader_vao = VAO()
         self.__uniform_shader = gls.shader_cache.get(
-            "line_vertex_shader", "frag1", defines={"INPUT_TYPE": "uniform"})
+            "line_vertex_shader", "frag1", defines={"INPUT_TYPE": "uniform"}
+        )
 
         with self.__uniform_shader_vao, self.trace_vbo:
-            vbobind(self.__uniform_shader,
-                    self.trace_vbo.dtype, "vertex").assign()
-            vbobind(self.__uniform_shader,
-                    self.trace_vbo.dtype, "ptid").assign()
+            vbobind(self.__uniform_shader, self.trace_vbo.dtype, "vertex").assign()
+            vbobind(self.__uniform_shader, self.trace_vbo.dtype, "ptid").assign()
             self.index_vbo.bind()
 
     def initializeGL(self, gls):
         # Build trace vertex VBO and associated vertex data
         dtype = [("vertex", numpy.float32, 2), ("ptid", numpy.uint32)]
-        self.working_array = numpy.zeros(
-            NUM_ENDCAP_SEGMENTS * 2 + 2, dtype=dtype)
+        self.working_array = numpy.zeros(NUM_ENDCAP_SEGMENTS * 2 + 2, dtype=dtype)
         self.trace_vbo = VBO(self.working_array, GL.GL_DYNAMIC_DRAW)
 
         # Generate geometry for trace and endcaps
@@ -64,7 +60,8 @@ class TraceRender:
 
         self.__attribute_shader_vao = VAO()
         self.__attribute_shader = gls.shader_cache.get(
-            "line_vertex_shader", "frag1", defines={"INPUT_TYPE": "in"})
+            "line_vertex_shader", "frag1", defines={"INPUT_TYPE": "in"}
+        )
 
         # Now we build an index buffer that allows us to render filled geometry from the same
         # VBO.
@@ -89,31 +86,34 @@ class TraceRender:
         arr = numpy.array(arr, dtype=numpy.uint32)
         self.index_vbo = VBO(arr, target=GL.GL_ELEMENT_ARRAY_BUFFER)
 
-        self.instance_dtype = numpy.dtype([
-            ("pos_a", numpy.float32, 2),
-            ("pos_b", numpy.float32, 2),
-            ("thickness", numpy.float32, 1),
-            #("color", numpy.float32, 4)
-        ])
+        self.instance_dtype = numpy.dtype(
+            [
+                ("pos_a", numpy.float32, 2),
+                ("pos_b", numpy.float32, 2),
+                ("thickness", numpy.float32, 1),
+                # ("color", numpy.float32, 4)
+            ]
+        )
 
         # Use a fake array to get a zero-length VBO for initial binding
         instance_array = numpy.ndarray(0, dtype=self.instance_dtype)
         self.instance_vbo = VBO(instance_array)
 
         with self.__attribute_shader_vao, self.trace_vbo:
-            vbobind(self.__attribute_shader,
-                    self.trace_vbo.dtype, "vertex").assign()
-            vbobind(self.__attribute_shader,
-                    self.trace_vbo.dtype, "ptid").assign()
+            vbobind(self.__attribute_shader, self.trace_vbo.dtype, "vertex").assign()
+            vbobind(self.__attribute_shader, self.trace_vbo.dtype, "ptid").assign()
 
         with self.__attribute_shader_vao, self.instance_vbo:
             self.__bind_pos_a = vbobind(
-                self.__attribute_shader, self.instance_dtype, "pos_a", div=1)
+                self.__attribute_shader, self.instance_dtype, "pos_a", div=1
+            )
             self.__bind_pos_b = vbobind(
-                self.__attribute_shader, self.instance_dtype, "pos_b", div=1)
+                self.__attribute_shader, self.instance_dtype, "pos_b", div=1
+            )
             self.__bind_thickness = vbobind(
-                self.__attribute_shader, self.instance_dtype, "thickness", div=1)
-            #vbobind(self.__attribute_shader, self.instance_dtype, "color", div=1).assign()
+                self.__attribute_shader, self.instance_dtype, "thickness", div=1
+            )
+            # vbobind(self.__attribute_shader, self.instance_dtype, "color", div=1).assign()
             self.__base_rebind(0)
 
             self.index_vbo.bind()
@@ -190,8 +190,9 @@ class TraceRender:
             # We reorder the traces to batch them by outline, and net to encourage
             # maximum draw call length. The rationale is that nets are commonly selected
             # or may be commonly drawn in different colors.
-            traces = sorted(traces, key=lambda i: (
-                i[1] & RENDER_OUTLINES, id(i[0].net)))
+            traces = sorted(
+                traces, key=lambda i: (i[1] & RENDER_OUTLINES, id(i[0].net))
+            )
 
             for trace, _ in traces:
                 # Now insert into the array
@@ -240,7 +241,11 @@ class TraceRender:
         with self.__attribute_shader, self.__attribute_shader_vao:
             # Setup overall calls
             GL.glUniformMatrix3fv(
-                self.__attribute_shader.uniforms.mat, 1, True, mat.ctypes.data_as(GLI.c_float_p))
+                self.__attribute_shader.uniforms.mat,
+                1,
+                True,
+                mat.ctypes.data_as(GLI.c_float_p),
+            )
 
             # We order the draw calls such that selected areas are drawn on top
             # of nonselected.
@@ -260,50 +265,76 @@ class TraceRender:
                     if not is_outline:
                         for first, last in ranges:
                             # filled traces come first in the array
-                            GL.glDrawElementsInstancedBaseInstance(GL.GL_TRIANGLES, TRIANGLES_SIZE, GL.GL_UNSIGNED_INT,
-                                                                   ctypes.c_void_p(0), last - first, first)
+                            GL.glDrawElementsInstancedBaseInstance(
+                                GL.GL_TRIANGLES,
+                                TRIANGLES_SIZE,
+                                GL.GL_UNSIGNED_INT,
+                                ctypes.c_void_p(0),
+                                last - first,
+                                first,
+                            )
                     else:
                         for first, last in ranges:
                             # Then outline traces. We reuse the vertex data for
                             # the outside
-                            GL.glDrawArraysInstancedBaseInstance(GL.GL_LINE_LOOP, 2, NUM_ENDCAP_SEGMENTS * 2,
-                                                                 last - first, first)
+                            GL.glDrawArraysInstancedBaseInstance(
+                                GL.GL_LINE_LOOP,
+                                2,
+                                NUM_ENDCAP_SEGMENTS * 2,
+                                last - first,
+                                first,
+                            )
                 else:
                     with self.instance_vbo:
                         if not is_outline:
                             for first, last in ranges:
                                 # filled traces come first in the array
                                 self.__base_rebind(first)
-                                GL.glDrawElementsInstanced(GL.GL_TRIANGLES, TRIANGLES_SIZE, GL.GL_UNSIGNED_INT,
-                                                           ctypes.c_void_p(0), last - first)
+                                GL.glDrawElementsInstanced(
+                                    GL.GL_TRIANGLES,
+                                    TRIANGLES_SIZE,
+                                    GL.GL_UNSIGNED_INT,
+                                    ctypes.c_void_p(0),
+                                    last - first,
+                                )
                         else:
                             for first, last in ranges:
                                 self.__base_rebind(first)
                                 # Then outline traces. We reuse the vertex data
                                 # for the outside
-                                GL.glDrawArraysInstanced(GL.GL_LINE_LOOP, 2, NUM_ENDCAP_SEGMENTS * 2,
-                                                         last - first)
+                                GL.glDrawArraysInstanced(
+                                    GL.GL_LINE_LOOP,
+                                    2,
+                                    NUM_ENDCAP_SEGMENTS * 2,
+                                    last - first,
+                                )
 
     # Immediate-mode render of a single trace
     # SLOW (at least for bulk-rendering)
     # Useful for rendering UI elements
     def render(self, mat, trace, render_settings=RENDER_STANDARD):
         color_a = self.parent.color_for_trace(trace) + [1]
-        color_a = self.parent.sel_colormod(
-            render_settings & RENDER_SELECTED, color_a)
+        color_a = self.parent.sel_colormod(render_settings & RENDER_SELECTED, color_a)
         with self.__uniform_shader, self.__uniform_shader_vao:
             GL.glUniform1f(
-                self.__uniform_shader.uniforms.thickness, trace.thickness / 2)
-            GL.glUniform2f(self.__uniform_shader.uniforms.pos_a,
-                           trace.p0.x, trace.p0.y)
-            GL.glUniform2f(self.__uniform_shader.uniforms.pos_b,
-                           trace.p1.x, trace.p1.y)
+                self.__uniform_shader.uniforms.thickness, trace.thickness / 2
+            )
+            GL.glUniform2f(self.__uniform_shader.uniforms.pos_a, trace.p0.x, trace.p0.y)
+            GL.glUniform2f(self.__uniform_shader.uniforms.pos_b, trace.p1.x, trace.p1.y)
             GL.glUniformMatrix3fv(
-                self.__uniform_shader.uniforms.mat, 1, True, mat.ctypes.data_as(GLI.c_float_p))
+                self.__uniform_shader.uniforms.mat,
+                1,
+                True,
+                mat.ctypes.data_as(GLI.c_float_p),
+            )
             GL.glUniform4f(self.__uniform_shader.uniforms.color, *color_a)
 
             if render_settings & RENDER_OUTLINES:
                 GL.glDrawArrays(GL.GL_LINE_LOOP, 2, NUM_ENDCAP_SEGMENTS * 2)
             else:
-                GL.glDrawElements(GL.GL_TRIANGLES, TRIANGLES_SIZE,
-                                  GL.GL_UNSIGNED_INT, ctypes.c_void_p(0))
+                GL.glDrawElements(
+                    GL.GL_TRIANGLES,
+                    TRIANGLES_SIZE,
+                    GL.GL_UNSIGNED_INT,
+                    ctypes.c_void_p(0),
+                )

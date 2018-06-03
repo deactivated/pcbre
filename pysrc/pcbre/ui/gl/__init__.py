@@ -1,4 +1,4 @@
-__author__ = 'davidc'
+__author__ = "davidc"
 
 import OpenGL.GL as GL
 import numpy
@@ -24,7 +24,6 @@ def translate_dtype(dt):
 
 
 class vbobind(object):
-
     def __init__(self, program, dtype, name, shader_name=None, div=0):
         if shader_name is None:
             shader_name = name
@@ -43,18 +42,23 @@ class vbobind(object):
         assert GL.glGetError() == 0
         offset = ctypes.c_void_p(self.offset + base * self.stride)
         GL.glEnableVertexAttribArray(self.loc)
-        if self.t in [GL.GL_BYTE, GL.GL_UNSIGNED_BYTE, GL.GL_SHORT,
-                      GL.GL_UNSIGNED_SHORT, GL.GL_INT, GL.GL_UNSIGNED_INT]:
-            GL.glVertexAttribIPointer(
-                self.loc, self.n, self.t, self.stride, offset)
+        if self.t in [
+            GL.GL_BYTE,
+            GL.GL_UNSIGNED_BYTE,
+            GL.GL_SHORT,
+            GL.GL_UNSIGNED_SHORT,
+            GL.GL_INT,
+            GL.GL_UNSIGNED_INT,
+        ]:
+            GL.glVertexAttribIPointer(self.loc, self.n, self.t, self.stride, offset)
         else:
             GL.glVertexAttribPointer(
-                self.loc, self.n, self.t, False, self.stride, offset)
+                self.loc, self.n, self.t, False, self.stride, offset
+            )
         GL.glVertexAttribDivisor(self.loc, self.div)
 
 
 class Texture(int):
-
     def __new__(cls, *args, **kwargs):
         a = GL.glGenTextures(1)
         return super(Texture, cls).__new__(cls, a)
@@ -67,7 +71,6 @@ class Texture(int):
 
 
 class VAO(int):
-
     def __new__(cls, *args, **kwargs):
         a = GL.glGenVertexArrays(1)
         return super(VAO, cls).__new__(cls, a)

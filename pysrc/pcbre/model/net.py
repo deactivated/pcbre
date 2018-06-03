@@ -29,4 +29,7 @@ class Net:
 
     def __repr__(self):
         return "<Net %s %s %s>" % (
-            self._id, self.name, ("(%s)" % self.net_class) if self.net_class else "")
+            self._id,
+            self.name,
+            ("(%s)" % self.net_class) if self.net_class else "",
+        )

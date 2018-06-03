@@ -3,8 +3,18 @@ import itertools
 from collections import defaultdict
 import operator
 
-from pcbre.algo.geom import dist_via_via, dist_via_trace, dist_trace_trace, \
-    dist_via_pad, dist_trace_pad, dist_pad_pad, distance, point_inside, can_self_intersect, intersect
+from pcbre.algo.geom import (
+    dist_via_via,
+    dist_via_trace,
+    dist_trace_trace,
+    dist_via_pad,
+    dist_trace_pad,
+    dist_pad_pad,
+    distance,
+    point_inside,
+    can_self_intersect,
+    intersect,
+)
 from pcbre.matrix import Point2
 from pcbre.model import serialization as ser
 from pcbre.model.artwork_geom import Trace, Via, Polygon, Airwire
@@ -60,8 +70,7 @@ class ArtworkIndex:
         return (rect.left, rect.bottom, rect.right, rect.top)
 
     def insert(self, geom):
-        self.__index.insert(self.__get_idx(
-            geom), self.__rect_index_order(geom.bbox))
+        self.__index.insert(self.__get_idx(geom), self.__rect_index_order(geom.bbox))
 
     def intersect(self, bbox):
         idxs = self.__index.intersection(self.__rect_index_order(bbox))
@@ -80,7 +89,6 @@ class ArtworkIndex:
 
 
 class Artwork:
-
     def __init__(self, project):
         self.__project = project
         self.__index = ArtworkIndex()
@@ -427,7 +435,8 @@ class Artwork:
 
     def rebuild_connectivity(self, progress_cb=lambda x, y: 0):
         connectivity = self.compute_connected(
-            self.get_all_artwork(), progress_cb=progress_cb)
+            self.get_all_artwork(), progress_cb=progress_cb
+        )
 
         # First, for each existing net, we identify which groups are owned by the net
         # and remove the groups having the smaller amounts of geometry (by
@@ -519,8 +528,10 @@ class Artwork:
             ilist = self.__index.intersect(geom.bbox)
             ilist = [i for i in ilist if i.ISC != IntersectionClass.NONE]
 
-            return sorted([(distance(geom, other), other)
-                           for other in ilist], key=operator.itemgetter(0))
+            return sorted(
+                [(distance(geom, other), other) for other in ilist],
+                key=operator.itemgetter(0),
+            )
 
         bbox = geom.bbox
 
@@ -541,10 +552,7 @@ class Artwork:
                 if bbox_prune and not bbox.intersects(other.bbox):
                     continue
 
-                results.append((
-                    dist_via_via(geom, other),
-                    other
-                ))
+                results.append((dist_via_via(geom, other), other))
 
             for other in self.__traces:
                 if id(other.layer) not in my_layerset:
@@ -553,20 +561,14 @@ class Artwork:
                 if bbox_prune and not bbox.intersects(other.bbox):
                     continue
 
-                results.append((
-                    dist_via_trace(geom, other),
-                    other
-                ))
+                results.append((dist_via_trace(geom, other), other))
 
             for other in self.__all_pads:
                 if other.is_through() or other.layer in geom.viapair.all_layers:
 
                     if bbox_prune and not bbox.intersects(other.bbox):
                         continue
-                    results.append((
-                        dist_via_pad(geom, other),
-                        other
-                    ))
+                    results.append((dist_via_pad(geom, other), other))
 
         elif isinstance(geom, Trace):
             for other in self.__traces:
@@ -575,10 +577,7 @@ class Artwork:
 
                 if bbox_prune and not bbox.intersects(other.bbox):
                     continue
-                results.append((
-                    dist_trace_trace(geom, other),
-                    other
-                ))
+                results.append((dist_trace_trace(geom, other), other))
 
             # Build lookup to check viapair
             vps_ok = {}
@@ -593,19 +592,13 @@ class Artwork:
                 if bbox_prune and not bbox.intersects(other.bbox):
                     continue
 
-                results.append((
-                    dist_via_trace(other, geom),
-                    other
-                ))
+                results.append((dist_via_trace(other, geom), other))
 
             for other in self.__all_pads:
                 if bbox_prune and not bbox.intersects(other.bbox):
                     continue
 
-                results.append((
-                    dist_trace_pad(geom, other),
-                    other
-                ))
+                results.append((dist_trace_pad(geom, other), other))
 
         elif isinstance(geom, Pad):
             # TODO: More opts here, can exclude some pads based on TH
@@ -613,19 +606,13 @@ class Artwork:
                 if bbox_prune and not bbox.intersects(other.bbox):
                     continue
 
-                results.append((
-                    dist_via_pad(other, geom),
-                    other
-                ))
+                results.append((dist_via_pad(other, geom), other))
 
             for other in self.__traces:
                 if bbox_prune and not bbox.intersects(other.bbox):
                     continue
 
-                results.append((
-                    dist_trace_pad(other, geom),
-                    other
-                ))
+                results.append((dist_trace_pad(other, geom), other))
 
             for cmp in self.__components:
                 if bbox_prune and not bbox.intersects(cmp.bbox):
@@ -634,10 +621,7 @@ class Artwork:
                 for other in cmp.get_pads():
                     if bbox_prune and not bbox.intersects(other.bbox):
                         continue
-                    results.append((
-                        dist_pad_pad(geom, other),
-                        other
-                    ))
+                    results.append((dist_pad_pad(geom, other), other))
 
         else:
             raise NotImplementedError()
@@ -702,11 +686,12 @@ class Artwork:
 
     def deserialize(self, msg):
         for i in msg.vias:
-            v = Via(deserialize_point2(i.point),
-                    self.__project.scontext.get(i.viapairSid),
-                    i.r,
-                    self.__project.scontext.get(i.netSid)
-                    )
+            v = Via(
+                deserialize_point2(i.point),
+                self.__project.scontext.get(i.viapairSid),
+                i.r,
+                self.__project.scontext.get(i.netSid),
+            )
 
             self.add_artwork(v)
 
@@ -716,21 +701,20 @@ class Artwork:
                 deserialize_point2(i.p1),
                 i.thickness,
                 self.__project.scontext.get(i.layerSid),
-                self.__project.scontext.get(i.netSid)
+                self.__project.scontext.get(i.netSid),
             )
 
             self.add_artwork(t)
 
         for i in msg.polygons:
             exterior = [deserialize_point2(j) for j in i.exterior]
-            interiors = [[deserialize_point2(k)
-                          for k in j] for j in i.interiors]
+            interiors = [[deserialize_point2(k) for k in j] for j in i.interiors]
 
             p = Polygon(
                 self.__project.scontext.get(i.layerSid),
                 exterior,
                 interiors,
-                self.__project.scontext.get(i.netSid)
+                self.__project.scontext.get(i.netSid),
             )
 
             self.add_artwork(p)
@@ -741,7 +725,7 @@ class Artwork:
                 deserialize_point2(i.p1),
                 self.__project.scontext.get(i.p0LayerSid),
                 self.__project.scontext.get(i.p1LayerSid),
-                self.__project.scontext.get(i.netSid)
+                self.__project.scontext.get(i.netSid),
             )
             self.add_artwork(aw)
 

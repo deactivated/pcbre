@@ -10,7 +10,6 @@ AIRWIRE_COLOR = (0.7, 0.7, 0)
 
 
 class AirwireToolOverlay(object):
-
     def __init__(self, ctrl):
         """
 
@@ -23,7 +22,8 @@ class AirwireToolOverlay(object):
     def render(self, surface):
         if self.ctrl.state == self.ctrl.STATE_WAIT_ADTL_POINT:
             self.view.hairline_renderer.deferred(
-                self.ctrl.pt0, self.ctrl.mouse, AIRWIRE_COLOR, None, RENDER_HINT_ONCE)
+                self.ctrl.pt0, self.ctrl.mouse, AIRWIRE_COLOR, None, RENDER_HINT_ONCE
+            )
 
     def initializeGL(self, fake_shared):
         pass

@@ -3,14 +3,18 @@ import numpy
 import cv2
 import pcbre.model.serialization as ser
 from pcbre.matrix import projectPoint, Point2
-from pcbre.model.serialization import (deserialize_matrix, serialize_matrix,
-                                       serialize_point2, deserialize_point2,
-                                       serialize_point2f, deserialize_point2f)
+from pcbre.model.serialization import (
+    deserialize_matrix,
+    serialize_matrix,
+    serialize_point2,
+    deserialize_point2,
+    serialize_point2f,
+    deserialize_point2f,
+)
 from pcbre.model.util import ImmutableListProxy
 
 
 class KeyPoint:
-
     def __init__(self, worldpos):
         self._project = None
         self.world_position = worldpos
@@ -57,7 +61,6 @@ class KeyPoint:
 
 
 class KeyPointPosition:
-
     def __init__(self, key_point, position):
         """
         Represents a point on an image thats tied to a world-position keypoint
@@ -73,7 +76,6 @@ class KeyPointPosition:
 
 
 class KeyPointAlignment:
-
     def __init__(self):
         self._project = None
         self.__keypoint_positions = set()
@@ -93,7 +95,8 @@ class KeyPointAlignment:
         for old_kpp in self.__keypoint_positions:
             if keypoint == old_kpp.key_point:
                 raise ValueError(
-                    "Error, adding a duplicate keypoint position assignment")
+                    "Error, adding a duplicate keypoint position assignment"
+                )
 
         self.__keypoint_positions.add(kpp)
 
@@ -106,8 +109,7 @@ class KeyPointAlignment:
         msg = ser.ImageTransform.KeypointTransformMeta.new_message()
         msg.init("keypoints", len(self.__keypoint_positions))
         for n, i in enumerate(self.__keypoint_positions):
-            msg.keypoints[n].kpSid = self._project.scontext.sid_for(
-                i.key_point)
+            msg.keypoints[n].kpSid = self._project.scontext.sid_for(i.key_point)
             msg.keypoints[n].position = serialize_point2f(i.image_pos)
 
         return msg
@@ -116,15 +118,24 @@ class KeyPointAlignment:
     def deserialize(project, msg):
         obj = KeyPointAlignment()
         for i in msg.keypoints:
-            obj.set_keypoint_position(project.scontext.get(
-                i.kpSid), deserialize_point2f(i.position))
+            obj.set_keypoint_position(
+                project.scontext.get(i.kpSid), deserialize_point2f(i.position)
+            )
         return obj
 
 
 class RectAlignment:
-
-    def __init__(self, handles, dim_handles, dims, dims_locked,
-                 origin_center, origin_corner, flip_x, flip_y):
+    def __init__(
+        self,
+        handles,
+        dim_handles,
+        dims,
+        dims_locked,
+        origin_center,
+        origin_corner,
+        flip_x,
+        flip_y,
+    ):
         self._project = None
         self.handles = handles
         self.dim_handles = dim_handles
@@ -147,8 +158,10 @@ class RectAlignment:
 
         msg.lockedToDim = self.dims_locked
         msg.originCorner = {
-            0: "lowerLeft", 1: "lowerRight",
-            2: "upperLeft", 3: "upperRight"
+            0: "lowerLeft",
+            1: "lowerRight",
+            2: "upperLeft",
+            3: "upperRight",
         }[self.origin_corner]
         msg.originCenter = serialize_point2f(self.origin_center)
 
@@ -180,23 +193,33 @@ class RectAlignment:
     @staticmethod
     def deserialize(msg):
         handles = [RectAlignment.__deserialize_handle(i) for i in msg.handles]
-        dimHandles = [RectAlignment.__deserialize_handle(
-            i) for i in msg.dimHandles]
+        dimHandles = [RectAlignment.__deserialize_handle(i) for i in msg.dimHandles]
         dims = [i for i in msg.dims]
 
         assert len(handles) == 12
         assert len(dimHandles) == 4
         assert len(dims) == 2
-        originCorner = {"lowerLeft": 0, "lowerRight": 1,
-                        "upperLeft": 2, "upperRight": 3}[str(msg.originCorner)]
+        originCorner = {
+            "lowerLeft": 0,
+            "lowerRight": 1,
+            "upperLeft": 2,
+            "upperRight": 3,
+        }[str(msg.originCorner)]
         originCenter = deserialize_point2f(msg.originCenter)
 
-        return RectAlignment(handles, dimHandles, dims, msg.lockedToDim,
-                             originCenter, originCorner, msg.flipX, msg.flipY)
+        return RectAlignment(
+            handles,
+            dimHandles,
+            dims,
+            msg.lockedToDim,
+            originCenter,
+            originCorner,
+            msg.flipX,
+            msg.flipY,
+        )
 
 
 class ImageLayer:
-
     def __init__(self, name, data, transform_matrix=numpy.identity(3)):
         self.name = name
         self._project = None
@@ -254,16 +277,21 @@ class ImageLayer:
         # Calculate a default transform matrix
         max_dim = float(max(self.__cached_decode.shape))
         sf = 2. / max_dim
-        tmat = numpy.array([
-            [sf, 0, -self.__cached_decode.shape[1] / max_dim],
-            [0, sf, -self.__cached_decode.shape[0] / max_dim],
-            [0, 0, 1]], dtype=numpy.float32)
+        tmat = numpy.array(
+            [
+                [sf, 0, -self.__cached_decode.shape[1] / max_dim],
+                [0, sf, -self.__cached_decode.shape[0] / max_dim],
+                [0, 0, 1],
+            ],
+            dtype=numpy.float32,
+        )
         self.__cached_p2norm = tmat
         self.__cached_norm2p = numpy.linalg.inv(tmat)
 
     """
     Transform matricies from pixel-space to normalized image space (-1..1)
     """
+
     @property
     def pixel_to_normalized(self):
         self.__calculate_transform_matrix()
@@ -311,8 +339,7 @@ class ImageLayer:
             msg.transform.meta.init("rectTransformMeta")
             msg.transform.meta.rectTransformMeta = self.alignment.serialize()
         else:
-            raise NotImplementedError(
-                "Don't know how to serialize %s" % self.alignment)
+            raise NotImplementedError("Don't know how to serialize %s" % self.alignment)
 
         return msg
 
@@ -328,11 +355,15 @@ class ImageLayer:
         if meta_which == "noMeta":
             obj.set_alignment(None)
         elif meta_which == "keypointTransformMeta":
-            obj.set_alignment(KeyPointAlignment.deserialize(
-                project, msg.transform.meta.keypointTransformMeta))
+            obj.set_alignment(
+                KeyPointAlignment.deserialize(
+                    project, msg.transform.meta.keypointTransformMeta
+                )
+            )
         elif meta_which == "rectTransformMeta":
-            obj.set_alignment(RectAlignment.deserialize(
-                msg.transform.meta.rectTransformMeta))
+            obj.set_alignment(
+                RectAlignment.deserialize(msg.transform.meta.rectTransformMeta)
+            )
         else:
             raise NotImplementedError()
 

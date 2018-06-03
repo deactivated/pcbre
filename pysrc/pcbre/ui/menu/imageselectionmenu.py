@@ -3,11 +3,10 @@ from pcbre.model.imagelayer import ImageLayer
 from pcbre.ui.dialogs.layeralignmentdialog.dialog import LayerAlignmentDialog
 
 
-__author__ = 'davidc'
+__author__ = "davidc"
 
 
 class ImageSelectionMenu(QtWidgets.QMenu):
-
     def __init__(self, window):
         super().__init__()
 

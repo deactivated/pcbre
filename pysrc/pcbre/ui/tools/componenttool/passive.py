@@ -2,26 +2,38 @@ from pcbre.qt_compat import QtCore, QtGui
 from pcbre import units
 from pcbre.matrix import Point2, Vec2
 from pcbre.model.const import SIDE
-from pcbre.model.passivecomponent import PassiveComponent, PassiveSymType, PassiveBodyType
-from pcbre.ui.dialogs.settingsdialog import AutoSettingsWidget, UnitEditable, PointUnitEditable
-from pcbre.ui.tools.multipoint import EditablePoint, OffsetDefaultPoint, MultipointEditFlow
+from pcbre.model.passivecomponent import (
+    PassiveComponent,
+    PassiveSymType,
+    PassiveBodyType,
+)
+from pcbre.ui.dialogs.settingsdialog import (
+    AutoSettingsWidget,
+    UnitEditable,
+    PointUnitEditable,
+)
+from pcbre.ui.tools.multipoint import (
+    EditablePoint,
+    OffsetDefaultPoint,
+    MultipointEditFlow,
+)
 from pcbre.ui.uimodel import GenModel, mdlacc
 from pcbre.ui.widgets.unitedit import UNIT_GROUP_MM
 
-__author__ = 'davidc'
+__author__ = "davidc"
 
 from collections import namedtuple
 
 _well_known_t = namedtuple(
-    "well_known", ["name", "body_type", "pin_d", "body_size", "pad_size"])
+    "well_known", ["name", "body_type", "pin_d", "body_size", "pad_size"]
+)
 
 
 def _wkchip(name):
-    n, _ = name.split('/')
+    n, _ = name.split("/")
     l = int(n[:2]) / 10 * units.MM
     w = int(n[2:4]) / 10 * units.MM
-    return _well_known_t(name, PassiveBodyType.CHIP,
-                         l, Point2(l, w), Point2(w, w))
+    return _well_known_t(name, PassiveBodyType.CHIP, l, Point2(l, w), Point2(w, w))
 
 
 well_known_chip = [
@@ -37,12 +49,11 @@ well_known_chip = [
     _wkchip("4516/1806"),
     _wkchip("4532/1812"),
     _wkchip("5025/2010"),
-    _wkchip("6332/2512")
+    _wkchip("6332/2512"),
 ]
 
 
 class PassiveModel(GenModel):
-
     def __init__(self):
         super(PassiveModel, self).__init__()
         self.well_known = None
@@ -92,7 +103,6 @@ class PassiveModel(GenModel):
 
 
 class PassiveEditFlow(MultipointEditFlow):
-
     def __init__(self, view, model):
         self.view = view
         self.model = model
@@ -109,10 +119,11 @@ class PassiveEditFlow(MultipointEditFlow):
         self.second_point = OffsetDefaultPoint(self.first_point, other_point)
 
         super(PassiveEditFlow, self).__init__(
-            self.view, [self.first_point, self.second_point], True)
+            self.view, [self.first_point, self.second_point], True
+        )
 
     def updated(self, ep):
-        v = (self.second_point.get() - self.first_point.get())
+        v = self.second_point.get() - self.first_point.get()
         self.theta = v.angle()
         self.model.pin_d = v.mag()
 
@@ -122,7 +133,6 @@ class PassiveEditFlow(MultipointEditFlow):
 
 
 class PassiveEditWidget(AutoSettingsWidget):
-
     def __add_wk(self, wk, name_override=None):
         if name_override:
             name = name_override
@@ -151,8 +161,7 @@ class PassiveEditWidget(AutoSettingsWidget):
             self.__add_wk(v)
 
         self.cb_well_known.currentIndexChanged.connect(self.pkg_changed)
-        self.cb_well_known.setCurrentIndex(
-            self.__wk_to_idx[self.__model.well_known])
+        self.cb_well_known.setCurrentIndex(self.__wk_to_idx[self.__model.well_known])
         self.pkg_changed(self.cb_well_known.currentIndex())
 
         # Snap checkbox
@@ -161,17 +170,25 @@ class PassiveEditWidget(AutoSettingsWidget):
         self.layout.addRow("Snap to Well Known", self.cb_snap)
 
         self.gs = [
-            self.addEdit("Pad Centers", UnitEditable(
-                self.__model, "pin_d", UNIT_GROUP_MM)),
-            self.addEdit("Body length", PointUnitEditable(
-                self.__model, "body_corner_vec", "x", UNIT_GROUP_MM)),
-            self.addEdit("Body width", PointUnitEditable(
-                self.__model, "body_corner_vec", "y", UNIT_GROUP_MM)),
-
-            self.addEdit("Pad length", PointUnitEditable(
-                self.__model, "pin_corner_vec", "x", UNIT_GROUP_MM)),
-            self.addEdit("Pad width", PointUnitEditable(
-                self.__model, "pin_corner_vec", "y", UNIT_GROUP_MM)),
+            self.addEdit(
+                "Pad Centers", UnitEditable(self.__model, "pin_d", UNIT_GROUP_MM)
+            ),
+            self.addEdit(
+                "Body length",
+                PointUnitEditable(self.__model, "body_corner_vec", "x", UNIT_GROUP_MM),
+            ),
+            self.addEdit(
+                "Body width",
+                PointUnitEditable(self.__model, "body_corner_vec", "y", UNIT_GROUP_MM),
+            ),
+            self.addEdit(
+                "Pad length",
+                PointUnitEditable(self.__model, "pin_corner_vec", "x", UNIT_GROUP_MM),
+            ),
+            self.addEdit(
+                "Pad width",
+                PointUnitEditable(self.__model, "pin_corner_vec", "y", UNIT_GROUP_MM),
+            ),
         ]
 
     def snap_ui_changed(self):
@@ -190,7 +207,14 @@ class PassiveEditWidget(AutoSettingsWidget):
 
 
 def Passive_getComponent(model, ctrl, flow):
-    return PassiveComponent(flow.center, flow.theta, flow.side,
-                            model.sym_type, model.body_type, model.pin_d / 2,
-                            model.body_corner_vec / 2, model.pin_corner_vec / 2,
-                            side_layer_oracle=ctrl.project)
+    return PassiveComponent(
+        flow.center,
+        flow.theta,
+        flow.side,
+        model.sym_type,
+        model.body_type,
+        model.pin_d / 2,
+        model.body_corner_vec / 2,
+        model.pin_corner_vec / 2,
+        side_layer_oracle=ctrl.project,
+    )

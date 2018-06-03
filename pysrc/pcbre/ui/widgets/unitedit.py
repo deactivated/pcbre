@@ -4,16 +4,14 @@ from pcbre.ui.widgets.lineedit import PLineEdit
 from pcbre.qt_compat import QtGui, QtCore, QtWidgets
 
 
-__author__ = 'davidc'
+__author__ = "davidc"
 
 
 class UnitGroup(object):
-
     def __init__(self, items, default_index=0):
         self.units = OrderedDict(items)
         self.by_name = dict(reversed(i) for i in enumerate(self.units.keys()))
-        self.by_scalefactor = dict(reversed(i)
-                                   for i in enumerate(self.units.values()))
+        self.by_scalefactor = dict(reversed(i) for i in enumerate(self.units.values()))
         self.__default_index = default_index
 
     def idx_by_name(self, name):
@@ -114,7 +112,8 @@ class UnitLineEdit(QtWidgets.QWidget):
             self.__lineEdit.setPlaceholderText("")
         else:
             self.__lineEdit.setPlaceholderText(
-                "%s" % (self._placeholder_value / float(scale)))
+                "%s" % (self._placeholder_value / float(scale))
+            )
 
     def text_changed(self):
         v = self.__lineEdit.text()

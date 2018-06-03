@@ -9,5 +9,9 @@ def __version_assert(imported, required, desc):
 
 def check_pkg_versions():
     import OpenGL
-    __version_assert(OpenGL.__version__, '3.1.0',
-                     "PyOpenGL version greater than 3.1.0 due to a shader bug")
+
+    __version_assert(
+        OpenGL.__version__,
+        "3.1.0",
+        "PyOpenGL version greater than 3.1.0 due to a shader bug",
+    )

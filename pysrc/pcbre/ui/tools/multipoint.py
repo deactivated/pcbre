@@ -6,7 +6,7 @@ from pcbre.qt_compat import QtCore, QtGui
 from pcbre.matrix import Point2, Vec2, clip_point_to_rect, Rect
 from pcbre.view.rendersettings import RENDER_HINT_ONCE
 
-__author__ = 'davidc'
+__author__ = "davidc"
 
 
 class RenderIcon:
@@ -16,7 +16,6 @@ class RenderIcon:
 
 
 class EditablePoint:
-
     def __init__(self, defv=None, icon=RenderIcon.POINT, enabled=True):
         self.is_set = False
         self.pt = defv
@@ -50,9 +49,7 @@ class EditablePoint:
 
 
 class OffsetDefaultPoint(EditablePoint):
-
-    def __init__(self, pt, default_offset,
-                 icon=RenderIcon.POINT_ON_LINE, enabled=True):
+    def __init__(self, pt, default_offset, icon=RenderIcon.POINT_ON_LINE, enabled=True):
         super(OffsetDefaultPoint, self).__init__(enabled=enabled)
         self.reference = pt
         self.offset = default_offset
@@ -89,9 +86,9 @@ def _default_color_fn(flow, pt):
 
 
 class MultipointEditRenderer:
-
-    def __init__(self, flow, view, color_fn=_default_color_fn,
-                 show_fn=lambda pt: pt.enabled):
+    def __init__(
+        self, flow, view, color_fn=_default_color_fn, show_fn=lambda pt: pt.enabled
+    ):
         """
         :type view: pcbre.ui.boardviewwidget.BoardViewWidget
         :param flow:
@@ -114,20 +111,17 @@ class MultipointEditRenderer:
 
             color = self.color_fn(self.flow, p)
             p_view = self.view.viewState.tfW2V(p.get())
-            #p_view = p.get()
+            # p_view = p.get()
 
             # Draw crappy cross for now
 
             for pa, pb in zip(corners, corners[1:] + corners[:1]):
-                self.view.hairline_renderer.deferred(p_view + pa,
-                                                     p_view + pb,
-                                                     color,
-                                                     "OVERLAY_VS",
-                                                     RENDER_HINT_ONCE)
+                self.view.hairline_renderer.deferred(
+                    p_view + pa, p_view + pb, color, "OVERLAY_VS", RENDER_HINT_ONCE
+                )
 
 
 class MultipointEditFlow:
-
     def __init__(self, view, points, can_shortcut=False):
         self.view = view
         self.__points = points
@@ -158,12 +152,12 @@ class MultipointEditFlow:
         if not world_to_point:
             pt = self.view.viewState.tfW2V(self.current_point.get())
 
-            bounds = Rect.fromPoints(Point2(0, 0), Point2(
-                self.view.width(), self.view.height()))
+            bounds = Rect.fromPoints(
+                Point2(0, 0), Point2(self.view.width(), self.view.height())
+            )
             pt_clipped = clip_point_to_rect(pt, bounds)
 
-            screen_pt = self.view.mapToGlobal(
-                QtCore.QPoint(*pt_clipped.intTuple()))
+            screen_pt = self.view.mapToGlobal(QtCore.QPoint(*pt_clipped.intTuple()))
 
             QtGui.QCursor.setPos(screen_pt)
         else:
@@ -199,8 +193,9 @@ class MultipointEditFlow:
 
     def __step_point(self, step):
         for i in range(len(self.points)):
-            self.__current_point_index = (
-                self.__current_point_index + step) % len(self.__points)
+            self.__current_point_index = (self.__current_point_index + step) % len(
+                self.__points
+            )
             if self.current_point.enabled:
                 break
         else:
@@ -214,8 +209,7 @@ class MultipointEditFlow:
 
     def mouseMoveEvent(self, evt):
         if self.__point_active:
-            point_pos = self.view.viewState.tfV2W(
-                Point2(evt.pos()) + self.__grab_delta)
+            point_pos = self.view.viewState.tfV2W(Point2(evt.pos()) + self.__grab_delta)
             self.current_point.set(point_pos)
             self.updated(self.current_point)
 
@@ -241,9 +235,19 @@ class MultipointEditFlow:
         self.updated()
 
     def keyReleaseEvent(self, evt):
-        if evt.key() in [QtCore.Qt.Key_Q, QtCore.Qt.Key_W, QtCore.Qt.Key_E, QtCore.Qt.Key_R,
-                         QtCore.Qt.Key_Left, QtCore.Qt.Key_Right, QtCore.Qt.Key_Up, QtCore.Qt.Key_Down,
-                         QtCore.Qt.Key_Enter, QtCore.Qt.Key_Return, QtCore.Qt.Key_Escape]:
+        if evt.key() in [
+            QtCore.Qt.Key_Q,
+            QtCore.Qt.Key_W,
+            QtCore.Qt.Key_E,
+            QtCore.Qt.Key_R,
+            QtCore.Qt.Key_Left,
+            QtCore.Qt.Key_Right,
+            QtCore.Qt.Key_Up,
+            QtCore.Qt.Key_Down,
+            QtCore.Qt.Key_Enter,
+            QtCore.Qt.Key_Return,
+            QtCore.Qt.Key_Escape,
+        ]:
             return True
 
         return False
@@ -255,7 +259,7 @@ class MultipointEditFlow:
             QtCore.Qt.Key_Left: Vec2(-1, 0),
             QtCore.Qt.Key_Right: Vec2(1, 0),
             QtCore.Qt.Key_Up: Vec2(0, 1),
-            QtCore.Qt.Key_Down: Vec2(0, -1)
+            QtCore.Qt.Key_Down: Vec2(0, -1),
         }
 
         if keycode == QtCore.Qt.Key_Escape:

@@ -4,7 +4,6 @@ import pcbre.model.serialization as ser
 
 
 class Layer:
-
     def __init__(self, name, color):
         self.name = name
         self.color = color
@@ -17,9 +16,11 @@ class Layer:
         self.number = 0
 
     def __repr__(self):
-        return "<Layer name:'%s' order:%s color:%s>" % (self.name,
-                                                        self.order,
-                                                        self.color)
+        return "<Layer name:'%s' order:%s color:%s>" % (
+            self.name,
+            self.order,
+            self.color,
+        )
 
     def serialize(self):
         m = ser.Layer.new_message()
@@ -55,7 +56,6 @@ class Layer:
 
 
 class ViaPair:
-
     def __init__(self, first_layer, second_layer):
         if first_layer == second_layer:
             raise ValueError("Can't have single layer layerpair")

@@ -4,12 +4,10 @@ from pcbre.qt_compat import QtCore
 
 
 class RectSize(object):
-
     def __init__(self, *args, **kwargs):
         if len(args) == 2:
             self.width, self.height = args
-        elif (len(args) == 1 and
-              isinstance(args[0], (QtCore.QRect, QtCore.QRectF))):
+        elif len(args) == 1 and isinstance(args[0], (QtCore.QRect, QtCore.QRectF)):
             self.width = args[0].width()
             self.width = args[0].height()
         elif len(args) == 1 and len(args[0]) == 2:
@@ -38,7 +36,6 @@ def clip_point_to_rect(pt, rect):
 
 
 class Rect(object):
-
     @staticmethod
     def fromCenterSize(pt1, width=0, height=0):
         width = abs(width)
@@ -94,8 +91,9 @@ class Rect(object):
 
     @property
     def center(self):
-        return Point2(self.right / 2. + self.left / 2.,
-                      self.bottom / 2. + self.top / 2.)
+        return Point2(
+            self.right / 2. + self.left / 2., self.bottom / 2. + self.top / 2.
+        )
 
     @property
     def tl(self):
@@ -141,13 +139,19 @@ class Rect(object):
 
     def __repr__(self):
         return "<Rect l=%f b=%f r=%f t=%f>" % (
-            self.left, self.bottom, self.right, self.top)
+            self.left,
+            self.bottom,
+            self.right,
+            self.top,
+        )
 
     def intersects(self, other):
-        return not (other.left > self.right or
-                    other.right < self.left or
-                    other.bottom > self.top or
-                    other.top < self.bottom)
+        return not (
+            other.left > self.right
+            or other.right < self.left
+            or other.bottom > self.top
+            or other.top < self.bottom
+        )
 
     @staticmethod
     def fromRect(r):
@@ -159,10 +163,12 @@ class Rect(object):
         return n
 
     def rotated_bbox(self, theta):
-        corners = [Point2(self.left, self.bottom),
-                   Point2(self.right, self.bottom),
-                   Point2(self.left, self.top),
-                   Point2(self.right, self.top)]
+        corners = [
+            Point2(self.left, self.bottom),
+            Point2(self.right, self.bottom),
+            Point2(self.left, self.top),
+            Point2(self.right, self.top),
+        ]
         rot_corners = projectPoints(rotate(theta), corners)
 
         n = Rect()
@@ -175,7 +181,6 @@ class Rect(object):
 
 
 class Vec2:
-
     @staticmethod
     def fromHomol(*args):
         if len(args) == 3:
@@ -193,8 +198,8 @@ class Vec2:
 
     def __init__(self, *args, **kwargs):
         if len(args) == 0:
-            self.x = kwargs['x']
-            self.y = kwargs['y']
+            self.x = kwargs["x"]
+            self.y = kwargs["y"]
 
         elif len(args) == 1:
             try:
@@ -237,19 +242,19 @@ class Vec2:
         d = numpy.abs(self - other).max()
         return d < eps
 
-    #@property
+    # @property
     # def x(self):
     #    return self[0]
 
-    #@x.setter
+    # @x.setter
     # def x(self, value):
     #    self[0] = value
 
-    #@property
+    # @property
     # def y(self):
     #    return self[1]
 
-    #@y.setter
+    # @y.setter
     # def y(self, value):
     #    self[1] = value
 
@@ -308,7 +313,6 @@ class Vec2:
 
 
 class Point2(Vec2):
-
     def __repr__(self):
         return "P(%f %f)" % (self.x, self.y)
 
@@ -348,6 +352,7 @@ def project_point_line(point, lp1, lp2, segment=True, off_end=False):
     proj = lp1 + float(t) * v
 
     return proj, (point - proj).mag()
+
 
 INTERSECT_COLINEAR = 0
 INTERSECT_PARALLEL = 1
@@ -405,32 +410,22 @@ def line_distance_segment(lp1, lp2, lp3, lp4):
 
 
 def translate(x, y):
-    return numpy.array([
-        [1, 0, x],
-        [0, 1, y],
-        [0, 0, 1]
-    ], dtype=numpy.float32)
+    return numpy.array([[1, 0, x], [0, 1, y], [0, 0, 1]], dtype=numpy.float32)
 
 
 def scale(xs, ys=None):
     if ys is None:
         ys = xs
 
-    return numpy.array([
-        [xs, 0, 0],
-        [0, ys, 0],
-        [0, 0, 1]
-    ], dtype=numpy.float32)
+    return numpy.array([[xs, 0, 0], [0, ys, 0], [0, 0, 1]], dtype=numpy.float32)
 
 
 def rotate(theta):
     _cos = math.cos(theta)
     _sin = math.sin(theta)
-    return numpy.array([
-        [_cos, -_sin, 0],
-        [_sin, _cos, 0],
-        [0, 0, 1]
-    ], dtype=numpy.float32)
+    return numpy.array(
+        [[_cos, -_sin, 0], [_sin, _cos, 0], [0, 0, 1]], dtype=numpy.float32
+    )
 
 
 def flip(axis=0):

@@ -2,7 +2,7 @@ import os
 
 default_binding = "pyqt5"
 
-requested_binding = os.environ.get('QT_API', '').lower()
+requested_binding = os.environ.get("QT_API", "").lower()
 if requested_binding not in ("pyqt5",):
     requested_binding = default_binding
 
@@ -17,6 +17,7 @@ if requested_binding == "pyqt5":
 
     def QtLoadUI(f):
         from pcbre.qt_compat import QtUiTools
+
         loader = QtUiTools.QUiLoader()
         return loader.load(f)
 

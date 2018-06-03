@@ -13,7 +13,6 @@ from .basetool import BaseTool, BaseToolController
 
 
 class ViaSettingsDialog(SettingsDialog):
-
     def __init__(self, tpm):
         super(ViaSettingsDialog, self).__init__()
         self.tpm = tpm
@@ -30,7 +29,6 @@ class ViaSettingsDialog(SettingsDialog):
 
 
 class ViaToolOverlay:
-
     def __init__(self, ctrl):
         """
         :type ctrl: ViaToolController
@@ -54,14 +52,14 @@ class ViaToolOverlay:
 
         if self.tpm.current_layer_pair is not None:
             self.render_b.deferred(
-                Point2(self.ctrl.x, self.ctrl.y), self.tpm.radius, 0, RENDER_OUTLINES)
+                Point2(self.ctrl.x, self.ctrl.y), self.tpm.radius, 0, RENDER_OUTLINES
+            )
 
         self.render_b.prepare()
         self.render_b.render_outline(viewport.glMatrix)
 
 
 class ViaToolController(BaseToolController):
-
     def __init__(self, view, project, toolparammodel):
         """
 
@@ -93,8 +91,12 @@ class ViaToolController(BaseToolController):
 
         # New object with dummy net
         if self.toolparammodel.current_layer_pair is not None:
-            v = Via(pt_world, self.toolparammodel.current_layer_pair,
-                    self.toolparammodel.radius, None)
+            v = Via(
+                pt_world,
+                self.toolparammodel.current_layer_pair,
+                self.toolparammodel.radius,
+                None,
+            )
             self.project.artwork.merge_artwork(v)
 
     def mouseReleaseEvent(self, evt):
@@ -115,7 +117,6 @@ class ViaToolController(BaseToolController):
 
 
 class ViaToolModel(QtCore.QObject):
-
     def __init__(self, project):
         super(ViaToolModel, self).__init__()
         self.project = project
@@ -153,8 +154,8 @@ class ViaToolModel(QtCore.QObject):
 class ViaTool(BaseTool):
     ICON_NAME = "via"
     NAME = "Via"
-    SHORTCUT = 'v'
-    TOOLTIP = 'Via (v)'
+    SHORTCUT = "v"
+    TOOLTIP = "Via (v)"
 
     def __init__(self, project):
         super(ViaTool, self).__init__(project)
@@ -185,6 +186,7 @@ class ViaTool(BaseTool):
             def closure(vp):
                 def fn():
                     self.__changed_selected_viapair(vp)
+
                 return fn
 
             a1.triggered.connect(closure(vp))

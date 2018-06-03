@@ -18,7 +18,6 @@ VERSION_MAGIC = b"\x01\x00"
 
 
 class ProjectConfig(dict):
-
     def serialize(self):
         pass
 
@@ -27,7 +26,6 @@ class ProjectConfig(dict):
 
 
 class ProjectIsBadException(Exception):
-
     def __init__(self, reason):
         self.__reason = reason
 
@@ -36,7 +34,6 @@ class ProjectIsBadException(Exception):
 
 
 class Stackup(QtCore.QObject):
-
     def __init__(self, project):
         super(Stackup, self).__init__()
 
@@ -53,15 +50,13 @@ class Stackup(QtCore.QObject):
         assert via_pair._project is None
         via_pair._project = self.__project
         self.__via_pairs.append(via_pair)
-        self.changed.emit(ModelChange(
-            self.via_pairs, ChangeType.ADD, via_pair))
+        self.changed.emit(ModelChange(self.via_pairs, ChangeType.ADD, via_pair))
 
     def remove_via_pair(self, via_pair):
         assert via_pair._project is self.__project
 
         raise NotImplementedError("Via Pair removal not finished")
-        self.changed.emit(ModelChange(
-            self.via_pairs, ChangeType.REMOVE, via_pair))
+        self.changed.emit(ModelChange(self.via_pairs, ChangeType.REMOVE, via_pair))
         # TODO, check for vias
 
         self.__via_pairs.erase(via_pair)
@@ -143,7 +138,6 @@ class Stackup(QtCore.QObject):
 
 
 class Imagery:
-
     def __init__(self, project):
         self.__project = project
 
@@ -215,8 +209,7 @@ class Imagery:
             self.__keypoints.append(KeyPoint.deserialize(self.__project, i))
 
         for i in msg.imagelayers:
-            self.__imagelayers.append(
-                ImageLayer.deserialize(self.__project, i))
+            self.__imagelayers.append(ImageLayer.deserialize(self.__project, i))
 
 
 class Nets(QtCore.QObject):
@@ -279,7 +272,6 @@ class Nets(QtCore.QObject):
 
 
 class Project:
-
     def __init__(self):
         self.scontext = SContext()
 

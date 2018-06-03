@@ -3,19 +3,18 @@ from pcbre.model.const import TFF
 from pcbre.model.pad import Pad
 
 
-__author__ = 'davidc'
+__author__ = "davidc"
 
 
 class NetDialog(QtWidgets.QDialog):
-
     def __init__(self, parent, obj):
         super(NetDialog, self).__init__(parent)
 
         buttonBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.Ok |
-            QtWidgets.QDialogButtonBox.Cancel,
+            QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel,
             QtCore.Qt.Horizontal,
-            self)
+            self,
+        )
         buttonBox.accepted.connect(self.accept)
         buttonBox.rejected.connect(self.reject)
 

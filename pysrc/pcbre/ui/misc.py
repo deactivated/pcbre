@@ -1,4 +1,4 @@
-__author__ = 'davidc'
+__author__ = "davidc"
 import numpy
 from pcbre.qt_compat import QtCore, QtGui
 
@@ -31,8 +31,7 @@ def QImage_from_numpy(arr):
 
         arr = new_arr
 
-    img = QtGui.QImage(arr.data, shape[1], shape[
-                       0], QtGui.QImage.Format_ARGB32)
+    img = QtGui.QImage(arr.data, shape[1], shape[0], QtGui.QImage.Format_ARGB32)
     img.array_holder = arr
 
     return img

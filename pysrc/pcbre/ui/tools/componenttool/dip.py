@@ -3,11 +3,20 @@ from pcbre.qt_compat import QtCore
 from pcbre.matrix import Point2, Vec2, projectPoint, rotate, translate
 from pcbre.model.const import SIDE
 from pcbre.model.dipcomponent import DIPComponent
-from pcbre.ui.tools.multipoint import MultipointEditFlow, EditablePoint, OffsetDefaultPoint
+from pcbre.ui.tools.multipoint import (
+    MultipointEditFlow,
+    EditablePoint,
+    OffsetDefaultPoint,
+)
 
 
-__author__ = 'davidc'
-from pcbre.ui.dialogs.settingsdialog import AutoSettingsWidget, LineEditable, IntTrait, UnitEditable
+__author__ = "davidc"
+from pcbre.ui.dialogs.settingsdialog import (
+    AutoSettingsWidget,
+    LineEditable,
+    IntTrait,
+    UnitEditable,
+)
 from pcbre.ui.uimodel import mdlacc, GenModel
 from pcbre.ui.widgets.unitedit import UNIT_GROUP_MM
 import math
@@ -17,15 +26,15 @@ TR_Y = math.sin(math.radians(30))
 
 
 class WidthProjectedPoint:
-
     def __init__(self, parent):
         self.is_set = False
         self.parent = parent
         self.enabled = True
 
     def __baseline(self):
-        baseline_vec = (self.parent.p1_point.get() -
-                        self.parent.p_bottom_corner.get()).norm()
+        baseline_vec = (
+            self.parent.p1_point.get() - self.parent.p_bottom_corner.get()
+        ).norm()
         baseline_vec_r = Point2(baseline_vec.y, -baseline_vec.x)
         return baseline_vec_r
 
@@ -56,7 +65,6 @@ class WidthProjectedPoint:
 
 
 class DIPEditFlow(MultipointEditFlow):
-
     def __init__(self, view, model):
         self._model = model
 
@@ -101,8 +109,7 @@ class DIPEditFlow(MultipointEditFlow):
             self.__theta = theta
 
             # Calculate pin count
-            self._model.pin_count = int(
-                round(dv.mag() / self._model.pin_space)) * 2 + 2
+            self._model.pin_count = int(round(dv.mag() / self._model.pin_space)) * 2 + 2
 
         self.update_matrix()
 
@@ -115,15 +122,16 @@ class DIPEditFlow(MultipointEditFlow):
         else:
             sign = 1
 
-        center_to_corner = Vec2(sign * self._model.pin_width / 2,
-                                self._model.pin_space * (self._model.pin_count / 2 - 1) / 2)
+        center_to_corner = Vec2(
+            sign * self._model.pin_width / 2,
+            self._model.pin_space * (self._model.pin_count / 2 - 1) / 2,
+        )
 
         center_to_corner_w = projectPoint(rot, center_to_corner)
 
         self.center = self.p1_point.get() - center_to_corner_w
 
-        self.matrix = translate(
-            self.center.x, self.center.y).dot(rotate(self.theta))
+        self.matrix = translate(self.center.x, self.center.y).dot(rotate(self.theta))
 
     @property
     def theta(self):
@@ -131,7 +139,6 @@ class DIPEditFlow(MultipointEditFlow):
 
 
 class DIPModel(GenModel):
-
     def __init__(self):
         super(DIPModel, self).__init__()
 
@@ -145,25 +152,38 @@ class DIPModel(GenModel):
 
 
 class DIPEditWidget(AutoSettingsWidget):
-
     def __init__(self, icmdl):
         super(DIPEditWidget, self).__init__()
 
         self.mdl = icmdl
 
         # PinCount
-        self.pincw = self.addEdit("Pin Count", LineEditable(
-            self.mdl, "pin_count", IntTrait))
+        self.pincw = self.addEdit(
+            "Pin Count", LineEditable(self.mdl, "pin_count", IntTrait)
+        )
 
-        self.addEdit("(e) Pin spacing (along length)",
-                     UnitEditable(self.mdl, "pin_space", UNIT_GROUP_MM))
-        self.addEdit("(E) Pin spacing (across width)",
-                     UnitEditable(self.mdl, "pin_width", UNIT_GROUP_MM))
+        self.addEdit(
+            "(e) Pin spacing (along length)",
+            UnitEditable(self.mdl, "pin_space", UNIT_GROUP_MM),
+        )
+        self.addEdit(
+            "(E) Pin spacing (across width)",
+            UnitEditable(self.mdl, "pin_width", UNIT_GROUP_MM),
+        )
 
-        self.addEdit("PCB Pad diameter", UnitEditable(
-            self.mdl, "pad_diameter", UNIT_GROUP_MM))
+        self.addEdit(
+            "PCB Pad diameter", UnitEditable(self.mdl, "pad_diameter", UNIT_GROUP_MM)
+        )
 
 
 def DIP_getComponent(mdl, ctrl, flow):
-    return DIPComponent(flow.center, flow.theta, flow.side, ctrl.project,
-                        mdl.pin_count, mdl.pin_space, mdl.pin_width, mdl.pad_diameter)
+    return DIPComponent(
+        flow.center,
+        flow.theta,
+        flow.side,
+        ctrl.project,
+        mdl.pin_count,
+        mdl.pin_space,
+        mdl.pin_width,
+        mdl.pad_diameter,
+    )

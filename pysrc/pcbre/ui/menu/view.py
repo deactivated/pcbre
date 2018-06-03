@@ -2,7 +2,6 @@ from pcbre.qt_compat import QtGui, QtWidgets
 
 
 class ViewMenu(QtWidgets.QMenu):
-
     def __init__(self, mw):
         QtWidgets.QMenu.__init__(self, "&View", mw)
 

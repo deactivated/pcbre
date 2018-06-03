@@ -18,26 +18,25 @@ class SelectByModes(enum.Enum):
     INSIDE_RECT = 3
     NET = 4
 
+
 select_names = {
     SelectByModes.POINT: "Touching Point",
     SelectByModes.TOUCH_LINE: "Touching Line",
     SelectByModes.TOUCH_RECT: "Touching Rect",
     SelectByModes.INSIDE_RECT: "Inside Rect",
-    SelectByModes.NET: "Net"
+    SelectByModes.NET: "Net",
 }
 
 select_icons = {
     SelectByModes.POINT: "select_by_point",
     SelectByModes.TOUCH_LINE: "select_by_touch_line",
-    SelectByModes.NET: "select_by_net"
-
+    SelectByModes.NET: "select_by_net",
 }
 
 valid_select = [SelectByModes.POINT, SelectByModes.NET]
 
 
 class SelectToolController(BaseToolController):
-
     def __init__(self, project, model, view):
         """
 
@@ -98,8 +97,8 @@ class SelectToolModel(GenModel):
 class SelectTool(BaseTool):
     ICON_NAME = "cross"
     NAME = "Select"
-    SHORTCUT = 's'
-    TOOLTIP = 'Select (s)'
+    SHORTCUT = "s"
+    TOOLTIP = "Select (s)"
 
     def __init__(self, project):
         super(SelectTool, self).__init__(project)
@@ -131,6 +130,7 @@ class SelectTool(BaseTool):
                 def fn():
                     self.__set_version(n)
                     self.toolButton.click()
+
                 return fn
 
             a1.triggered.connect(closure(n))

@@ -1,10 +1,9 @@
-__author__ = 'davidc'
+__author__ = "davidc"
 
 from pcbre.qt_compat import QtGui, QtWidgets
 
 
 class FileMenu(QtWidgets.QMenu):
-
     def __init__(self, mw):
         QtWidgets.QMenu.__init__(self, "&File", mw)
 

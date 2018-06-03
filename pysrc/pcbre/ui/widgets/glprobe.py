@@ -1,4 +1,4 @@
-__author__ = 'davidc'
+__author__ = "davidc"
 
 from pcbre.qt_compat import QtCore, QtGui, QtOpenGL
 from OpenGL import GL
@@ -6,7 +6,6 @@ import re
 
 
 class _33ProbeWidget(QtOpenGL.QGLWidget):
-
     def __init__(self):
         f = QtOpenGL.QGLFormat()
         f.setVersion(3, 3)

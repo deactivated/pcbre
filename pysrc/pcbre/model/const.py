@@ -19,19 +19,22 @@ class IntersectionClass(enum.Enum):
     VIA = 2
     PAD = 3
     POLYGON = 4
-    VIRTUAL_LINE = 5  # Object that only intersects at the two instantaneous points at each end
+    VIRTUAL_LINE = (
+        5
+    )  # Object that only intersects at the two instantaneous points at each end
 
 
 class _TFF(int):
-
     def __new__(cls, val):
         return int.__new__(cls, val)
 
     def __repr__(self):
         a = []
-        ks = [(k, v) for k, v in
-              [(k, getattr(TFF, k)) for k in dir(TFF)]
-              if isinstance(v, _TFF)]
+        ks = [
+            (k, v)
+            for k, v in [(k, getattr(TFF, k)) for k in dir(TFF)]
+            if isinstance(v, _TFF)
+        ]
 
         for k, v in sorted(ks, key=operator.itemgetter(1)):
             if self & v:

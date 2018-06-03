@@ -6,20 +6,34 @@ from pcbre.model.const import OnSide, IntersectionClass
 from pcbre.model.pad import Pad
 
 
-__author__ = 'davidc'
+__author__ = "davidc"
 
 
 class SMD4Component(Component):
     ISC = IntersectionClass.NONE
 
-    def __init__(self,
-                 center, theta, side, side_layer_oracle,
-                 side1_pins, side2_pins, side3_pins, side4_pins,
-                 dim_1_body, dim_1_pincenter, dim_2_body, dim_2_pincenter,
-                 pin_contact_length, pin_contact_width, pin_spacing):
+    def __init__(
+        self,
+        center,
+        theta,
+        side,
+        side_layer_oracle,
+        side1_pins,
+        side2_pins,
+        side3_pins,
+        side4_pins,
+        dim_1_body,
+        dim_1_pincenter,
+        dim_2_body,
+        dim_2_pincenter,
+        pin_contact_length,
+        pin_contact_width,
+        pin_spacing,
+    ):
 
-        Component.__init__(self, center, theta, side,
-                           side_layer_oracle=side_layer_oracle)
+        Component.__init__(
+            self, center, theta, side, side_layer_oracle=side_layer_oracle
+        )
         self.side_pins = [side1_pins, side2_pins, side3_pins, side4_pins]
 
         # Y Dimensions (along pin 1 edge
@@ -78,8 +92,16 @@ class SMD4Component(Component):
             for pin_no in range(side_pin_count):
                 pin_center = start + step * pin_no
                 pads.append(
-                    Pad(self, "%s" % (overall_pin_no + 1), pin_center, pad_theta, self.pin_spacing / 2, self.pin_contact_length,
-                        side=self.side))
+                    Pad(
+                        self,
+                        "%s" % (overall_pin_no + 1),
+                        pin_center,
+                        pad_theta,
+                        self.pin_spacing / 2,
+                        self.pin_contact_length,
+                        side=self.side,
+                    )
+                )
                 overall_pin_no += 1
 
         self.__pins_cache = pads
@@ -87,12 +109,20 @@ class SMD4Component(Component):
     @property
     def theta_bbox(self):
         if self.side_pins[0] or self.side_pins[2]:
-            x_axis = self.dim_2_pincenter + self.pin_contact_length + self.pin_contact_width * 2
+            x_axis = (
+                self.dim_2_pincenter
+                + self.pin_contact_length
+                + self.pin_contact_width * 2
+            )
         else:
             x_axis = self.dim_2_body
 
         if self.side_pins[1] or self.side_pins[3]:
-            y_axis = self.dim_1_pincenter + self.pin_contact_length + self.pin_contact_width * 2
+            y_axis = (
+                self.dim_1_pincenter
+                + self.pin_contact_length
+                + self.pin_contact_width * 2
+            )
         else:
             y_axis = self.dim_1_body
 
@@ -129,10 +159,23 @@ class SMD4Component(Component):
     @staticmethod
     def deserialize(project, msg):
         t = msg.smd4
-        cmp = SMD4Component(None, None, None, project,
-                            t.side1Pins, t.side2Pins, t.side3Pins, t.side4Pins,
-                            t.dim1Body, t.dim1PinEdge, t.dim2Body, t.dim2PinEdge,
-                            t.pinContactLength, t.pinContactWidth, t.pinSpacing)
+        cmp = SMD4Component(
+            None,
+            None,
+            None,
+            project,
+            t.side1Pins,
+            t.side2Pins,
+            t.side3Pins,
+            t.side4Pins,
+            t.dim1Body,
+            t.dim1PinEdge,
+            t.dim2Body,
+            t.dim2PinEdge,
+            t.pinContactLength,
+            t.pinContactWidth,
+            t.pinSpacing,
+        )
 
         Component.deserializeTo(project, msg.common, cmp)
         return cmp

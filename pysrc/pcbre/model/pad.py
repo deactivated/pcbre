@@ -1,7 +1,7 @@
 from pcbre.model.artwork_geom import Trace
 from pcbre.model.const import IntersectionClass, TFF
 
-__author__ = 'davidc'
+__author__ = "davidc"
 
 from pcbre.matrix import rotate, translate, Point2, Vec2, Rect, projectPoint
 from shapely.geometry import Point as ShapelyPoint
@@ -10,7 +10,7 @@ import numpy.linalg
 
 
 def lazyprop(fn):
-    attr_name = '_lazy_' + fn.__name__
+    attr_name = "_lazy_" + fn.__name__
 
     @property
     def _lazyprop(self):
@@ -30,11 +30,11 @@ def lazyprop(fn):
 class Pad(object):
     """ Pads are sub
     """
+
     ISC = IntersectionClass.PAD
     TYPE_FLAGS = TFF.HAS_GEOM | TFF.HAS_NET
 
-    def __init__(self, parent, pad_no, rel_center,
-                 theta, w, l, th_diam=0, side=None):
+    def __init__(self, parent, pad_no, rel_center, theta, w, l, th_diam=0, side=None):
         """
         :param parent: Parent
         :param rel_center:
@@ -50,8 +50,7 @@ class Pad(object):
         self.__rel_center = rel_center
 
         # Cached translation-only location matrix
-        self.__translate_mat = translate(
-            self.__rel_center.x, self.__rel_center.y)
+        self.__translate_mat = translate(self.__rel_center.x, self.__rel_center.y)
         self.__theta = theta
 
         self.w = w
@@ -73,17 +72,17 @@ class Pad(object):
 
         self.center = projectPoint(pmat, self.__rel_center)
 
-        self.layer = self.parent._side_layer_oracle.stackup.layer_for_side(
-            self.side)
+        self.layer = self.parent._side_layer_oracle.stackup.layer_for_side(self.side)
 
     @lazyprop
     def __p2p_mat(self):
-        return rotate(-self.theta).dot(translate(-self.rel_center.x, -self.rel_center.y))
+        return rotate(-self.theta).dot(
+            translate(-self.rel_center.x, -self.rel_center.y)
+        )
 
     @lazyprop
     def __inv_p2p_mat(self):
-        return translate(self.rel_center.x, self.rel_center.y).dot(
-            rotate(self.theta))
+        return translate(self.rel_center.x, self.rel_center.y).dot(rotate(self.theta))
 
     @lazyprop
     def pad_to_world_matrix(self):

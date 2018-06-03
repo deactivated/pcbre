@@ -7,7 +7,7 @@ import itertools
 import operator
 
 
-__author__ = 'davidc'
+__author__ = "davidc"
 
 
 class _SkyLineNode(object):
@@ -32,7 +32,6 @@ def print_skyline(s):
 
 
 class _StartHeight(object):
-
     def __init__(self, startnode, head=False):
         self.height = startnode.height
         self.node = startnode
@@ -65,13 +64,13 @@ class _StartHeight(object):
 
     def __repr__(self):
         if self.head:
-            nodes = itertools.takewhile(
-                lambda x: x != self, _node_iter(self.next))
-            return ", ".join("%s height: %d fw:%d" %
-                             (s.node, s.height, s.wasted_width) for s in nodes)
+            nodes = itertools.takewhile(lambda x: x != self, _node_iter(self.next))
+            return ", ".join(
+                "%s height: %d fw:%d" % (s.node, s.height, s.wasted_width)
+                for s in nodes
+            )
         else:
-            return "<%s height: %d fw:%d>" % (
-                self.node, self.height, self.wasted_width)
+            return "<%s height: %d fw:%d>" % (self.node, self.height, self.wasted_width)
 
 
 def _node_iter(node):
@@ -189,7 +188,9 @@ class SkyLine(object):
                         s_h_list.prev.unlink()
                 else:
                     # Packing rect fits inside:
-                    s_h_list.prev.wasted_width = node.left - s_h_list.prev.node.left - width
+                    s_h_list.prev.wasted_width = (
+                        node.left - s_h_list.prev.node.left - width
+                    )
 
                     assert s_h_list.prev != s_h_list
 
@@ -207,8 +208,9 @@ class SkyLine(object):
                 s_h_list.prev.append(_StartHeight(node))
 
         if len(candidates):
-            return sorted(candidates, key=operator.attrgetter(
-                "height", "wasted_width"))[0]
+            return sorted(
+                candidates, key=operator.attrgetter("height", "wasted_width")
+            )[0]
 
         return None
 
@@ -235,11 +237,13 @@ class SkyLine(object):
                 scores.append((n_l, height, self.find(width, height)))
 
             win_index, glyph_height, win_cand = min(
-                scores, key=lambda x: (x[2].height + x[1], x[2].wasted_width))
+                scores, key=lambda x: (x[2].height + x[1], x[2].wasted_width)
+            )
             width, height = l[win_index][1]
 
-            self.split(win_cand.node, win_cand.node.left +
-                       width, win_cand.height + height)
+            self.split(
+                win_cand.node, win_cand.node.left + width, win_cand.height + height
+            )
 
             results[l[win_index][0]] = win_cand.node.left, win_cand.height
 

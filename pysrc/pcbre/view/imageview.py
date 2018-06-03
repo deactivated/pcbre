@@ -8,7 +8,6 @@ from pcbre.ui.gl import vbobind, Texture, VAO
 
 
 class ImageView(object):
-
     def __init__(self, il):
         """
 
@@ -32,14 +31,16 @@ class ImageView(object):
         # Setup the basic texture parameters
         with self._tex.on(GL.GL_TEXTURE_2D):
             GL.glTexParameteri(
-                GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_NEAREST)
-            GL.glTexParameteri(
-                GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR)
+                GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_NEAREST
+            )
+            GL.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR)
 
             GL.glTexParameteri(
-                GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP_TO_EDGE)
+                GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP_TO_EDGE
+            )
             GL.glTexParameteri(
-                GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP_TO_EDGE)
+                GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP_TO_EDGE
+            )
 
             # Numpy packs data tightly, whereas the openGL default is
             # 4-byte-aligned.  Fix line alignment to 1 byte so odd-sized
@@ -47,24 +48,23 @@ class ImageView(object):
             GL.glPixelStorei(GL.GL_UNPACK_ALIGNMENT, 1)
 
             # Download the data to the buffer. cv2 stores data in BGR format
-            GL.glTexImage2D(GL.GL_TEXTURE_2D,
-                            0,
-                            GL.GL_RGB,
-                            self.im.shape[1],
-                            self.im.shape[0],
-                            0,
-                            GL.GL_BGR,
-                            GL.GL_UNSIGNED_BYTE,
-                            self.im.ctypes.data_as(
-                                ctypes.POINTER(ctypes.c_uint8))
-                            )
+            GL.glTexImage2D(
+                GL.GL_TEXTURE_2D,
+                0,
+                GL.GL_RGB,
+                self.im.shape[1],
+                self.im.shape[0],
+                0,
+                GL.GL_BGR,
+                GL.GL_UNSIGNED_BYTE,
+                self.im.ctypes.data_as(ctypes.POINTER(ctypes.c_uint8)),
+            )
 
         self.prog = gls.shader_cache.get("image_vert", "image_frag")
 
-        ar = numpy.ndarray(4, dtype=[
-            ("vertex", numpy.float32, 2),
-            ("texpos", numpy.float32, 2)
-        ])
+        ar = numpy.ndarray(
+            4, dtype=[("vertex", numpy.float32, 2), ("texpos", numpy.float32, 2)]
+        )
 
         sca = max(self.im.shape[0], self.im.shape[1])
         x = self.im.shape[1] / float(sca)
@@ -99,8 +99,7 @@ class ImageView(object):
 
         GL.glActiveTexture(GL.GL_TEXTURE0)
         with self.prog, self._tex.on(GL.GL_TEXTURE_2D), self.vao:
-            GL.glUniformMatrix3fv(self.mat_loc, 1, True,
-                                  mat.astype(numpy.float32))
+            GL.glUniformMatrix3fv(self.mat_loc, 1, True, mat.astype(numpy.float32))
             GL.glUniform1i(self.tex1_loc, 0)
 
             GL.glDrawArrays(GL.GL_TRIANGLE_STRIP, 0, 4)

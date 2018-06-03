@@ -7,7 +7,6 @@ FIRST_VIEW_COL = 1
 
 
 class LayerViewSetupDialog(QtWidgets.QDialog):
-
     def __init__(self, parent, data_list):
         QtWidgets.QDialog.__init__(self, parent)
 
@@ -18,10 +17,8 @@ class LayerViewSetupDialog(QtWidgets.QDialog):
 
         self.table_view = QtWidgets.QTableView()
 
-        self.table_view.setSelectionMode(
-            QtWidgets.QAbstractItemView.SingleSelection)
-        self.table_view.setSelectionBehavior(
-            QtWidgets.QAbstractItemView.SelectRows)
+        self.table_view.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
+        self.table_view.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
 
         self.table_view.setModel(self.table_model)
         # set font
@@ -56,7 +53,6 @@ class LayerViewSetupDialog(QtWidgets.QDialog):
 
 
 class EditableLayer(object):
-
     def __init__(self, mdl, ref, name, ils):
         self.name = name
         self.mdl = mdl
@@ -65,13 +61,13 @@ class EditableLayer(object):
 
 
 class MyTableModel(QtCore.QAbstractTableModel):
-
     def __init__(self, parent, project, *args):
         QtCore.QAbstractTableModel.__init__(self, parent, *args)
         self.p = project
         self._layers = [
             EditableLayer(self, pl, pl.name, pl.imagelayers)
-            for pl in project.stackup.layers]
+            for pl in project.stackup.layers
+        ]
 
         self._views = project.imagery.imagelayers
 
@@ -99,8 +95,7 @@ class MyTableModel(QtCore.QAbstractTableModel):
         elif role == QtCore.Qt.CheckStateRole:
             layer = self._layers[row]
             view = self._views[col]
-            return (QtCore.Qt.Checked if view in layer.view_set
-                    else QtCore.Qt.Unchecked)
+            return QtCore.Qt.Checked if view in layer.view_set else QtCore.Qt.Unchecked
 
         return None
 
@@ -136,10 +131,10 @@ class MyTableModel(QtCore.QAbstractTableModel):
         if orientation == QtCore.Qt.Vertical and role == QtCore.Qt.DisplayRole:
             return self._layers[index].name
 
-        if (orientation == QtCore.Qt.Horizontal and
-                role == QtCore.Qt.DisplayRole):
+        if orientation == QtCore.Qt.Horizontal and role == QtCore.Qt.DisplayRole:
             # TODO HACK
             import os.path
+
             return os.path.basename(self._views[index].name)
         return None
 
@@ -148,7 +143,8 @@ class MyTableModel(QtCore.QAbstractTableModel):
 if __name__ == "__main__":
     app = QtCore.QApplication([])
     import os.path
-    PATH = '/tmp/test.pcbre'
+
+    PATH = "/tmp/test.pcbre"
     if os.path.exists(PATH):
         project = pcbre.model.project.Project.open(PATH)
     else:

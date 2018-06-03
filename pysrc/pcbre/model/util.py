@@ -1,8 +1,7 @@
-__author__ = 'davidc'
+__author__ = "davidc"
 
 
 class ImmutableSetProxy:
-
     def __init__(self, parent):
         self.parent = parent
 
@@ -14,7 +13,6 @@ class ImmutableSetProxy:
 
 
 class ImmutableListProxy:
-
     def __init__(self, parent):
         self.parent = parent
 

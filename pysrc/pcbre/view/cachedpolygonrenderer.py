@@ -6,11 +6,15 @@ from OpenGL.arrays.vbo import VBO
 
 from pcbre.matrix import Point2
 from pcbre.ui.gl import vbobind, VAO, glimports as GLI
-from pcbre.view.rendersettings import (RENDER_STANDARD, RENDER_OUTLINES,
-                                       RENDER_SELECTED, RENDER_HINT_NORMAL)
+from pcbre.view.rendersettings import (
+    RENDER_STANDARD,
+    RENDER_OUTLINES,
+    RENDER_SELECTED,
+    RENDER_HINT_NORMAL,
+)
 from pcbre.view.util import get_consolidated_draws
 
-__author__ = 'davidc'
+__author__ = "davidc"
 
 
 class PolygonVBOPair:
@@ -49,13 +53,17 @@ class PolygonVBOPair:
 
         # Lookup for vertex positions
         self.__vert_vbo_dtype = numpy.dtype([("vertex", numpy.float32, 2)])
-        self.__vert_vbo = VBO(numpy.ndarray(0, dtype=self.__vert_vbo_dtype),
-                              GL.GL_DYNAMIC_DRAW)
+        self.__vert_vbo = VBO(
+            numpy.ndarray(0, dtype=self.__vert_vbo_dtype), GL.GL_DYNAMIC_DRAW
+        )
         self.__vert_vbo_current = False
 
         self.__index_vbo_dtype = numpy.uint32
-        self.__index_vbo = VBO(numpy.ndarray(0, dtype=self.__index_vbo_dtype),
-                               GL.GL_DYNAMIC_DRAW, GL.GL_ELEMENT_ARRAY_BUFFER)
+        self.__index_vbo = VBO(
+            numpy.ndarray(0, dtype=self.__index_vbo_dtype),
+            GL.GL_DYNAMIC_DRAW,
+            GL.GL_ELEMENT_ARRAY_BUFFER,
+        )
         self.__index_vbo_current = False
 
         self.__shader = self.__gls.shader_cache.get("vert2", "frag1")
@@ -68,8 +76,7 @@ class PolygonVBOPair:
         if self.__vert_vbo_current or not len(self.__position_list):
             return
 
-        ar = numpy.ndarray(len(self.__position_list),
-                           dtype=self.__vert_vbo_dtype)
+        ar = numpy.ndarray(len(self.__position_list), dtype=self.__vert_vbo_dtype)
         ar["vertex"] = self.__position_list
         self.__vert_vbo.data = ar
         self.__vert_vbo.size = None
@@ -84,7 +91,8 @@ class PolygonVBOPair:
         self.__outline_index_offset = len(self.__tri_index_list)
         self.__index_vbo.data = numpy.array(
             self.__tri_index_list + self.__outline_index_list,
-            dtype=self.__index_vbo_dtype)
+            dtype=self.__index_vbo_dtype,
+        )
         self.__index_vbo.size = None
         self.__index_vbo.copied = False
         self.__index_vbo.bind()
@@ -115,7 +123,8 @@ class PolygonVBOPair:
         for t in tris:
             for p in t.a, t.b, t.c:
                 self.__tri_index_list.append(
-                    self.__get_position_index(Point2(p.x, p.y)))
+                    self.__get_position_index(Point2(p.x, p.y))
+                )
 
         tr = (tri_index_first, len(self.__tri_index_list))
         self.__tri_draw_ranges[polygon] = tr
@@ -124,8 +133,7 @@ class PolygonVBOPair:
         poly_repr = polygon.get_poly_repr()
         for edge in [poly_repr.exterior] + list(poly_repr.interiors):
             for pt in edge.coords:
-                self.__outline_index_list.append(
-                    self.__get_position_index(Point2(pt)))
+                self.__outline_index_list.append(self.__get_position_index(Point2(pt)))
             self.__outline_index_list.append(self.__RESTART_INDEX)
 
         lr = (outline_index_first, len(self.__outline_index_list))
@@ -137,8 +145,10 @@ class PolygonVBOPair:
 
     def deferred(self, polygon, render_settings=RENDER_STANDARD):
         if polygon in self.__tri_draw_ranges:
-            trange, lrange = self.__tri_draw_ranges[
-                polygon], self.__outline_draw_ranges[polygon]
+            trange, lrange = (
+                self.__tri_draw_ranges[polygon],
+                self.__outline_draw_ranges[polygon],
+            )
         else:
             trange, lrange = self.__add(polygon)
 
@@ -163,8 +173,10 @@ class PolygonVBOPair:
         with self.__shader, self.__vao:
             GL.glUniformMatrix3fv(
                 self.__shader.uniforms.mat,
-                1, True,
-                matrix.ctypes.data_as(GLI.c_float_p))
+                1,
+                True,
+                matrix.ctypes.data_as(GLI.c_float_p),
+            )
 
             for rs, ranges in self.__deferred_tri_render_ranges.items():
                 tri_draw_list = get_consolidated_draws(ranges)
@@ -173,8 +185,10 @@ class PolygonVBOPair:
                 for first, last in tri_draw_list:
                     GL.glDrawElements(
                         GL.GL_TRIANGLES,
-                        last - first, GL.GL_UNSIGNED_INT,
-                        ctypes.c_void_p(first * 4))
+                        last - first,
+                        GL.GL_UNSIGNED_INT,
+                        ctypes.c_void_p(first * 4),
+                    )
 
             GL.glEnable(GL.GL_PRIMITIVE_RESTART)
             GL.glPrimitiveRestartIndex(self.__RESTART_INDEX)
@@ -184,14 +198,14 @@ class PolygonVBOPair:
                 for first, last in line_draw_list:
                     GL.glDrawElements(
                         GL.GL_LINE_STRIP,
-                        last - first, GL.GL_UNSIGNED_INT,
-                        ctypes.c_void_p(
-                            (first + self.__outline_index_offset) * 4))
+                        last - first,
+                        GL.GL_UNSIGNED_INT,
+                        ctypes.c_void_p((first + self.__outline_index_offset) * 4),
+                    )
             GL.glDisable(GL.GL_PRIMITIVE_RESTART)
 
 
 class CachedPolygonRenderer:
-
     def __init__(self, view):
         self.__layer_arrays = {}
         self.__view = view
@@ -204,8 +218,7 @@ class CachedPolygonRenderer:
         for v in self.__layer_arrays.values():
             v.restart()
 
-    def deferred(self, polygon, rendersettings,
-                 render_hint=RENDER_HINT_NORMAL):
+    def deferred(self, polygon, rendersettings, render_hint=RENDER_HINT_NORMAL):
         if polygon.layer not in self.__layer_arrays:
             self.__layer_arrays[polygon.layer] = PolygonVBOPair(self.__view)
             self.__layer_arrays[polygon.layer].initializeGL()

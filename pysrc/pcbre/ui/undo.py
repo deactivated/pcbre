@@ -4,11 +4,10 @@ import collections
 from pcbre.qt_compat import QtGui, QtCore, QtWidgets
 
 
-__author__ = 'davidc'
+__author__ = "davidc"
 
 
 class UndoStack(QtWidgets.QUndoStack):
-
     def setup_actions(self, target, menu=None):
         undoAction = self.createUndoAction(target)
         undoAction.setShortcuts(QtGui.QKeySequence.Undo)
@@ -24,7 +23,6 @@ class UndoStack(QtWidgets.QUndoStack):
 
 
 class undo_helper_fncall(QtWidgets.QUndoCommand):
-
     def __init__(self, set_state, *args, **kwargs):
         super(undo_helper_fncall, self).__init__()
 
@@ -55,7 +53,6 @@ class undo_helper_fncall(QtWidgets.QUndoCommand):
 
 
 class undofunc(object):
-
     def __new__(cls, *args, **kwargs):
         if len(args) == 1 and isinstance(args[0], collections.Callable):
             self = object.__new__(cls)
@@ -67,7 +64,8 @@ class undofunc(object):
             return functools.partial(undofunc, simple_merge=args[0])
         else:
             raise ValueError(
-                "invalid args to undofunc args=%s kwargs=%s" % (args, kwargs))
+                "invalid args to undofunc args=%s kwargs=%s" % (args, kwargs)
+            )
 
     @staticmethod
     def merge_check_default(self, new):
@@ -86,8 +84,9 @@ class undofunc(object):
             else:
                 raise RuntimeError("Tried to merge but can't")
 
-        v = undo_helper_fncall(functools.partial(self.__set_state, target),
-                               *args, **kwargs)
+        v = undo_helper_fncall(
+            functools.partial(self.__set_state, target), *args, **kwargs
+        )
 
         if merge:
             v.set_merge_id(hash((self.__set_state, id(target))))
@@ -101,14 +100,14 @@ class undofunc(object):
 
 
 class undo_set_params(QtWidgets.QUndoCommand):
-
     def __init__(self, target, **kwargs):
         super(undo_set_params, self).__init__()
         self._id = -1
         if "merge" in kwargs:
             del kwargs["merge"]
-            self._id = hash((frozenset(list(kwargs.keys())),
-                             id(target))) & ((1 << 31) - 1)
+            self._id = hash((frozenset(list(kwargs.keys())), id(target))) & (
+                (1 << 31) - 1
+            )
 
         self.target = target
         self.new_state = kwargs

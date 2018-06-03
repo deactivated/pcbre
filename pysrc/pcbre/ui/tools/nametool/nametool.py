@@ -4,11 +4,10 @@ from pcbre.model.const import TFF
 from pcbre.ui.tools.basetool import BaseToolController, BaseTool
 from .net_dialog import NetDialog
 
-__author__ = 'davidc'
+__author__ = "davidc"
 
 
 class NameToolController(BaseToolController):
-
     def __init__(self, view, project):
         super(NameToolController, self).__init__()
 
@@ -38,8 +37,8 @@ class NameToolController(BaseToolController):
 class NameTool(BaseTool):
     ICON_NAME = "netname"
     NAME = "Name"
-    SHORTCUT = 'n'
-    TOOLTIP = 'Name (n)'
+    SHORTCUT = "n"
+    TOOLTIP = "Name (n)"
 
     def __init__(self, project):
         super(NameTool, self).__init__(project)

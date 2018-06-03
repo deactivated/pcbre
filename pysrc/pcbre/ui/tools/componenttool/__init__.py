@@ -1,21 +1,40 @@
 from collections import namedtuple
-from pcbre.ui.tools.componenttool.passive import PassiveModel, PassiveEditWidget, Passive_getComponent, PassiveEditFlow
+from pcbre.ui.tools.componenttool.passive import (
+    PassiveModel,
+    PassiveEditWidget,
+    Passive_getComponent,
+    PassiveEditFlow,
+)
 from pcbre.ui.tools.multipoint import MultipointEditRenderer, DONE_REASON
 from pcbre.ui.widgets.unitedit import UNIT_GROUP_MM
 from pcbre.util import Timer
 from pcbre.view.rendersettings import RENDER_OUTLINES, RENDER_HINT_ONCE
 
-__author__ = 'davidc'
+__author__ = "davidc"
 
 from pcbre.qt_compat import QtCore, QtGui
 from pcbre.ui.tools.basetool import BaseToolController, BaseTool
 from pcbre.ui.uimodel import mdlacc, GenModel
 
-from pcbre.ui.tools.componenttool.basicsmd import BasicSMDICModel, BasicSMD_getComponent, BasicSMDFlow
-from pcbre.ui.tools.componenttool.dip import DIPModel, DIPEditWidget, DIP_getComponent, DIPEditFlow
+from pcbre.ui.tools.componenttool.basicsmd import (
+    BasicSMDICModel,
+    BasicSMD_getComponent,
+    BasicSMDFlow,
+)
+from pcbre.ui.tools.componenttool.dip import (
+    DIPModel,
+    DIPEditWidget,
+    DIP_getComponent,
+    DIPEditFlow,
+)
 
-from pcbre.ui.dialogs.settingsdialog import MultiAutoSettingsDialog, UnitEditable, FloatTrait, LineEditable, \
-    DegreeEditable
+from pcbre.ui.dialogs.settingsdialog import (
+    MultiAutoSettingsDialog,
+    UnitEditable,
+    FloatTrait,
+    LineEditable,
+    DegreeEditable,
+)
 from .basicsmd import BasicSMDICEditWidget
 from pcbre.ui.boardviewwidget import QPoint_to_pair
 from pcbre.matrix import translate, rotate, Point2
@@ -26,16 +45,30 @@ MDL_TYPE_PASSIVE = 2
 
 
 mdl_meta_t = namedtuple(
-    "mdl_meta", ["cons", "widget_cons", "flow_cons", "get_comp", "text"])
+    "mdl_meta", ["cons", "widget_cons", "flow_cons", "get_comp", "text"]
+)
 mdl_meta = {
-    MDL_TYPE_BASICSMD: mdl_meta_t(BasicSMDICModel, BasicSMDICEditWidget, BasicSMDFlow, BasicSMD_getComponent, "Basic 4-sided SMT"),
-    MDL_TYPE_DIP: mdl_meta_t(DIPModel, DIPEditWidget, DIPEditFlow, DIP_getComponent, "DIP Component"),
-    MDL_TYPE_PASSIVE: mdl_meta_t(PassiveModel, PassiveEditWidget, PassiveEditFlow, Passive_getComponent, "2-lead passive")
+    MDL_TYPE_BASICSMD: mdl_meta_t(
+        BasicSMDICModel,
+        BasicSMDICEditWidget,
+        BasicSMDFlow,
+        BasicSMD_getComponent,
+        "Basic 4-sided SMT",
+    ),
+    MDL_TYPE_DIP: mdl_meta_t(
+        DIPModel, DIPEditWidget, DIPEditFlow, DIP_getComponent, "DIP Component"
+    ),
+    MDL_TYPE_PASSIVE: mdl_meta_t(
+        PassiveModel,
+        PassiveEditWidget,
+        PassiveEditFlow,
+        Passive_getComponent,
+        "2-lead passive",
+    ),
 }
 
 
 class ComponentSettings(MultiAutoSettingsDialog):
-
     def __init__(self, mdl, ctrl):
         super(ComponentSettings, self).__init__()
 
@@ -83,7 +116,6 @@ class ComponentSettings(MultiAutoSettingsDialog):
 
 
 class ComponentModel(GenModel):
-
     def __init__(self):
         super(ComponentModel, self).__init__()
 
@@ -105,7 +137,6 @@ class ComponentModel(GenModel):
 
 
 class ComponentOverlay:
-
     def __init__(self, parent):
         """
         :type parent: ComponentController
@@ -124,7 +155,8 @@ class ComponentOverlay:
         cmp._project = self.parent.project
         with Timer() as t_cmp_render:
             self.parent.view.render_component(
-                vs.glMatrix, cmp, RENDER_OUTLINES, RENDER_HINT_ONCE)
+                vs.glMatrix, cmp, RENDER_OUTLINES, RENDER_HINT_ONCE
+            )
 
         with Timer() as t_mp_edit_renderer:
             pr = MultipointEditRenderer(self.parent.flow, self.parent.view)
@@ -132,7 +164,6 @@ class ComponentOverlay:
 
 
 class ComponentController(BaseToolController):
-
     def __init__(self, mdl, project, view):
         """
 
@@ -154,7 +185,8 @@ class ComponentController(BaseToolController):
 
     def get_component(self):
         return mdl_meta[self.mdl.cmptype].get_comp(
-            self.mdl.get_selected_model(), self, self.flow)
+            self.mdl.get_selected_model(), self, self.flow
+        )
 
     def showSettingsDialog(self):
         dlg = ComponentSettings(self.mdl, self)
@@ -193,7 +225,8 @@ class ComponentController(BaseToolController):
 
     def restartFlow(self):
         self.flow = mdl_meta[self.mdl.cmptype].flow_cons(
-            self.view, self.mdl.get_selected_model())
+            self.view, self.mdl.get_selected_model()
+        )
         self.flow.make_active(True)
 
     @property
@@ -202,10 +235,10 @@ class ComponentController(BaseToolController):
 
 
 class ComponentTool(BaseTool):
-    NAME = 'Component'
-    ICON_NAME = 'component'
-    SHORTCUT = 'c'
-    TOOLTIP = 'Component (c)'
+    NAME = "Component"
+    ICON_NAME = "component"
+    SHORTCUT = "c"
+    TOOLTIP = "Component (c)"
 
     def __init__(self, project):
         super(ComponentTool, self).__init__(project)

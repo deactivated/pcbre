@@ -1,2 +1,2 @@
-__author__ = 'davidc'
+__author__ = "davidc"
 from .nametool import NameTool

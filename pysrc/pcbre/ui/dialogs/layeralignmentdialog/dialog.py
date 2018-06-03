@@ -2,13 +2,25 @@ import numpy
 import OpenGL.GL as GL
 
 from pcbre.matrix import scale, Point2
-from pcbre.model.imagelayer import KeyPoint, KeyPointPosition, KeyPointAlignment, RectAlignment
+from pcbre.model.imagelayer import (
+    KeyPoint,
+    KeyPointPosition,
+    KeyPointAlignment,
+    RectAlignment,
+)
 from pcbre.ui.boardviewwidget import BaseViewWidget
-from pcbre.ui.dialogs.layeralignmentdialog.keypointalign import KeypointAlignmentModel, KeypointAlignmentControllerView, \
-    KeypointAlignmentWidget
+from pcbre.ui.dialogs.layeralignmentdialog.keypointalign import (
+    KeypointAlignmentModel,
+    KeypointAlignmentControllerView,
+    KeypointAlignmentWidget,
+)
 from pcbre.ui.dialogs.layeralignmentdialog.rectalign import RectAlignSettingsWidget
-from pcbre.ui.dialogs.layeralignmentdialog.visibilitywidget import VisibilityModel, VisibilityModelGroup, \
-    VisibilityModelLeaf, VisibilityTree
+from pcbre.ui.dialogs.layeralignmentdialog.visibilitywidget import (
+    VisibilityModel,
+    VisibilityModelGroup,
+    VisibilityModelLeaf,
+    VisibilityTree,
+)
 from pcbre.ui.gl.textrender import TextBatcher
 from pcbre.ui.undo import UndoStack, undofunc, sig
 from pcbre.view.imageview import ImageView
@@ -19,7 +31,7 @@ from pcbre.ui.uimodel import mdlacc, GenModel
 from .rectalign import RectAlignmentControllerView, RectAlignmentModel
 
 
-__author__ = 'davidc'
+__author__ = "davidc"
 
 
 ALIGN_BY_DIMENSIONS = 0
@@ -32,7 +44,6 @@ VIEW_MODE_EXISTING_KEYPOINTS = 2
 
 
 class AlignmentViewModel(GenModel):
-
     def __init__(self, image):
         GenModel.__init__(self)
 
@@ -52,7 +63,6 @@ def cmd_set_align_by(target, align_mode):
 
 
 class AlignmentViewWidget(BaseViewWidget):
-
     def __init__(self, vis_model, il, model):
         BaseViewWidget.__init__(self)
 
@@ -161,7 +171,6 @@ class AlignmentViewWidget(BaseViewWidget):
 
 
 class LayerAlignmentDialog(QtWidgets.QDialog):
-
     def __init__(self, parent, project, il):
         QtWidgets.QDialog.__init__(self, parent)
         self.resize(800, 600)
@@ -244,7 +253,8 @@ class LayerAlignmentDialog(QtWidgets.QDialog):
         control_buttons_layout.addWidget(vis_gb)
 
         bbox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.Save | QtWidgets.QDialogButtonBox.Cancel)
+            QtWidgets.QDialogButtonBox.Save | QtWidgets.QDialogButtonBox.Cancel
+        )
         bbox.accepted.connect(self.accept)
         bbox.rejected.connect(self.reject)
         control_buttons_layout.addWidget(bbox)
@@ -260,9 +270,7 @@ class LayerAlignmentDialog(QtWidgets.QDialog):
 
         self._selected_view = None
 
-        self._saved_transforms = [
-            scale(0.8), scale(0.8)
-        ]
+        self._saved_transforms = [scale(0.8), scale(0.8)]
 
         # Undo stack
         self.undoStack = UndoStack()
@@ -336,24 +344,25 @@ class LayerAlignmentDialog(QtWidgets.QDialog):
         self.update_tabs()
 
         if self.model.align_by == ALIGN_BY_DIMENSIONS:
-            self.directions_label.setText("Ctrl-click to add anchor point, Shift-click to delete anchor point.\n" +
-                                          "Anchor points constrain handle movement.")
+            self.directions_label.setText(
+                "Ctrl-click to add anchor point, Shift-click to delete anchor point.\n"
+                + "Anchor points constrain handle movement."
+            )
         else:
             self.directions_label.setText(
-                "Ctrl-click to add keypoint. Shift-click to delete keypoint.")
+                "Ctrl-click to add keypoint. Shift-click to delete keypoint."
+            )
 
     def set_view_type(self, idx):
         self.model.view_mode = idx
 
     def save_restore_transform(self):
         if self._selected_view is not None:
-            self._saved_transforms[
-                self._selected_view] = self.view.viewState.transform
+            self._saved_transforms[self._selected_view] = self.view.viewState.transform
 
         self._selected_view = self.model.view_mode
 
-        self.view.viewState.transform = self._saved_transforms[
-            self._selected_view]
+        self.view.viewState.transform = self._saved_transforms[self._selected_view]
 
     def update_controls(self):
 

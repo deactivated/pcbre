@@ -1,4 +1,4 @@
-__author__ = 'davidc'
+__author__ = "davidc"
 
 from OpenGL.GL.shaders import ShaderProgram, compileShader
 import OpenGL.GL as GL
@@ -16,7 +16,6 @@ class UnboundAttributeException(Exception):
 
 
 class UniformProxy(object):
-
     def __init__(self, parent):
         self._prog = parent
 
@@ -26,7 +25,6 @@ class UniformProxy(object):
 
 
 class AttributeProxy(object):
-
     def __init__(self, parent):
         self._prog = parent
 
@@ -36,7 +34,6 @@ class AttributeProxy(object):
 
 
 class EnhShaderProgram(ShaderProgram):
-
     def _get_uniforms(self):
         _active_uniform = GL.glGetProgramiv(self, GL.GL_ACTIVE_UNIFORMS)
 
@@ -66,15 +63,16 @@ class EnhShaderProgram(ShaderProgram):
         _attribs = {}
 
         for attrib_index in range(_active_attrib):
-            GL.glGetActiveAttrib(self, attrib_index, bufSize,
-                                 ct_nameSize, ct_size, ct_type, ct_name
-                                 )
+            GL.glGetActiveAttrib(
+                self, attrib_index, bufSize, ct_nameSize, ct_size, ct_type, ct_name
+            )
 
             # in python3 attribute names are bytestrings. Convert to UTF8
             name = ct_name.value.decode("ascii")
 
             _attribs[name] = _index_size_type(
-                attrib_index, ct_size.value, ct_type.value)
+                attrib_index, ct_size.value, ct_type.value
+            )
 
         return _attribs
 
@@ -99,6 +97,7 @@ class EnhShaderProgram(ShaderProgram):
                 func_attr(loc, *args, **kwargs)
                 GL.glUseProgram(0)
                 self._uniforms_to_be.remove(uniform_name)
+
             return binder
 
         raise AttributeError

@@ -3,9 +3,24 @@ import numpy
 
 import pcbre.matrix
 
-from .schema_capnp import (Project, Stackup, ViaPair, Layer, Color3f, Artwork,
-                           Imagery, Net, Nets, Image, Matrix3x3, Matrix4x4,
-                           Point2, Point2f, Keypoint, ImageTransform)
+from .schema_capnp import (
+    Project,
+    Stackup,
+    ViaPair,
+    Layer,
+    Color3f,
+    Artwork,
+    Imagery,
+    Net,
+    Nets,
+    Image,
+    Matrix3x3,
+    Matrix4x4,
+    Point2,
+    Point2f,
+    Keypoint,
+    ImageTransform,
+)
 
 
 def serialize_color3f(*arg):
@@ -58,8 +73,9 @@ def serialize_matrix(mat):
 
 
 def __deserialize_matrix_n(msg, nterms):
-    ar = numpy.array([getattr(msg, "t%d" % i)
-                      for i in range(nterms)], dtype=numpy.float)
+    ar = numpy.array(
+        [getattr(msg, "t%d" % i) for i in range(nterms)], dtype=numpy.float
+    )
     return ar
 
 
@@ -102,7 +118,6 @@ class StateError(Exception):
 
 
 class SContext:
-
     def __init__(self):
         self.obj_to_sid = {}
         self.sid_to_obj = {}
@@ -145,8 +160,7 @@ class SContext:
 
     def set_sid(self, sid, m):
         if not self.__restoring:
-            raise StateError(
-                "Must be in restore mode to create objects with SID")
+            raise StateError("Must be in restore mode to create objects with SID")
         if sid in self.sid_to_obj:
             return
         assert sid not in self.sid_to_obj

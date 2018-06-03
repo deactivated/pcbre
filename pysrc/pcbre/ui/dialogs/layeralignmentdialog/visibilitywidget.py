@@ -2,7 +2,7 @@ from pcbre.ui.uimodel import GenModel
 from pcbre.qt_compat import QtGui, QtCore, QtWidgets
 
 
-__author__ = 'davidc'
+__author__ = "davidc"
 
 
 VISIBLE_NO = 0
@@ -11,7 +11,6 @@ VISIBLE_YES = 2
 
 
 class VisibilityModelLeaf(object):
-
     def __init__(self, name):
         super(VisibilityModelLeaf, self).__init__()
         self.name = name
@@ -34,7 +33,6 @@ class VisibilityModelLeaf(object):
 
 
 class VisibilityModelGroup(object):
-
     def __init__(self, name):
         super(VisibilityModelGroup, self).__init__()
         self.__children = []
@@ -64,7 +62,6 @@ class VisibilityModelGroup(object):
 
 
 class VisibilityModel(GenModel):
-
     def __init__(self):
         super(VisibilityModel, self).__init__()
         self.__children = []
@@ -86,7 +83,6 @@ class VisibilityModel(GenModel):
 
 
 class VisibilityAdaptor(QtCore.QAbstractItemModel):
-
     @staticmethod
     def recursive_stuff_parent(parent):
         for i in parent.children:
@@ -208,7 +204,6 @@ class VisibilityAdaptor(QtCore.QAbstractItemModel):
 
 
 class VisibilityTree(QtWidgets.QTreeView):
-
     def __init__(self, model):
         super(VisibilityTree, self).__init__()
         self.model = model
