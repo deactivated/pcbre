@@ -9,7 +9,8 @@ __author__ = "davidc"
 
 class AddImageDialogAction(QtWidgets.QAction):
     """
-    This action shows a QT file selection dialog; and then adds an image to the project
+    This action shows a QT file selection dialog and adds an image to the
+    project.
     """
 
     def __init__(self, window):

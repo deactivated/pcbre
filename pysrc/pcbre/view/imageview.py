@@ -9,20 +9,8 @@ from pcbre.ui.gl import vbobind, Texture, VAO
 
 class ImageView(object):
     def __init__(self, il):
-        """
-
-        :param il:
-        :type il: pcbre.model.imagelayer.ImageLayer
-        :return:
-        """
-
         self.il = il
         self.im = il.decoded_image
-
-        # haaaaaax
-        # flipy = pcbre.matrix.flip(1)
-        # self.mat = flipy.dot(self.il.transform_matrix.dot(numpy.linalg.inv(self.dview_tmat)))
-        # self.mat = self.dview_tmat
         self.mat = None
 
     def initGL(self, gls):
@@ -89,13 +77,12 @@ class ImageView(object):
         m_pre = self.mat
         if self.mat is None:
             m_pre = self.il.transform_matrix
-        mat = viewPort.dot(m_pre)
 
-        # mat = numpy.array([
-        #     [1 / viewPort.width(), 0, 0],
-        #     [0, 1 / viewPort.height(), 0],
-        #     [0, 0, 1]
-        # ])
+        # haaxx?
+        flip_y = pcbre.matrix.flip(1)
+        m_pre = m_pre.dot(flip_y)
+
+        mat = viewPort.dot(m_pre)
 
         GL.glActiveTexture(GL.GL_TEXTURE0)
         with self.prog, self._tex.on(GL.GL_TEXTURE_2D), self.vao:

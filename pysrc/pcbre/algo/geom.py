@@ -1,8 +1,5 @@
-import math
-from pcbre.matrix import project_point_line, line_intersect, line_distance_segment, Vec2
-from pcbre.model.artwork_geom import Trace, Via, Polygon
+from pcbre.matrix import project_point_line, line_distance_segment, Vec2
 from pcbre.model.const import IntersectionClass
-from pcbre.model.pad import Pad
 from shapely.geometry import Point as ShapelyPoint
 
 __author__ = "davidc"
@@ -190,7 +187,10 @@ def pt_inside_virtual_line(airwire, pt):
     return dist_pt_line_seg(pt, airwire.p0, airwire.p1) <= 0
 
 
-########### Build comparison functions for geom types #################
+#
+# Build comparison functions for geom types
+#
+
 _geom_types = [i for i in IntersectionClass if i is not IntersectionClass.NONE]
 _geom_ops = {}
 

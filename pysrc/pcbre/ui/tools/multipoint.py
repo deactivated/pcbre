@@ -1,5 +1,5 @@
 import math
-from copy import copy, deepcopy
+import copy
 from enum import Enum
 
 from pcbre.qt_compat import QtCore, QtGui
@@ -9,7 +9,7 @@ from pcbre.view.rendersettings import RENDER_HINT_ONCE
 __author__ = "davidc"
 
 
-class RenderIcon:
+class RenderIcon(Enum):
     POINT = 0
     POINT_ON_LINE = 1  # implies has .get_vector()
     LINE = 2  # implies has .get_vector()
@@ -31,7 +31,7 @@ class EditablePoint:
         return self.__enabled()
 
     def save(self):
-        return deepcopy((self.is_set, self.pt))
+        return copy.deepcopy((self.is_set, self.pt))
 
     def restore(self, v):
         self.is_set, self.pt = v
@@ -50,7 +50,7 @@ class EditablePoint:
 
 class OffsetDefaultPoint(EditablePoint):
     def __init__(self, pt, default_offset, icon=RenderIcon.POINT_ON_LINE, enabled=True):
-        super(OffsetDefaultPoint, self).__init__(enabled=enabled)
+        super().__init__(enabled=enabled)
         self.reference = pt
         self.offset = default_offset
         self.icon = icon
@@ -58,9 +58,15 @@ class OffsetDefaultPoint(EditablePoint):
     def get_vector(self):
         return self.get() - self.reference.get()
 
+    def set(self):
+        raise RuntimeError()
+
     def get(self):
         if self.is_set:
             return self.pt
+
+        if not self.reference.is_set:
+            return
 
         if callable(self.offset):
             offset = self.offset()
@@ -172,8 +178,8 @@ class MultipointEditFlow:
         if self.__point_active:
             self.__point_active = False
             self.current_point.restore(self.__saved_point)
-        else:
-            self.__done = DONE_REASON.REJECT
+        # else:
+        self.__done = DONE_REASON.REJECT
 
     def commit_entry(self, shift_pressed):
         if self.is_first_point and not shift_pressed:
@@ -264,6 +270,7 @@ class MultipointEditFlow:
 
         if keycode == QtCore.Qt.Key_Escape:
             self.abort_entry()
+
         elif keycode in (QtCore.Qt.Key_Enter, QtCore.Qt.Key_Return):
             if self.__point_active:
                 self.commit_entry()

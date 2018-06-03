@@ -1,8 +1,11 @@
+import weakref
 import itertools
-
-from collections import defaultdict
 import operator
 
+from collections import defaultdict
+from rtree import index
+
+from pcbre.matrix import Point2
 from pcbre.algo.geom import (
     dist_via_via,
     dist_via_trace,
@@ -15,7 +18,6 @@ from pcbre.algo.geom import (
     can_self_intersect,
     intersect,
 )
-from pcbre.matrix import Point2
 from pcbre.model import serialization as ser
 from pcbre.model.artwork_geom import Trace, Via, Polygon, Airwire
 from pcbre.model.component import Component
@@ -27,20 +29,18 @@ from pcbre.model.serialization import serialize_point2, deserialize_point2
 from pcbre.model.smd4component import SMD4Component
 from pcbre.model.util import ImmutableSetProxy
 
-from rtree import index
-import weakref
 
 # kref Rules of engagement:
 #
-#   Once an item is added to artwork, it should be considered geometrically and electrically immutable
-#
-#
+# Once an item is added to artwork, it should be considered geometrically and
+# electrically immutable.
 
 
 class ArtworkIndex:
     """
-    Artwork index provides a wrapper on the Rtree spatial query library. Specifically, it resolves query results to
-    physical geom objects, as well as uses the "fast" query paths
+    Artwork index provides a wrapper on the Rtree spatial query
+    library. Specifically, it resolves query results to physical geom objects,
+    as well as uses the "fast" query paths.
     """
 
     def __init__(self):
@@ -261,7 +261,8 @@ class Artwork:
 
     def merge_nets(self, net1, net2):
         """
-        Merge two nets, such that all artwork on net2 is now on net1, and net2 is deleted
+        Merge two nets, such that all artwork on net2 is now on net1, and net2
+        is deleted.
 
         :param net1: destination Net object
         :param net2: source Net object
@@ -295,9 +296,9 @@ class Artwork:
         """
         pt = Point2(pt)
 
-        # layers_include / layers_exclude specify IDs of the layers to search, or exclude from the search
-        # since exclude implicitly means "all layers minus the specified", the
-        # combination of both is invalid
+        # layers_include / layers_exclude specify IDs of the layers to search,
+        # or exclude from the search since exclude implicitly means "all layers
+        # minus the specified", the combination of both is invalid
         assert layers_include is None or layers_exclude is None
 
         for aw in self.get_all_artwork():
@@ -337,10 +338,12 @@ class Artwork:
 
     def remove_aw_nets(self, geom, suppress_presence_error=False):
         """
-        Perform any net-splitting that would occur if geom is removed from the project
+        Perform any net-splitting that would occur if geom is removed from the
+        project.
+
         :param new_geom:
-        :param suppress_presence_error: Ignore that the geometry being removed isn't actually present in the DB.
-                                        primarily useful for unit tests
+        :param suppress_presence_error: Ignore that the geometry being removed
+        isn't actually present in the DB. primarily useful for unit tests.
         :return:
         """
         connected = set([i for d, i in self.query_intersect(geom)])
@@ -438,9 +441,9 @@ class Artwork:
             self.get_all_artwork(), progress_cb=progress_cb
         )
 
-        # First, for each existing net, we identify which groups are owned by the net
-        # and remove the groups having the smaller amounts of geometry (by
-        # count)
+        # First, for each existing net, we identify which groups are owned by
+        # the net and remove the groups having the smaller amounts of geometry
+        # (by count)
         nets_to_groups = defaultdict(list)
         for g in connectivity:
             for i in g:
@@ -453,8 +456,9 @@ class Artwork:
                     if i.net == net:
                         i.net = None
 
-        # Second, now for all groups, we build a list of all nets on the group. We choose the
-        # highest priority net and assign it to the whole group
+        # Second, now for all groups, we build a list of all nets on the
+        # group. We choose the highest priority net and assign it to the whole
+        # group
         for group in connectivity:
             nets = set(i.net for i in group if i.net is not None)
             # TODO: Prioritize net
@@ -468,7 +472,9 @@ class Artwork:
 
     def merge_artwork(self, geom):
         """
-        Merge a geometry object into the design. Takes care of either assigning object a net, or merging nets if necessary
+        Merge a geometry object into the design. Takes care of either assigning
+        object a net, or merging nets if necessary.
+
         :param geom:
         :rtype: bool
         :return: Whether the geometry may be merged
@@ -516,10 +522,9 @@ class Artwork:
     # return distance-sorted list of intersects
     def query(self, geom, bbox_prune=False):
         """
-
-        :param geom:  object to query
-        :param distance: if d is None, find nearest object (or all touching objects).
-                        If d is a number, those nearer than d
+        :param geom: object to query
+        :param distance: if d is None, find nearest object (or all touching
+                         objects). If d is a number, those nearer than d
         :return: list of artwork objects
         """
         assert bbox_prune
@@ -565,7 +570,6 @@ class Artwork:
 
             for other in self.__all_pads:
                 if other.is_through() or other.layer in geom.viapair.all_layers:
-
                     if bbox_prune and not bbox.intersects(other.bbox):
                         continue
                     results.append((dist_via_pad(geom, other), other))

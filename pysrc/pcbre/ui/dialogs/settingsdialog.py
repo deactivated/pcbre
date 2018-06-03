@@ -1,6 +1,7 @@
 import math
-from pcbre.qt_compat import QtGui, QtCore, QtWidgets
+
 from pcbre.matrix import Point2
+from pcbre.qt_compat import QtGui, QtCore, QtWidgets
 from pcbre.ui.widgets.unitedit import UnitLineEdit
 
 
@@ -193,7 +194,7 @@ class AutoSettingsDialog(SettingsDialog):
 
 class AutoSettingsWidget(QtWidgets.QWidget):
     """
-    Widget similar to AutoSettingsDialog; for use with MultiAutoSettingsDialog
+    Widget similar to AutoSettingsDialog; for use with MultiAutoSettingsDialog.
     """
 
     def __init__(self):

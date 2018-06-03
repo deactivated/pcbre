@@ -2,8 +2,7 @@ from pcbre.algo.geom import layer_for
 from pcbre.matrix import Point2
 from pcbre.model.artwork_geom import Airwire
 from pcbre.ui.tools.basetool import BaseTool, BaseToolController
-import cv2
-from pcbre.qt_compat import QtGui, QtCore
+from pcbre.qt_compat import QtCore
 from pcbre.view.rendersettings import RENDER_HINT_ONCE
 
 AIRWIRE_COLOR = (0.7, 0.7, 0)
@@ -22,7 +21,11 @@ class AirwireToolOverlay(object):
     def render(self, surface):
         if self.ctrl.state == self.ctrl.STATE_WAIT_ADTL_POINT:
             self.view.hairline_renderer.deferred(
-                self.ctrl.pt0, self.ctrl.mouse, AIRWIRE_COLOR, None, RENDER_HINT_ONCE
+                p1=self.ctrl.pt0,
+                p2=self.ctrl.mouse,
+                color=AIRWIRE_COLOR,
+                group=None,
+                hint=RENDER_HINT_ONCE,
             )
 
     def initializeGL(self, fake_shared):

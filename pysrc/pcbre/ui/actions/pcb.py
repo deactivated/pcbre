@@ -1,7 +1,8 @@
 import time
+
 from pcbre.ui.dialogs.layerviewsetup import LayerViewSetupDialog
 from pcbre.ui.dialogs.stackupsetup import StackupSetupDialog
-from pcbre.qt_compat import QtGui, QtCore, QtWidgets
+from pcbre.qt_compat import QtGui, QtWidgets
 
 
 __author__ = "davidc"

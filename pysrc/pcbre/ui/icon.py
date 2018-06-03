@@ -1,4 +1,4 @@
-from pcbre.qt_compat import QtCore, QtGui
+from pcbre.qt_compat import QtGui
 import pkg_resources
 
 

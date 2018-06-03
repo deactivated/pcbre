@@ -1,3 +1,6 @@
+import time
+
+
 def np_print_regular(x, caption=None):
     border = "-" * (8 * x.shape[1] + 4)
     if caption:
@@ -14,9 +17,6 @@ def float_or_None(s):
     if s == "":
         return None
     return float(s)
-
-
-import time
 
 
 class Timer:

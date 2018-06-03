@@ -1,19 +1,18 @@
-from collections import defaultdict
-from pcbre.view.rendersettings import RENDER_STANDARD, RENDER_OUTLINES, RENDER_SELECTED
-from pcbre.view.util import get_consolidated_draws_1
-
-__author__ = "davidc"
 import math
+import numpy
+import ctypes
+import weakref
+from collections import defaultdict
+
 from OpenGL import GL
 from OpenGL.arrays.vbo import VBO
-import numpy
-from pcbre import units
+
 from pcbre.matrix import Rect, translate, rotate, Point2, scale, Vec2
 from pcbre.ui.gl import VAO, vbobind, glimports as GLI
-import ctypes
 
+from .rendersettings import RENDER_STANDARD, RENDER_OUTLINES, RENDER_SELECTED
+from .util import get_consolidated_draws_1
 
-import weakref
 
 NUM_ENDCAP_SEGMENTS = 32
 TRIANGLES_SIZE = (NUM_ENDCAP_SEGMENTS - 1) * 3 * 2 + 3 * 2
@@ -43,17 +42,18 @@ class TraceRender:
         )
 
         with self.__uniform_shader_vao, self.trace_vbo:
-            vbobind(self.__uniform_shader, self.trace_vbo.dtype, "vertex").assign()
+            vbobind(self.__uniform_shader, self.trace_vbo.dtype, "lvertex").assign()
             vbobind(self.__uniform_shader, self.trace_vbo.dtype, "ptid").assign()
             self.index_vbo.bind()
 
     def initializeGL(self, gls):
         # Build trace vertex VBO and associated vertex data
-        dtype = [("vertex", numpy.float32, 2), ("ptid", numpy.uint32)]
+        dtype = [("lvertex", numpy.float32, 2), ("ptid", numpy.uint32)]
         self.working_array = numpy.zeros(NUM_ENDCAP_SEGMENTS * 2 + 2, dtype=dtype)
         self.trace_vbo = VBO(self.working_array, GL.GL_DYNAMIC_DRAW)
 
         # Generate geometry for trace and endcaps
+        #
         # ptid is a variable with value 0 or 1 that indicates which endpoint
         # the geometry is associated with
         self.__build_trace()
@@ -63,8 +63,8 @@ class TraceRender:
             "line_vertex_shader", "frag1", defines={"INPUT_TYPE": "in"}
         )
 
-        # Now we build an index buffer that allows us to render filled geometry from the same
-        # VBO.
+        # Now we build an index buffer that allows us to render filled geometry
+        # from the same VBO.
         arr = []
         for i in range(NUM_ENDCAP_SEGMENTS - 1):
             arr.append(0)
@@ -113,7 +113,8 @@ class TraceRender:
             self.__bind_thickness = vbobind(
                 self.__attribute_shader, self.instance_dtype, "thickness", div=1
             )
-            # vbobind(self.__attribute_shader, self.instance_dtype, "color", div=1).assign()
+            # vbobind(self.__attribute_shader, self.instance_dtype, "color",
+            #   div=1).assign()
             self.__base_rebind(0)
 
             self.index_vbo.bind()
@@ -134,18 +135,18 @@ class TraceRender:
 
     def __build_trace(self):
         # Update trace VBO
-        self.working_array["vertex"][0] = (0, 0)
+        self.working_array["lvertex"][0] = (0, 0)
         self.working_array["ptid"][0] = 0
-        self.working_array["vertex"][1] = (0, 0)
+        self.working_array["lvertex"][1] = (0, 0)
         self.working_array["ptid"][1] = 1
 
         end = Vec2(1, 0)
         for i in range(0, NUM_ENDCAP_SEGMENTS):
             theta = math.pi * i / (NUM_ENDCAP_SEGMENTS - 1) + math.pi / 2
             m = rotate(theta).dot(end.homol())
-            self.working_array["vertex"][2 + i] = m[:2]
+            self.working_array["lvertex"][2 + i] = m[:2]
             self.working_array["ptid"][2 + i] = 0
-            self.working_array["vertex"][2 + i + NUM_ENDCAP_SEGMENTS] = -m[:2]
+            self.working_array["lvertex"][2 + i + NUM_ENDCAP_SEGMENTS] = -m[:2]
             self.working_array["ptid"][2 + i + NUM_ENDCAP_SEGMENTS] = 1
 
         # Force data copy
@@ -154,8 +155,10 @@ class TraceRender:
 
     def deferred_multiple(self, trace_settings, render_settings=0):
         """
-        :param trace_settings: list of traces to draw and the settings for that particular trace
+        :param trace_settings: list of traces to draw and the settings for that
+            particular trace
         :param render_settings:
+
         :return:
         """
         for t, tr in trace_settings:
@@ -170,7 +173,7 @@ class TraceRender:
 
     def prepare(self):
         """
-        :return: Build VBOs and information for rendering pass
+        Build VBOs and information for rendering pass.
         """
         self.__prepared = True
 
@@ -187,9 +190,10 @@ class TraceRender:
 
         pos = 0
         for layer, traces in self.__deferred_layer.items():
-            # We reorder the traces to batch them by outline, and net to encourage
-            # maximum draw call length. The rationale is that nets are commonly selected
-            # or may be commonly drawn in different colors.
+            # We reorder the traces to batch them by outline, and net to
+            # encourage maximum draw call length. The rationale is that nets
+            # are commonly selected or may be commonly drawn in different
+            # colors.
             traces = sorted(
                 traces, key=lambda i: (i[1] & RENDER_OUTLINES, id(i[0].net))
             )
@@ -202,6 +206,10 @@ class TraceRender:
                 self.__last_prepared[trace] = pos
 
                 pos += 1
+
+        err = GL.glGetError()
+        if err != GL.GL_NO_ERROR:
+            print(err)
 
         # Force full resend of VBO
         self.instance_vbo.data = instance_array
@@ -259,9 +267,9 @@ class TraceRender:
                 GL.glUniform4f(self.__attribute_shader.uniforms.color, *color)
 
                 if has_base_instance:
-                    # Many instances backport glDrawElementsInstancedBaseInstance
-                    # This is faster than continually rebinding, so support if
-                    # possible
+                    # Many instances backport
+                    # glDrawElementsInstancedBaseInstance. This is faster than
+                    # continually rebinding, so support if possible.
                     if not is_outline:
                         for first, last in ranges:
                             # filled traces come first in the array
@@ -309,12 +317,12 @@ class TraceRender:
                                     last - first,
                                 )
 
-    # Immediate-mode render of a single trace
-    # SLOW (at least for bulk-rendering)
-    # Useful for rendering UI elements
+    # Immediate-mode render of a single trace. SLOW for bulk-rendering, but
+    # useful for rendering UI elements.
     def render(self, mat, trace, render_settings=RENDER_STANDARD):
         color_a = self.parent.color_for_trace(trace) + [1]
         color_a = self.parent.sel_colormod(render_settings & RENDER_SELECTED, color_a)
+
         with self.__uniform_shader, self.__uniform_shader_vao:
             GL.glUniform1f(
                 self.__uniform_shader.uniforms.thickness, trace.thickness / 2

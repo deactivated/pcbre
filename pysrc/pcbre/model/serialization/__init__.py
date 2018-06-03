@@ -1,6 +1,6 @@
+import capnp
 import contextlib
 import numpy
-
 import pcbre.matrix
 
 from .schema_capnp import (

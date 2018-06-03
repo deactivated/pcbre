@@ -1,11 +1,10 @@
+import pkg_resources
+
 from pcbre.ui.gl.shadercache import ShaderCache
 from pcbre.ui.gl.textrender import TextRender
 from pcbre.ui.gl.textatlas import SDFTextAtlas
-import OpenGL.GL as GL
 
 __author__ = "davidc"
-
-import pkg_resources
 
 
 sans_serif_atlas = SDFTextAtlas(
@@ -16,11 +15,8 @@ sans_serif_atlas = SDFTextAtlas(
 class GLShared(object):
     def __init__(self):
         self.shader_cache = ShaderCache()
-
         self.text = TextRender(self, sans_serif_atlas)
 
     def initializeGL(self):
-        # self.shader_cache.initializeGL()
-
         self.text.initializeGL()
         self.text.updateTexture()

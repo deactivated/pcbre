@@ -1,4 +1,4 @@
-from pcbre.qt_compat import QtCore, QtWidgets
+from pcbre.qt_compat import QtWidgets
 from pcbre.model.imagelayer import ImageLayer
 from pcbre.ui.dialogs.layeralignmentdialog.dialog import LayerAlignmentDialog
 

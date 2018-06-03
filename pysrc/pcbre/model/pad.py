@@ -1,12 +1,11 @@
+import numpy.linalg
+
+from pcbre.matrix import rotate, translate, Point2, Vec2, Rect, projectPoint
 from pcbre.model.artwork_geom import Trace
 from pcbre.model.const import IntersectionClass, TFF
 
+
 __author__ = "davidc"
-
-from pcbre.matrix import rotate, translate, Point2, Vec2, Rect, projectPoint
-from shapely.geometry import Point as ShapelyPoint
-
-import numpy.linalg
 
 
 def lazyprop(fn):

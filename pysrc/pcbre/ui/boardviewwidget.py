@@ -1,34 +1,22 @@
 import math
 import time
-import numpy
 import OpenGL.GL as GL
-import OpenGL.arrays.vbo as VBO
 
-from collections import defaultdict
+from pcbre import matrix as M
 
-import pcbre.matrix as M
-
-from pcbre import units
 from pcbre.qt_compat import QtCore, QtGui, QtOpenGL, QGLContext, QtWidgets
 from pcbre.matrix import scale, translate, Point2, projectPoint
 from pcbre.model.const import SIDE
 from pcbre.model.dipcomponent import DIPComponent
-from pcbre.model.pad import Pad
-from pcbre.model.passivecomponent import (
-    PassiveComponent,
-    PassiveSymType,
-    PassiveBodyType,
-)
+from pcbre.model.passivecomponent import PassiveComponent
 from pcbre.model.smd4component import SMD4Component
 from pcbre.model.stackup import Layer
 
-from pcbre.ui.gl import vbobind
-from pcbre.ui.gl.glshared import GLShared
-from pcbre.ui.gl.shadercache import ShaderCache
-from pcbre.ui.gl.textrender import TextBatcher, TextBatch
-from pcbre.ui.tools.airwiretool import AIRWIRE_COLOR
 from pcbre.util import Timer
-from pcbre.view.cachedpolygonrenderer import PolygonVBOPair, CachedPolygonRenderer
+from pcbre.ui.gl.glshared import GLShared
+from pcbre.ui.gl.textrender import TextBatcher
+from pcbre.ui.tools.airwiretool import AIRWIRE_COLOR
+from pcbre.view.cachedpolygonrenderer import CachedPolygonRenderer
 from pcbre.view.componenttext import ComponentTextBatcher
 from pcbre.view.hairlinerenderer import HairlineRenderer
 from pcbre.view.imageview import ImageView
@@ -86,10 +74,11 @@ def getSelectColor(c, selected):
     return (r, g, b)
 
 
-# Full view state for the multilayer view
-
-
 class ViewState(ViewPort, QtCore.QObject):
+    """
+    View state for the multi-layer view.
+    """
+
     changed = QtCore.Signal()
     currentLayerChanged = QtCore.Signal()
 
@@ -384,7 +373,7 @@ class BaseViewWidget(QtOpenGL.QGLWidget):
         GL.glClearColor(0, 0, 0, 1)
 
         self.gls.initializeGL()
-        GL.glGetError()
+        assert GL.glGetError() == 0
 
         GL.glEnable(GL.GL_BLEND)
 
@@ -418,10 +407,10 @@ class BaseViewWidget(QtOpenGL.QGLWidget):
         if width == 0 or height == 0:
             return
 
-        size = max(width, height)
-
+        # size = max(width, height)
         # GL.glViewport((width - size) // 2, (height - size) // 2, size, size)
         # self.viewState.resize(width, height)
+
         GL.glViewport(0, 0, width, height)
         self.viewState.resize(width, height)
 
@@ -444,7 +433,9 @@ class BoardViewWidget(BaseViewWidget):
         self.dip_renderer = DIPRender(self)
         self.smd_renderer = SMDRender(self)
         self.trace_renderer = TraceRender(self)
+
         self.via_renderer = THRenderer(self)
+        self.pad_via_batch = self.via_renderer.batch()
         self.__via_project_batch = ViaBoardBatcher(self.via_renderer, self.project)
 
         self.text_batch = TextBatcher(self.gls.text)
@@ -532,15 +523,22 @@ class BoardViewWidget(BaseViewWidget):
 
         for pad in cmp.get_pads():
             pad_render_mode = render_mode
-            if not pad.is_through() and not self.layer_visible(pad.layer):
+            if not pad.is_through() and (
+                pad.layer is None or not self.layer_visible(pad.layer)
+            ):
                 continue
 
             if pad in self.selectionList:
                 pad_render_mode |= RENDER_SELECTED
             self.pad_renderer.render(cm, pad, pad_render_mode, render_hint)
 
-    def _layer_visible(self, l):
-        return l is self.viewState.current_layer or self.viewState.draw_other_layers
+    def update_layer_visible_cache(self):
+        def _layer_visible(l):
+            return l is self.viewState.current_layer or self.viewState.draw_other_layers
+
+        self.__layer_visible_lut = [
+            _layer_visible(i) for i in self.project.stackup.layers
+        ]
 
     def layer_visible(self, l):
         return self.__layer_visible_lut[l.number]
@@ -551,9 +549,9 @@ class BoardViewWidget(BaseViewWidget):
     def render(self):
         t_render_start = time.time()
 
-        self.__layer_visible_lut = [
-            self._layer_visible(i) for i in self.project.stackup.layers
-        ]
+        gl_matrix = self.viewState.glMatrix
+
+        self.update_layer_visible_cache()
 
         # zero accuum buffers for restarts
         self.trace_renderer.restart()
@@ -577,7 +575,7 @@ class BoardViewWidget(BaseViewWidget):
                     i = self.viewState.layer_permute % len(images)
                     images_cycled = images[i:] + images[:i]
                     for l in images_cycled:
-                        self.image_view_cache_load(l).render(self.viewState.glMatrix)
+                        self.image_view_cache_load(l).render(gl_matrix)
 
         # Now render features
         self.lt = time.time()
@@ -620,7 +618,7 @@ class BoardViewWidget(BaseViewWidget):
                 render_state = 0
                 if cmp in self.selectionList:
                     render_state |= RENDER_SELECTED
-                self.render_component(self.viewState.glMatrix, cmp, render_state)
+                self.render_component(gl_matrix, cmp, render_state)
 
             with Timer() as t_cmp_gen:
                 self.cmp_text_batch.update_if_necessary()
@@ -644,31 +642,31 @@ class BoardViewWidget(BaseViewWidget):
 
             for layer in layers:
                 with t_tr_draw:
-                    self.trace_renderer.render_deferred_layer(
-                        self.viewState.glMatrix, layer
-                    )
+                    self.trace_renderer.render_deferred_layer(gl_matrix, layer)
 
-                self.poly_renderer.render(self.viewState.glMatrix, layer)
+                self.poly_renderer.render(gl_matrix, layer)
                 with t_tex_draw:
                     self.text_batch.render(key=layer)
-                self.hairline_renderer.render_group(self.viewState.glMatrix, layer)
+                self.hairline_renderer.render_group(gl_matrix, layer)
 
             with Timer() as t_vt_draw:
                 for i in self.project.stackup.via_pairs:
-                    self.__via_project_batch.render_viapair(self.viewState.glMatrix, i)
+                    self.__via_project_batch.render_viapair(gl_matrix, i)
+
+            with Timer():
+                # A hack: all vias associated with pads are lumped into a
+                # seperate batch.
+                self.pad_via_batch.prepare()
+                self.pad_via_batch.render_filled(gl_matrix)
 
             # Final rendering
             # Render the non-layer text
             with t_tex_draw:
-                self.cmp_text_batch.render_layer(
-                    self.viewState.glMatrix, SIDE.Top, False
-                )
-                self.cmp_text_batch.render_layer(
-                    self.viewState.glMatrix, SIDE.Bottom, False
-                )
+                self.cmp_text_batch.render_layer(gl_matrix, SIDE.Top, False)
+                self.cmp_text_batch.render_layer(gl_matrix, SIDE.Bottom, False)
                 self.text_batch.render()
 
-            self.hairline_renderer.render_group(self.viewState.glMatrix, None)
+            self.hairline_renderer.render_group(gl_matrix, None)
 
             self.hairline_renderer.render_group(self.viewState.glWMatrix, "OVERLAY_VS")
 

@@ -228,6 +228,15 @@ class ImageLayer:
         self.__data = data
         self.__alignment = None
 
+    @staticmethod
+    def fromFile(project, filename):
+        assert os.path.exists(filename)
+
+        basename = os.path.basename(filename)
+        with open(filename, "rb") as f:
+            im_data = f.read()
+        return ImageLayer(name=basename, data=im_data)
+
     @property
     def alignment(self):
         return self.__alignment
@@ -267,6 +276,7 @@ class ImageLayer:
             im = cv2.imdecode(im_data, 1)
             im.flags.writeable = False
             self.__cached_decode = im
+            print(im)
 
         return self.__cached_decode
 
@@ -307,15 +317,6 @@ class ImageLayer:
 
     def n2p(self, pt):
         return projectPoint(self.normalized_to_pixel, pt)
-
-    @staticmethod
-    def fromFile(project, filename):
-        assert os.path.exists(filename)
-
-        im = cv2.imdecode(numpy.fromfile(filename, dtype=numpy.uint8), 1)
-        tmat = numpy.identity(3)
-        basename = os.path.basename(filename)
-        return ImageLayer(name=basename, data=open(filename, "rb").read())
 
     @property
     def keypoint_positions(self):

@@ -1,10 +1,6 @@
 import math
-import numpy
 
-from OpenGL import GL as GL
-from OpenGL.arrays.vbo import VBO
-
-from pcbre.qt_compat import QtGui, QtCore
+from pcbre.qt_compat import QtCore, QtWidgets
 from pcbre.matrix import (
     Point2,
     rotate,
@@ -18,7 +14,6 @@ from pcbre.model.smd4component import SMD4Component
 from pcbre.ui.dialogs.settingsdialog import (
     AutoSettingsWidget,
     LineEditable,
-    FloatTrait,
     IntTrait,
     UnitEditable,
 )
@@ -113,7 +108,8 @@ class BasicSMDFlow(MultipointEditFlow):
             self.p_side_2_1,
             self.p_body_corner,
         ]
-        super(BasicSMDFlow, self).__init__(view, points, True)
+
+        super().__init__(view, points, True)
 
         self.__side = None
         self.__update_matrix()
@@ -227,7 +223,7 @@ class BasicSMDICEditWidget(AutoSettingsWidget):
 
         self.mdl = icmdl
         # Symmetry
-        self.symw = QtGui.QComboBox()
+        self.symw = QtWidgets.QComboBox()
         syms = [SYM_4_SQUARE, SYM_4_RECT, SYM_2, SYM_ARB]
         for s in syms:
             self.symw.addItem(text_for_sym(s), s)
@@ -282,7 +278,7 @@ class BasicSMDICEditWidget(AutoSettingsWidget):
             UnitEditable(self.mdl, "dim_2_pincenter", UNIT_GROUP_MM),
         )
 
-        self.layout.addWidget(QtGui.QLabel("Dimension 1 is along pin 1 edge"))
+        self.layout.addWidget(QtWidgets.QLabel("Dimension 1 is along pin 1 edge"))
 
         self.addEdit(
             "(e) Pin Spacing", UnitEditable(self.mdl, "pin_spacing", UNIT_GROUP_MM)

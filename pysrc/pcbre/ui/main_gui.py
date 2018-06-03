@@ -2,22 +2,23 @@
 
 import pcbre.model.project as P
 
-from pcbre.qt_compat import QtCore, QtGui, QtWidgets, getOpenFileName, getSaveFileName
-from pcbre.ui.actions.add import AddImageDialogAction
-from pcbre.ui.actions.misc import (
+from pcbre.qt_compat import QtCore, QtWidgets
+
+from .actions.add import AddImageDialogAction
+from .actions.misc import (
     NudgeUpAction,
     NudgeLeftAction,
     NudgeDownAction,
     NudgeRightAction,
     ShowToolSettingsAction,
 )
-from pcbre.ui.actions.pcb import (
+from .actions.pcb import (
     RebuildConnectivityAction,
     LayerViewSetupDialogAction,
     StackupSetupDialogAction,
 )
-from pcbre.ui.actions.save import checkCloseSave
-from pcbre.ui.actions.view import (
+from .actions.save import checkCloseSave, SaveAction, SaveAsDialogAction, ExitAction
+from .actions.view import (
     LayerJumpAction,
     FlipXAction,
     FlipYAction,
@@ -27,12 +28,11 @@ from pcbre.ui.actions.view import (
     ToggleShowImageryAction,
     ToggleDrawOtherLayersAction,
 )
-from pcbre.ui.boardviewwidget import BoardViewWidget
-from pcbre.ui.panes.info import InfoWidget
-from pcbre.ui.panes.layerlist import LayerListWidget
-from pcbre.ui.tools.all import TOOLS
-from pcbre.ui.widgets.glprobe import probe
-from pcbre.ui.actions.save import SaveAction, SaveAsDialogAction, ExitAction
+from .boardviewwidget import BoardViewWidget
+from .panes.info import InfoWidget
+from .panes.layerlist import LayerListWidget
+from .tools.all import TOOLS
+from .widgets.glprobe import probe
 
 
 class MainWindowActions:
@@ -151,9 +151,9 @@ class MainWindow(QtWidgets.QMainWindow):
             evt.ignore()
 
     def createMenubar(self):
-        from pcbre.ui.menu.file import FileMenu
-        from pcbre.ui.menu.view import ViewMenu
-        from pcbre.ui.menu.pcb import PCBMenu
+        from .menu.file import FileMenu
+        from .menu.view import ViewMenu
+        from .menu.pcb import PCBMenu
 
         self.menuBar().addMenu(FileMenu(self))
         self.menuBar().addMenu(ViewMenu(self))

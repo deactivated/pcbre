@@ -1,22 +1,23 @@
+import numpy
 from collections import defaultdict
-from pcbre.view.rendersettings import (
+
+from OpenGL import GL
+from OpenGL.arrays.vbo import VBO
+
+from ..matrix import Rect, translate, rotate, Point2, scale, Vec2
+from ..ui.gl import VAO, vbobind, glimports as GLI
+
+from .rendersettings import (
     RENDER_STANDARD,
     RENDER_OUTLINES,
     RENDER_SELECTED,
     RENDER_HINT_NORMAL,
     RENDER_HINT_ONCE,
 )
-from pcbre.view.util import get_consolidated_draws_1, get_consolidated_draws
+from .util import get_consolidated_draws_1, get_consolidated_draws
+
 
 __author__ = "davidc"
-import math
-from OpenGL import GL
-from OpenGL.arrays.vbo import VBO
-import numpy
-from pcbre import units
-from pcbre.matrix import Rect, translate, rotate, Point2, scale, Vec2
-from pcbre.ui.gl import VAO, vbobind, glimports as GLI
-import ctypes
 
 
 class HairlineRenderer:

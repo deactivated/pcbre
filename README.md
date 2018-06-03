@@ -18,7 +18,7 @@ PCBRE requires the following dependencies. Some will probably need to come from 
 - python3-pip (for installing python packages)
 - numpy
 - scipy
-- PySide
+- python3-pyqt5
 
 <!-- begin list -->
 - Cython (required by poly2tri and pypotrace)
@@ -38,8 +38,8 @@ PCBRE requires the following dependencies. Some will probably need to come from 
 - shapely
 - rtree
 - freetype\_py
-- git+https://github.com/davidcarne/poly2tri.python.git
 - pyopengl
+- git+https://github.com/davidcarne/poly2tri.python.git
 
 <!-- begin list -->
 - mock (only needed for tests)
@@ -63,7 +63,7 @@ Install the following packages using apt:
 - python3-pip
 - python3-numpy
 - python3-scipy
-- python3-pyside
+- python3-pyqt5
 - libspatialindex-dev
 - libgeos-dev
 - libpotrace-dev

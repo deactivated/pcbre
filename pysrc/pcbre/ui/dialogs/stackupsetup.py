@@ -27,7 +27,7 @@ class StackupSetupDialog(QtWidgets.QDialog):
         QtWidgets.QDialog.__init__(self, parent, *args)
 
         self.resize(470, 350)
-        self.setWindowTitle("Layer parameters")
+        self.setWindowTitle("Layer Parameters")
 
         self.table_model = MyTableModel(self, data_list)
 
@@ -46,8 +46,8 @@ class StackupSetupDialog(QtWidgets.QDialog):
         lb = HHeader(QtCore.Qt.Vertical, self.table_view)
         lb.sectionDoubleClicked.connect(self.selectColor)
         self.table_view.setVerticalHeader(lb)
-        lbar = self.table_view.verticalHeader()
 
+        # lbar = self.table_view.verticalHeader()
         # lbar.setMovable(True)
         # lbar.setDragEnabled(True)
         # lbar.setDragDropMode(QAbstractItemView.InternalMove)
@@ -62,19 +62,19 @@ class StackupSetupDialog(QtWidgets.QDialog):
         layout.addWidget(self.table_view)
         l2 = QtWidgets.QVBoxLayout()
 
-        self.newButton = QtWidgets.QPushButton("add layer")
+        self.newButton = QtWidgets.QPushButton("Add Layer")
         self.newButton.clicked.connect(self.addLayer)
-        self.deleteButton = QtWidgets.QPushButton("delete layer")
+        self.deleteButton = QtWidgets.QPushButton("Delete Layer")
         self.deleteButton.clicked.connect(self.deleteLayer)
 
-        self.upButton = QtWidgets.QPushButton("move up")
+        self.upButton = QtWidgets.QPushButton("Move Up")
         self.upButton.clicked.connect(self.moveUpButtonPressed)
-        self.downButton = QtWidgets.QPushButton("move down")
+        self.downButton = QtWidgets.QPushButton("Move Down")
         self.downButton.clicked.connect(self.moveDownButtonPressed)
 
-        self.cancelButton = QtWidgets.QPushButton("cancel")
+        self.cancelButton = QtWidgets.QPushButton("Cancel")
         self.cancelButton.clicked.connect(self.reject)
-        self.okButton = QtWidgets.QPushButton("apply")
+        self.okButton = QtWidgets.QPushButton("Apply")
         self.okButton.setDefault(True)
         self.okButton.clicked.connect(self.accept)
 
@@ -87,7 +87,6 @@ class StackupSetupDialog(QtWidgets.QDialog):
         l2.addWidget(self.cancelButton)
         l2.addWidget(self.okButton)
 
-        # l2.addRow("test", None)
         layout.addLayout(l2)
 
         self.setLayout(layout)

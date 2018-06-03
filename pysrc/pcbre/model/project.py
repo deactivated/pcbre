@@ -1,10 +1,10 @@
-from pcbre.qt_compat import QtCore
 import os
-from pcbre.model.const import SIDE
-
-from pcbre.model.net import Net
 
 import pcbre.model.serialization as ser
+
+from pcbre.qt_compat import QtCore
+from pcbre.model.const import SIDE
+from pcbre.model.net import Net
 from pcbre.model.artwork import Artwork
 from pcbre.model.change import ModelChange, ChangeType
 from pcbre.model.imagelayer import ImageLayer, KeyPoint
@@ -349,8 +349,6 @@ class Project:
 
         bakname = path + ".bak"
         try:
-            bakname = path + ".bak"
-
             if os.path.exists(bakname):
                 os.unlink(bakname)
 
@@ -359,19 +357,16 @@ class Project:
         except (IOError, OSError):
             raise IOError("Couldn't manipulate backup file")
 
-        f = open(path, "w+b", buffering=0)
-        try:
-            self.save_fd(f)
-        except Exception as e:
-            os.unlink(path)
-            os.rename(bakname, path)
-            raise
+        with open(path, "w+b", buffering=0) as f:
+            try:
+                self.save_fd(f)
+            except:
+                os.unlink(path)
+                os.rename(bakname, path)
+                raise
 
-        if update_path:
-            self.filepath = path
-
-        f.flush()
-        f.close()
+            if update_path:
+                self.filepath = path
 
     def close(self):
         pass

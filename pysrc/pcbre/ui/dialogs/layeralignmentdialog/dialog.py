@@ -1,13 +1,9 @@
 import numpy
 import OpenGL.GL as GL
 
-from pcbre.matrix import scale, Point2
-from pcbre.model.imagelayer import (
-    KeyPoint,
-    KeyPointPosition,
-    KeyPointAlignment,
-    RectAlignment,
-)
+from pcbre.qt_compat import QtCore, QtWidgets
+from pcbre.matrix import scale
+from pcbre.model.imagelayer import KeyPointAlignment, RectAlignment
 from pcbre.ui.boardviewwidget import BaseViewWidget
 from pcbre.ui.dialogs.layeralignmentdialog.keypointalign import (
     KeypointAlignmentModel,
@@ -25,7 +21,6 @@ from pcbre.ui.gl.textrender import TextBatcher
 from pcbre.ui.undo import UndoStack, undofunc, sig
 from pcbre.view.imageview import ImageView
 from pcbre.view.originview import OriginView
-from pcbre.qt_compat import QtCore, QtWidgets
 from pcbre.ui.uimodel import mdlacc, GenModel
 
 from .rectalign import RectAlignmentControllerView, RectAlignmentModel
@@ -90,7 +85,6 @@ class AlignmentViewWidget(BaseViewWidget):
             ov.initializeGL(self.gls)
 
         self.originView.initializeGL(self.gls)
-
         self.text_batch.initializeGL()
 
     def get_iv(self, il):
@@ -123,6 +117,7 @@ class AlignmentViewWidget(BaseViewWidget):
 
     def render(self):
         self.text_batch.restart()
+
         GL.glEnable(GL.GL_BLEND)
         if self.model.align_by == ALIGN_BY_DIMENSIONS:
             if self.model.view_mode == VIEW_MODE_UNALIGNED:
@@ -260,8 +255,8 @@ class LayerAlignmentDialog(QtWidgets.QDialog):
         control_buttons_layout.addWidget(bbox)
         hlayout.addLayout(control_buttons_layout, 0)
 
-        # Explicitly disconnect child-events for the rect-align model
-        # We (mostly) don't care about changes to the perimeter
+        # Explicitly disconnect child-events for the rect-align model We
+        # (mostly) don't care about changes to the perimeter
         self.model.ra.changed.disconnect(self.model.change)
 
         self.model.changed.connect(self.view.update)
@@ -345,8 +340,9 @@ class LayerAlignmentDialog(QtWidgets.QDialog):
 
         if self.model.align_by == ALIGN_BY_DIMENSIONS:
             self.directions_label.setText(
-                "Ctrl-click to add anchor point, Shift-click to delete anchor point.\n"
-                + "Anchor points constrain handle movement."
+                "Ctrl-click to add anchor point, Shift-click to "
+                "delete anchor point.\n Anchor points constrain "
+                "handle movement."
             )
         else:
             self.directions_label.setText(
@@ -365,7 +361,6 @@ class LayerAlignmentDialog(QtWidgets.QDialog):
         self.view.viewState.transform = self._saved_transforms[self._selected_view]
 
     def update_controls(self):
-
         self.save_restore_transform()
 
         self.align_selection.setCurrentIndex(self.model.align_by)

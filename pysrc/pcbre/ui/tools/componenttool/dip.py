@@ -1,3 +1,5 @@
+import math
+
 from pcbre import units
 from pcbre.qt_compat import QtCore
 from pcbre.matrix import Point2, Vec2, projectPoint, rotate, translate
@@ -9,8 +11,6 @@ from pcbre.ui.tools.multipoint import (
     OffsetDefaultPoint,
 )
 
-
-__author__ = "davidc"
 from pcbre.ui.dialogs.settingsdialog import (
     AutoSettingsWidget,
     LineEditable,
@@ -19,7 +19,10 @@ from pcbre.ui.dialogs.settingsdialog import (
 )
 from pcbre.ui.uimodel import mdlacc, GenModel
 from pcbre.ui.widgets.unitedit import UNIT_GROUP_MM
-import math
+
+
+__author__ = "davidc"
+
 
 TR_X = math.cos(math.radians(30))
 TR_Y = math.sin(math.radians(30))
@@ -100,7 +103,6 @@ class DIPEditFlow(MultipointEditFlow):
         self.update_matrix()
 
     def updated(self, ep):
-
         if self.p_bottom_corner.is_set and self.p1_point.is_set:
             dv = self.p_bottom_corner.get() - self.p1_point.get()
 
@@ -114,7 +116,6 @@ class DIPEditFlow(MultipointEditFlow):
         self.update_matrix()
 
     def update_matrix(self):
-
         rot = rotate(self.theta)
 
         if self.side == SIDE.Top:
@@ -136,6 +137,10 @@ class DIPEditFlow(MultipointEditFlow):
     @property
     def theta(self):
         return self.__theta
+
+    @theta.setter
+    def theta(self, v):
+        self.__theta = v
 
 
 class DIPModel(GenModel):

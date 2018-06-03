@@ -20,9 +20,7 @@ from pcbre.matrix import (
 )
 from pcbre.ui.uimodel import GenModel, mdlacc
 from pcbre.ui.gl import VAO, vbobind
-from pcbre.ui.widgets.lineedit import PLineEdit
 from pcbre.ui.widgets.unitedit import UnitLineEdit, UNIT_GROUP_MM, UNIT_GROUP_PX
-from pcbre.util import float_or_None
 from OpenGL.arrays.vbo import VBO
 
 ADD_MODIFIER = QtCore.Qt.ControlModifier
@@ -975,39 +973,40 @@ class KeypointAlignmentWidget(QtWidgets.QWidget):
         if cs == CONS_UNCONSTRAINED:
             self.constraint_status_lbl.setText(
                 "Image is unconstrained. Will not be aligned in world space. "
-                + "This is probably not what you want"
+                "This is probably not what you want."
             )
         elif cs == CONS_TRANSLATION:
             self.constraint_status_lbl.setText(
-                "Image is constrained only by one keypoint. This will only position "
-                + "the image in space, but not provide scale or alignment information. "
-                + "This is probably not what you want"
+                "Image is constrained only by one keypoint. This will only "
+                "position the image in space, but not provide scale or "
+                "alignment information. This is probably not what you want."
             )
         elif cs == CONS_ROTATE_SCALE:
             self.constraint_status_lbl.setText(
-                "Image is constrained by two keypoints. This will only position, "
-                + "proportionally scale and rotate the image. That may be OK for "
-                + "scanned images"
+                "Image is constrained by two keypoints. This will only "
+                "position, proportionally scale and rotate the image. That "
+                "may be OK for scanned images."
             )
         elif cs == CONS_ORTHOGONAL:
             self.constraint_status_lbl.setText(
-                "Image is constrained by three keypoints. This allows alignment of "
-                + "scale, rotation, translation and shear. This is probably not what "
-                + "you want, but may be useful for synthetically transformed images"
+                "Image is constrained by three keypoints. This allows "
+                "alignment of scale, rotation, translation and shear. This "
+                "is probably not what you want, but may be useful for "
+                "synthetically transformed images."
             )
         elif cs == CONS_PERSPECTIVE:
             self.constraint_status_lbl.setText(
-                "Image is constrained by four keypoints. This allows for full recovery"
-                + " of the perspective transform. This is probably what you want "
-                + "for camera imagery."
+                "Image is constrained by four keypoints. This allows for full "
+                "recovery of the perspective transform. This is probably what "
+                "you want for camera imagery."
             )
         elif cs == CONS_SINGULAR:
             self.constraint_status_lbl.setText(
-                "Can't solve for these constraints. Are keypoints overlapping or "
-                + "colinear in either world or image space?"
+                "Can't solve for these constraints. Are keypoints overlapping "
+                "or colinear in either world or image space?"
             )
         elif cs == CONS_OVERCONSTRAINED:
             self.constraint_status_lbl.setText(
                 "Too many constraints to solve for. "
-                + "Max 4 enabled keypoints for alignment."
+                "Max 4 enabled keypoints for alignment."
             )

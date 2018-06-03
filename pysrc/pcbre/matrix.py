@@ -1,3 +1,6 @@
+"""
+Matrix Utilities
+"""
 import numpy
 import math
 from pcbre.qt_compat import QtCore
@@ -243,20 +246,20 @@ class Vec2:
         return d < eps
 
     # @property
-    # def x(self):
-    #    return self[0]
+    #  def x(self):
+    #     return self[0]
 
     # @x.setter
-    # def x(self, value):
-    #    self[0] = value
+    #  def x(self, value):
+    #     self[0] = value
 
     # @property
-    # def y(self):
-    #    return self[1]
+    #  def y(self):
+    #     return self[1]
 
     # @y.setter
-    # def y(self, value):
-    #    self[1] = value
+    #  def y(self, value):
+    #     self[1] = value
 
     def mag2(self):
         return self.x ** 2 + self.y ** 2
@@ -319,12 +322,12 @@ class Point2(Vec2):
 
 def project_point_line(point, lp1, lp2, segment=True, off_end=False):
     """
-
     :param point:
     :type point: Vec2
     :type line: Vec2
     :param line:
-    :return: (u, d), where u is nearest point along line, and d is distance from line to point
+    :return: (u, d), where u is nearest point along line, and d is distance
+             from line to point
     """
 
     lp1 = Vec2(lp1)

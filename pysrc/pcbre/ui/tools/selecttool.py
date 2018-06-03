@@ -1,10 +1,8 @@
 import enum
-import pkg_resources
 
-from pcbre.model.artwork_geom import Trace
 from pcbre.model.const import TFF
 from pcbre.ui.boardviewwidget import QPoint_to_pair
-from pcbre.qt_compat import QtCore, QtGui, QtWidgets
+from pcbre.qt_compat import QtCore, QtWidgets
 from pcbre.ui.uimodel import GenModel, mdlacc
 from pcbre.ui.icon import Icon
 

@@ -7,7 +7,7 @@ INPUT_TYPE vec2 pos_b;
 INPUT_TYPE float thickness;
 uniform vec4 color;
 
-in vec2 vertex;
+in vec2 lvertex;
 in int ptid;
 
 out vec4 color_vtx;
@@ -34,7 +34,7 @@ void main(void)
         -linevec.y, linevec.x
     );
 
-    vec3 calc = mat * vec3(pos + endcap_r * (thickness * vertex), 1);
+    vec3 calc = mat * vec3(pos + endcap_r * (thickness * lvertex), 1);
     gl_Position = vec4(calc.x, calc.y, 0, 1);
 
     color_vtx = color;

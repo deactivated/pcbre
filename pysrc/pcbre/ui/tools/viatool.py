@@ -1,20 +1,18 @@
-from pcbre.qt_compat import QtCore, QtGui, QtWidgets
+from pcbre.qt_compat import QtCore, QtWidgets
 
-from pcbre.matrix import Point2, translate
+from pcbre.matrix import Point2
 from pcbre.model.artwork_geom import Via
-from pcbre.model.net import Net
-from pcbre.ui.boardviewwidget import QPoint_to_pair
 from pcbre.ui.dialogs.settingsdialog import SettingsDialog
 from pcbre.ui.widgets.unitedit import UnitLineEdit, UNIT_GROUP_MM
 from pcbre.view.rendersettings import RENDER_OUTLINES
-from pcbre.view.viaview import THRenderer
+
 
 from .basetool import BaseTool, BaseToolController
 
 
 class ViaSettingsDialog(SettingsDialog):
     def __init__(self, tpm):
-        super(ViaSettingsDialog, self).__init__()
+        super().__init__()
         self.tpm = tpm
 
         self.radius_li = UnitLineEdit(UNIT_GROUP_MM)
@@ -65,7 +63,7 @@ class ViaToolController(BaseToolController):
 
         :type view: pcbre.ui.boardviewwidget.BoardViewWidget
         """
-        super(ViaToolController, self).__init__()
+        super().__init__()
 
         self.view = view
         self.project = project
@@ -110,21 +108,22 @@ class ViaToolController(BaseToolController):
     def mouseWheelEvent(self, event):
         if event.modifiers() & QtCore.Qt.ShiftModifier:
             # TODO: Remove hack on step
-            step = event.delta() / 120.0
+            step = event.angleDelta().y() / 120.0
+
             self.toolparammodel.radius += step
             if self.toolparammodel.radius <= 0:
                 self.toolparammodel.radius = 0.00001
 
 
 class ViaToolModel(QtCore.QObject):
+    changed = QtCore.Signal()
+
     def __init__(self, project):
-        super(ViaToolModel, self).__init__()
+        super().__init__()
         self.project = project
 
         self.__current_layer_pair = None
         self.__r = 1000
-
-    changed = QtCore.Signal()
 
     @property
     def current_layer_pair(self):

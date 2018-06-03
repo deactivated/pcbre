@@ -1,5 +1,7 @@
-from pcbre.qt_compat import QtCore, QtGui
+from collections import namedtuple
+
 from pcbre import units
+from pcbre.qt_compat import QtCore, QtWidgets
 from pcbre.matrix import Point2, Vec2
 from pcbre.model.const import SIDE
 from pcbre.model.passivecomponent import (
@@ -7,6 +9,7 @@ from pcbre.model.passivecomponent import (
     PassiveSymType,
     PassiveBodyType,
 )
+from pcbre.ui.uimodel import GenModel, mdlacc
 from pcbre.ui.dialogs.settingsdialog import (
     AutoSettingsWidget,
     UnitEditable,
@@ -17,12 +20,11 @@ from pcbre.ui.tools.multipoint import (
     OffsetDefaultPoint,
     MultipointEditFlow,
 )
-from pcbre.ui.uimodel import GenModel, mdlacc
 from pcbre.ui.widgets.unitedit import UNIT_GROUP_MM
+
 
 __author__ = "davidc"
 
-from collections import namedtuple
 
 _well_known_t = namedtuple(
     "well_known", ["name", "body_type", "pin_d", "body_size", "pad_size"]
@@ -151,7 +153,7 @@ class PassiveEditWidget(AutoSettingsWidget):
         self.__idx_to_wk = {}
         self.__wk_to_idx = {}
 
-        self.cb_well_known = QtGui.QComboBox()
+        self.cb_well_known = QtWidgets.QComboBox()
         self.layout.addRow("Package", self.cb_well_known)
 
         self.__add_wk(None, "Custom")
@@ -165,7 +167,7 @@ class PassiveEditWidget(AutoSettingsWidget):
         self.pkg_changed(self.cb_well_known.currentIndex())
 
         # Snap checkbox
-        self.cb_snap = QtGui.QCheckBox()
+        self.cb_snap = QtWidgets.QCheckBox()
         self.cb_snap.setChecked(self.__model.snap_well)
         self.layout.addRow("Snap to Well Known", self.cb_snap)
 

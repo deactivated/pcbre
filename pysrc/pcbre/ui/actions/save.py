@@ -1,6 +1,6 @@
-__author__ = "davidc"
+from pcbre.qt_compat import QtWidgets
 
-from pcbre.qt_compat import QtGui, QtWidgets
+__author__ = "davidc"
 
 pcbre_filter = "PCBRE Project Files (*.pcbre)"
 

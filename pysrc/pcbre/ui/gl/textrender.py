@@ -2,7 +2,6 @@
 
 import numpy
 import ctypes
-import time
 import freetype
 import scipy.ndimage.morphology
 import scipy.ndimage.interpolation
@@ -13,7 +12,6 @@ from OpenGL import GL
 
 from pcbre.matrix import Rect, translate, scale, Point2, projectPoint
 from pcbre.ui.gl import Texture, vbobind, VAO
-from pcbre.qt_compat import QtCore, QtGui
 from pcbre.ui.misc import QImage_from_numpy
 from pcbre.ui.gl.textatlas import BASE_FONT
 
@@ -123,9 +121,12 @@ class TextBatcher(object):
         )
         self.vao = VAO()
 
-        with self.vao, self.vbo:
-            self.text_render.b1.assign()
-            self.text_render.b2.assign()
+        # XXX wtf...
+        #
+        # with self.vao, self.vbo:
+        #     self.text_render.b1.assign()
+        #     self.text_render.b2.assign()
+
         self.__vbo_needs_update = True
 
     def render(self, key=None):

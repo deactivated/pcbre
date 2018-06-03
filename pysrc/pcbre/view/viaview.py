@@ -1,29 +1,30 @@
-from collections import defaultdict
+import weakref
+import math
+import numpy
+
+from OpenGL import GL
+from OpenGL.arrays.vbo import VBO
+
 from pcbre.model.artwork_geom import Via
 from pcbre.view.rendersettings import (
     RENDER_SELECTED,
     RENDER_OUTLINES,
     RENDER_HINT_NORMAL,
 )
-import weakref
+
+# from pcbre.matrix import Rect, translate, rotate, Point2, scale, Vec2
+from pcbre.ui.gl import VAO, vbobind, glimports as GLI
 
 __author__ = "davidc"
-import math
-from OpenGL import GL
-from OpenGL.arrays.vbo import VBO
-import numpy
-from pcbre import units
-from pcbre.matrix import Rect, translate, rotate, Point2, scale, Vec2
-from pcbre.ui.gl import VAO, vbobind, glimports as GLI
-import ctypes
+
 
 N_OUTLINE_SEGMENTS = 100
 
 
 class ViaBoardBatcher:
     """
-    The ViaBoardBatcher manages via draw batches (per-layer). It automatically updates the draw batches on-demand and
-    only when necessary
+    The ViaBoardBatcher manages via draw batches (per-layer). It automatically
+    updates the draw batches on-demand and only when necessary.
     """
 
     def __init__(self, via_renderer, project):
@@ -35,21 +36,22 @@ class ViaBoardBatcher:
         self.__last_via_generation = None
 
     def update_if_necessary(self, selection_list):
-
         # Evaluate if we need to redraw
-        ok = True
+        redraw = False
 
         # Todo: check via_pairs the same
 
         if self.__last_via_generation != self.project.artwork.vias_generation:
-            ok = False
+            redraw = True
 
         via_sel_list = set(i for i in selection_list if isinstance(i, Via))
         if via_sel_list != self.__selected_set:
-            ok = False
+            redraw = True
 
-        if ok:
-            return
+        # if not redraw:
+        #     return
+
+        print("redraw vias")
 
         self.__last_via_generation = self.project.artwork.vias_generation
         self.__selected_set = via_sel_list
@@ -142,9 +144,10 @@ class _THBatch:
             ).assign()
 
         # Build instance for outline rendering
+        #
         # We don't have an inner 'r' for this because we just do two instances
-        # per vertex
-
+        # per vertex.
+        #
         # Use a fake array to get a zero-length VBO for initial binding
         outline_instance_array = numpy.ndarray(
             0, dtype=self.parent._outline_instance_dtype
@@ -201,8 +204,8 @@ class _THBatch:
             # HACK, color object
             color_mod = self.parent.parent.sel_colormod(rs & RENDER_SELECTED, color_a)
 
-            # frag shader uses pythag to determine is frag is within
-            # shaded area. Precalculate comparison term
+            # Frag shader uses pythag to determine if frag is within the shaded
+            # area. Precalculate comparison term.
             r_frac_sq = (r2 / r1) ** 2
             instance_array[n] = (center, r1, r_frac_sq, color_mod)
 
@@ -291,7 +294,6 @@ class THRenderer:
         return batch
 
     def initializeGL(self, glshared):
-
         self._filled_shader = glshared.shader_cache.get(
             "via_filled_vertex_shader", "via_filled_fragment_shader"
         )

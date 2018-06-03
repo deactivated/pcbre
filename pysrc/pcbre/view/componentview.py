@@ -1,5 +1,4 @@
 import math
-
 import weakref
 
 from pcbre import units
@@ -100,16 +99,17 @@ class PadRender:
             color_a = [1, 1, 1, 1]
 
         if pad.is_through():
-            self.parent.via_renderer.deferred(
+            via_batch = self.parent.pad_via_batch
+            via_batch.deferred(
                 pad.center, pad.l / 2, pad.th_diam / 2, render_mode, render_hint
             )
 
             # r = Rect.fromCenterSize(Point2(0,0), pad.l * 0.6, pad.w * 0.6)
-
             # _text_to(self.view, pad,r, mat, textcol_a)
         else:
             t = pad.trace_repr
             self.parent.trace_renderer.deferred(t, render_mode, render_hint)
+
             # r = Rect.fromCenterSize(Point2(0,0), pad.l*0.8, pad.w*0.8)
             # _text_to(self.view, pad, r, mat, textcol_a)
 

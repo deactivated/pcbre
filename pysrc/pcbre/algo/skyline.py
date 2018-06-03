@@ -1,6 +1,9 @@
-"""The skyline algorithm is a clean python implementation of the skyline best fit bin packing algorithm.
-(See: http://clb.demon.fi/files/RectangleBinPack.pdf pp 25). It is used in pcbre for packing rectangular sprites into
-textures. An example usage is text-sprite generation"""
+"""
+The skyline algorithm is a clean python implementation of the skyline best fit
+bin packing algorithm.  (See: http://clb.demon.fi/files/RectangleBinPack.pdf pp
+25).  It is used in pcbre for packing rectangular sprites into textures.  An
+example usage is text-sprite generation
+"""
 
 import math
 import itertools
@@ -11,10 +14,12 @@ __author__ = "davidc"
 
 
 class _SkyLineNode(object):
-    """ A set of skyline nodes describe the skyline. They are organized in a singly linked list.
-    Each node has a coordinate (left, height) that describes the upper-left corner edge of a skyline block.
-    The width of the block (which continues at 'height') is implicit to either the 'left' of the next block, or to the
-    width of the area on which the skyline is being run.
+    """
+    A set of skyline nodes describe the skyline.  They are organized in a
+    singly linked list.  Each node has a coordinate (left, height) that
+    describes the upper-left corner edge of a skyline block.  The width of the
+    block (which continues at 'height') is implicit to either the 'left' of the
+    next block, or to the width of the area on which the skyline is being run.
     """
 
     def __init__(self, left=0, height=0):
@@ -80,8 +85,10 @@ def _node_iter(node):
 
 
 class SkyLine(object):
-    """The SkyLine class represents a mutable 'SkyLine' in area (width, height). Initially, the skyline is zero-height.
-    The 'pack' and 'pack_multiple' functions may be used to allocate rectangular areas, and update the skyline.
+    """The SkyLine class represents a mutable 'SkyLine' in area (width,
+    height).  Initially, the skyline is zero-height.  The 'pack' and
+    'pack_multiple' functions may be used to allocate rectangular areas, and
+    update the skyline.
 
     The SkyLine class itself does not directly manage any
     """
@@ -93,7 +100,9 @@ class SkyLine(object):
         self.first = _SkyLineNode()
 
     def first_iter(self):
-        """return an iterator that walks the nodes from left to right"""
+        """
+        Return an iterator that walks the nodes from left to right.
+        """
         return _node_iter(self.first)
 
     def width(self, node):
@@ -122,8 +131,7 @@ class SkyLine(object):
         last_height = node.height
         node.height = height
 
-        # If the splitpoint is at the RHS of the packing bin
-        # just shortcut out
+        # If the splitpoint is at the RHS of the packing bin just shortcut out
         if splitpoint == self.width:
             node.next = None
             return
@@ -131,22 +139,22 @@ class SkyLine(object):
         # walk the nodes ahead
         for next in _node_iter(node.next):
 
-            # If one of the nodes ahead has left == our splitpoint
-            # Then we just adopt the node as our next
+            # If one of the nodes ahead has left == our splitpoint Then we just
+            # adopt the node as our next
             if next.left == splitpoint:
                 node.next = next
                 self.merge()
                 return
 
-            # Else if the node ahead has left > our split point
-            # we need to insert a node to split the difference
+            # Else if the node ahead has left > our split point we need to
+            # insert a node to split the difference
             elif next.left > splitpoint:
                 if next.height == last_height:
                     print(next.height, last_height)
                     print(splitpoint, height)
                     print(print_skyline(node))
-                    # This case should be impossible
-                    # if it occurs, something is wrong with the skyline
+                    # This case should be impossible if it occurs, something is
+                    # wrong with the skyline
                     assert False
                     next.left = splitpoint
                     node.next = next
@@ -166,8 +174,8 @@ class SkyLine(object):
         self.merge()
 
     def find(self, width, height):
-        # We use a left-to-right sweep that tracks the viable
-        # candidate start points as seen looking back to the left
+        # We use a left-to-right sweep that tracks the viable candidate start
+        # points as seen looking back to the left
 
         candidates = []
 

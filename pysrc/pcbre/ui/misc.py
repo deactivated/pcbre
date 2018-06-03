@@ -1,8 +1,7 @@
-__author__ = "davidc"
 import numpy
-from pcbre.qt_compat import QtCore, QtGui
+from pcbre.qt_compat import QtGui
 
-KEEP = None
+__author__ = "davidc"
 
 
 def QImage_from_numpy(arr):

@@ -1,8 +1,9 @@
-__author__ = "davidc"
-
-from OpenGL.GL.shaders import ShaderProgram, compileShader
 import OpenGL.GL as GL
+from OpenGL.GL.shaders import ShaderProgram, compileShader
 from collections import namedtuple
+
+
+__author__ = "davidc"
 
 _index_size_type = namedtuple("index_size_type", ["index", "size", "type"])
 
@@ -119,8 +120,10 @@ def compileProgram(*shaders):
 
     GL.glLinkProgram(program)
 
-    # Do not perform shader validity checking at compile time.
-    # On some platforms (OSX), the FBO doesn't exist at initializeGL time, or is not bound
+    # Do not perform shader validity checking at compile time: on some
+    # platforms (OSX), the FBO doesn't exist at initializeGL time, or is not
+    # bound
+
     # program.check_validate()
 
     program.check_linked()

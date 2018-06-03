@@ -1,6 +1,6 @@
-__author__ = "davidc"
-
 from pcbre.qt_compat import QtGui, QtCore, QtWidgets
+
+__author__ = "davidc"
 
 
 def _nudge(dx, dy):
