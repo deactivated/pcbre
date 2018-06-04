@@ -1,6 +1,8 @@
 # PCBRE
 
-PCB is an open source package for semiautomated and manual PCB reverse engineering.
+**WARNING** This branch is currently non-functional. **WARNING**
+
+PCBRE is an open source package for semiautomated and manual PCB reverse engineering.
 
 ## Documentation and Support
 
